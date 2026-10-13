@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sans Soluções em Finanças</title>
+<meta name="description" content="Sans: soluções em finanças, da estratégia à tomada de decisão. Gestão de caixa, capital de giro, performance, controles internos, viabilidade de projetos e sortimento.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231B2A41'/%3E%3Ctext x='29' y='46' font-family='Georgia,serif' font-size='42' text-anchor='middle' fill='%23F3EDE2'%3ES%3C/text%3E%3Ccircle cx='47' cy='43' r='3.5' fill='%23C49A6C'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600&display=swap">
+<style>
+/* Layout: marca de página única, faixas alternadas creme/marinho, coluna de 1200px */
+:root{
+  --navy:#1B2A41; --navy-line:#34445C; --cream:#F3EDE2; --paper:#FBF8F2;
+  --brown:#7A5638; --tan:#C49A6C; --ink-soft:#3D4A5C; --mist:#C9BFAE; --rule:#E2D9CA;
+  --display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --body:'Manrope', 'Segoe UI', Helvetica, Arial, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--cream);color:var(--navy);font-family:var(--body);font-size:16px;line-height:1.6}
+a{color:inherit}
+a:focus-visible{outline:2px solid var(--tan);outline-offset:3px}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:24px}
+.eyebrow{font-size:13px;letter-spacing:.28em;text-transform:uppercase;font-weight:600;color:var(--brown);margin:0}
+.dark .eyebrow{color:var(--tan)}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance}
+h2{font-size:clamp(32px,4vw,44px);line-height:1.15}
+h3{font-weight:500}
+.dot{color:var(--brown)}
+.dark .dot{color:var(--tan)}
+.dark{background:var(--navy);color:var(--cream)}
+
+header{border-bottom:1px solid var(--rule)}
+header .wrap{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding-block:20px}
+.logo{font-family:var(--display);font-size:32px;line-height:1;text-decoration:none}
+nav{display:flex;flex-wrap:wrap;gap:24px;align-items:center;font-size:15px;font-weight:500}
+nav a{text-decoration:none}
+nav a:hover{color:var(--brown)}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:12px 22px;font-weight:600;text-decoration:none;border:1px solid var(--navy)}
+.btn-solid{background:var(--navy);color:var(--cream)}
+.btn-solid:hover{background:#24375A;color:var(--cream)}
+.btn-line:hover{background:var(--paper)}
+
+.hero .wrap{display:flex;flex-direction:column;gap:28px;padding-block:112px}
+.hero h1{font-size:clamp(40px,6vw,76px);line-height:1.05;letter-spacing:-.02em;max-width:960px}
+.hero p{margin:0;font-size:20px;color:var(--ink-soft)}
+.actions{display:flex;flex-wrap:wrap;gap:16px}
+
+section .wrap.block{display:flex;flex-direction:column;gap:48px;padding-block:112px}
+.head{display:flex;flex-direction:column;gap:12px;max-width:760px}
+
+.grid5{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--navy-line);border:1px solid var(--navy-line)}
+.grid5 article{background:var(--navy);padding:32px 24px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.grid5 .q{margin:0;font-size:15px;line-height:1.5;color:var(--mist)}
+.grid5 h3{font-size:22px;line-height:1.25}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:40px}
+.grid2 article{display:flex;flex-direction:column;gap:12px;border-top:2px solid var(--navy);padding-top:24px;min-width:0}
+.grid2 article + article{border-top-color:var(--brown)}
+.grid2 h3{font-size:28px}
+.grid2 p{margin:0;color:var(--ink-soft);max-width:60ch}
+
+.about{background:var(--paper);border-top:1px solid var(--rule)}
+.about .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:48px;align-items:start;padding-block:112px}
+.about p{margin:0;font-size:17px;line-height:1.7;color:var(--ink-soft);max-width:62ch}
+
+.contact .wrap.top{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:48px;align-items:end;padding-block:112px}
+.contact h2{font-size:clamp(34px,4.4vw,48px);line-height:1.1}
+.mail{font-size:clamp(18px,2.4vw,22px);word-break:break-word}
+.mail a{color:var(--cream)}
+.mail a:hover{color:var(--tan)}
+footer{border-top:1px solid var(--navy-line)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding-block:24px;font-size:14px;color:var(--mist)}
+footer .logo{font-size:22px;color:var(--cream)}
+</style>
+
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a class="logo" href="#topo">Sans<span class="dot">.</span></a>
+    <nav aria-label="Principal">
+      <a href="#frentes">Frentes</a>
+      <a href="#como">Como atuamos</a>
+      <a href="#sobre">Sobre</a>
+      <a class="btn btn-solid" href="#contato">Fale com a Sans</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="topo">
+    <div class="wrap">
+      <p class="eyebrow">Soluções em finanças</p>
+      <h1>Finanças da estratégia à tomada de decisão.</h1>
+      <p>Planejamento e Performance<br>Gestão do capital de giro<br>Integração Financeira e Comercial</p>
+      <div class="actions">
+        <a class="btn btn-solid" href="#contato">Agende uma conversa</a>
+        <a class="btn btn-line" href="#frentes">Conheça as frentes</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="dark" id="frentes">
+    <div class="wrap block">
+      <div class="head">
+        <p class="eyebrow">Frentes de atuação</p>
+        <h2>Problemas reais de gestão, resolvidos com fundamentos financeiros.</h2>
+      </div>
+      <div class="grid5">
+        <article><p class="q">A empresa vende, mas o caixa não acompanha?</p><h3>Ferramentas de gestão de caixa, revisão do ciclo financeiro e capital de giro</h3></article>
+        <article><p class="q">Os números chegam tarde ou desestruturados e não ajudam a decidir?</p><h3>Acompanhamento de performance do negócio</h3></article>
+        <article><p class="q">Retrabalho, time muito grande, processos manuais e insegurança nos números?</p><h3>Melhoria do ambiente de controles internos e otimização de processos</h3></article>
+        <article><p class="q">Vai investir e precisa saber se o projeto se paga?</p><h3>Viabilidade econômica de novos projetos</h3></article>
+        <article><p class="q">Estoque parado em alguns itens e ruptura em outros?</p><h3>Revisão estratégica do sortimento</h3></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="como">
+    <div class="wrap block">
+      <h2>Como atuamos<span class="dot">.</span></h2>
+      <div class="grid2">
+        <article><h3>Projetos de escopo fechado</h3><p>Entregas, prazo e investimento definidos desde o início, para resolver um problema específico do negócio.</p></article>
+        <article><h3>Apoio contínuo como controller</h3><p>Acompanhamento recorrente do resultado e do caixa, com apoio direto às decisões da diretoria.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="about" id="sobre">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">Sobre a Sans</p>
+        <h2>Finanças como parceira do negócio, não como área de relatório.</h2>
+      </div>
+      <p>A Sans nasce da experiência executiva em diferentes verticais de negócio de grandes empresas (Varejo, Indústria, Desenvolvimento Imobiliário, Reflorestamento, Financeiras &amp; Cartões, entre outras), centrada nos fundamentos técnicos financeiros para a melhor gestão do caixa e a busca pela rentabilidade.</p>
+    </div>
+  </section>
+
+  <section class="dark contact" id="contato">
+    <div class="wrap top">
+      <div class="head">
+        <p class="eyebrow">Contato</p>
+        <h2>Vamos conversar sobre os números da sua empresa.</h2>
+      </div>
+      <p class="mail"><a href="mailto:contato@sansfinancas.com.br">contato@sansfinancas.com.br</a></p>
+    </div>
+    <footer>
+      <div class="wrap">
+        <span class="logo">Sans<span class="dot">.</span></span>
+        <span>© 2026 Sans · Soluções em finanças</span>
+      </div>
+    </footer>
+  </section>
+</main>
+</body>
+</html>
