@@ -44,18 +44,26 @@ nav a:hover{color:var(--brown)}
 .btn-solid:hover{background:#24375A;color:var(--cream)}
 .btn-line:hover{background:var(--paper)}
 
-.hero .wrap{display:flex;flex-direction:column;gap:28px;padding-block:112px}
-.hero h1{font-size:clamp(40px,6vw,76px);line-height:1.05;letter-spacing:-.02em;max-width:960px}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr);gap:56px;align-items:center;padding-block:96px}
+.hero-main{display:flex;flex-direction:column;gap:28px;min-width:0}
+.hero h1{font-size:clamp(40px,5.2vw,68px);line-height:1.05;letter-spacing:-.02em}
 .hero p{margin:0;font-size:20px;color:var(--ink-soft)}
 .actions{display:flex;flex-wrap:wrap;gap:16px}
+.sectors{display:flex;flex-direction:column;gap:16px;min-width:0}
+.sectors .eyebrow{font-size:12px;color:var(--ink-soft)}
+.sector-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.sector-list li{display:flex;align-items:center;gap:16px;padding:14px 18px;background:var(--paper);border:1px solid var(--rule);min-width:0}
+.sector-list svg{flex:none;width:30px;height:30px;color:var(--brown)}
+.sector-list span{font-size:16px;font-weight:600;line-height:1.3}
+@media (min-width:960px){.hero .wrap{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:72px}}
 
 section .wrap.block{display:flex;flex-direction:column;gap:48px;padding-block:112px}
 .head{display:flex;flex-direction:column;gap:12px;max-width:760px}
 
-.grid5{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--navy-line);border:1px solid var(--navy-line)}
-.grid5 article{background:var(--navy);padding:32px 24px;display:flex;flex-direction:column;gap:14px;min-width:0}
-.grid5 .q{margin:0;font-size:15px;line-height:1.5;color:var(--mist)}
-.grid5 h3{font-size:22px;line-height:1.25}
+.grid5{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:1px;background:var(--navy-line);border:1px solid var(--navy-line)}
+.grid5 article{background:var(--navy);padding:32px 28px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.grid5 .q{margin:0;font-family:var(--display);font-size:20px;line-height:1.35;color:var(--cream);text-wrap:balance}
+.grid5 h3{font-family:var(--body);font-size:20px;font-weight:500;line-height:1.35;color:var(--tan);margin-top:auto}
 
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:40px}
 .grid2 article{display:flex;flex-direction:column;gap:12px;border-top:2px solid var(--navy);padding-top:24px;min-width:0}
@@ -94,12 +102,24 @@ footer .logo{font-size:22px;color:var(--cream)}
 <main>
   <section class="hero" id="topo">
     <div class="wrap">
+      <div class="hero-main">
       <p class="eyebrow">Soluções em finanças</p>
       <h1>Finanças da estratégia à tomada de decisão.</h1>
       <p>Planejamento e Performance<br>Gestão do capital de giro<br>Integração Financeira e Comercial</p>
       <div class="actions">
         <a class="btn btn-solid" href="#contato">Agende uma conversa</a>
         <a class="btn btn-line" href="#frentes">Conheça as frentes</a>
+      </div>
+      </div>
+      <div class="sectors">
+        <p class="eyebrow">Experiência em</p>
+        <ul class="sector-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span>Varejo</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="8" height="9"/><rect x="13" y="11" width="8" height="9"/><rect x="8" y="3" width="8" height="6"/><path d="M12 9v2"/></svg><span>Construção industrializada</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V9l5-3v15"/><path d="M14 21V4l5 3v14"/><path d="M7 12h1M7 15h1M16 9h1M16 12h1M16 15h1"/></svg><span>Desenvolvimento imobiliário</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v8a2 2 0 0 1-2 2v8"/><path d="M5 3v6M9 3v6"/><path d="M17 21V3c-2 0-3 3-3 7s1 4 3 4"/></svg><span>Food service</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg><span>Produtos &amp; serviços financeiros</span></li>
+        </ul>
       </div>
     </div>
   </section>
@@ -116,6 +136,7 @@ footer .logo{font-size:22px;color:var(--cream)}
         <article><p class="q">Retrabalho, time muito grande, processos manuais e insegurança nos números?</p><h3>Melhoria do ambiente de controles internos e otimização de processos</h3></article>
         <article><p class="q">Vai investir e precisa saber se o projeto se paga?</p><h3>Viabilidade econômica de novos projetos</h3></article>
         <article><p class="q">Estoque parado em alguns itens e ruptura em outros?</p><h3>Revisão estratégica do sortimento</h3></article>
+        <article><p class="q">Inadimplência subindo e pouca visibilidade sobre a carteira?</p><h3>Crediário e cartões private label: cobrança e risco de crédito</h3></article>
       </div>
     </div>
   </section>
@@ -125,7 +146,7 @@ footer .logo{font-size:22px;color:var(--cream)}
       <h2>Como atuamos<span class="dot">.</span></h2>
       <div class="grid2">
         <article><h3>Projetos de escopo fechado</h3><p>Entregas, prazo e investimento definidos desde o início, para resolver um problema específico do negócio.</p></article>
-        <article><h3>Apoio contínuo como controller</h3><p>Acompanhamento recorrente do resultado e do caixa, com apoio direto às decisões da diretoria.</p></article>
+        <article><h3>Apoio contínuo como controladoria</h3><p>Acompanhamento recorrente do resultado e do caixa, com apoio direto às decisões da diretoria.</p></article>
       </div>
     </div>
   </section>
