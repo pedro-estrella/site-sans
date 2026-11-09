@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora financeira RPN</title>
+<meta name="description" content="Calculadora financeira RPN compatível com o funcionamento da HP 12c, com manual guiado e questões no estilo do CFA resolvidas passo a passo.">
+<link rel="canonical" href="https://sansfinancas.com.br/calculadora/">
+<meta name="theme-color" content="#1B2A41">
+<link rel="apple-touch-icon" href="https://sansfinancas.com.br/logo.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sans">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://sansfinancas.com.br/calculadora/">
+<meta property="og:title" content="Calculadora financeira RPN · Sans">
+<meta property="og:description" content="Calculadora RPN no navegador, com manual guiado e questões no estilo do CFA resolvidas tecla a tecla.">
+<meta property="og:image" content="https://sansfinancas.com.br/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Identidade Sans: creme nos fundos, marinho no corpo, marrom só nos detalhes.
+     Layout: corpo da calculadora em escala fixa 680x420, ampliado para caber na janela; manual ao lado ou por cima. */
+  --marinho:#1B2A41; --creme:#F3EDE2; --marrom:#7A5638; --marrom-claro:#C49A6C; --cinza:#5C6676; --areia:#C9BFAE;
+  --tecla:#26384F; --tecla-base:#132033; --linha:#D9CFBE;
+  --display:"Fraunces", Georgia, "Times New Roman", serif;
+  --body:"Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--creme);color:var(--marinho);font-family:var(--body);overflow:hidden}
+body.janela{background:var(--marinho)}
+#app{display:flex;height:100%;width:100%}
+#stage{flex:1;min-width:0;position:relative;display:flex;align-items:center;justify-content:center;padding:16px}
+body.janela #stage{padding:0}
+#holder{position:relative}
+#calc{position:absolute;left:0;top:0;width:680px;height:430px;transform-origin:0 0;background:var(--marinho);border-radius:18px;padding:0 18px 14px;overflow:hidden;box-shadow:0 18px 40px rgba(27,42,65,.25);user-select:none;-webkit-user-select:none;touch-action:manipulation}
+body.janela #calc{border-radius:0;box-shadow:none}
+
+/* topo */
+.top{display:flex;gap:18px;height:132px;align-items:stretch;margin:0 -18px;padding:12px 18px;background:var(--creme);border-bottom:3px solid var(--marrom)}
+.lcd-frame{width:356px;height:96px;align-self:center;background:var(--tecla-base);border-radius:10px;padding:9px}
+.lcd{height:100%;background:var(--creme);border-radius:5px;position:relative;padding:4px 12px 0;display:flex;flex-direction:column;justify-content:center}
+#disp{font-family:var(--display);font-weight:500;font-size:34px;line-height:1;text-align:right;white-space:pre;font-variant-numeric:tabular-nums lining-nums;color:var(--marinho);height:40px;overflow:hidden}
+#disp.small{font-size:30px}
+#disp.blink{animation:blink 1s steps(2,start) infinite}
+@keyframes blink{to{visibility:hidden}}
+@media (prefers-reduced-motion:reduce){#disp.blink{animation:none;text-decoration:underline}}
+.lcd.off{background:#E4DCCD}
+.ann{display:flex;gap:0;height:12px;margin-top:4px;font-size:9.5px;font-weight:600;letter-spacing:.08em;color:var(--cinza)}
+.ann span{visibility:hidden}
+.ann span.on{visibility:visible}
+.ann .a-f{width:26px;color:var(--marrom)} .ann .a-g{width:26px} .ann .a-begin{width:56px} .ann .a-c{width:22px} .ann .a-dmy{width:46px} .ann .a-prgm{margin-left:auto}
+.side{flex:1;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding:0 0 0}
+.logo{display:block;width:124px;height:auto;margin-right:4px}
+.tools{display:flex;gap:6px}
+.tools{gap:5px}
+.tools button{font:600 9.5px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--marinho);background:transparent;border:1px solid rgba(27,42,65,.3);border-radius:999px;padding:7px 9px;cursor:pointer}
+.tools button:hover{border-color:var(--marrom);color:var(--marrom)}
+.tools button[aria-pressed="true"]{background:var(--marinho);color:var(--creme);border-color:var(--marinho)}
+.model{text-align:right;line-height:1.35}
+.model .t{display:block;font:600 10.5px var(--body);letter-spacing:.22em;text-transform:uppercase;color:var(--areia)}
+.model .s{display:block;font:500 10px var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--cinza)}
+
+/* teclado */
+.keys{display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(4,68px);column-gap:9px;margin-top:12px;position:relative}
+.cell{display:flex;flex-direction:column;align-items:stretch}
+.gold{height:18px;font:600 10px/18px var(--body);letter-spacing:.06em;color:var(--marrom-claro);text-align:center;white-space:nowrap}
+.key{flex:1;margin-bottom:8px;display:flex;flex-direction:column;border:0;padding:0;border-radius:6px;overflow:hidden;cursor:pointer;background:var(--tecla);color:var(--creme);box-shadow:0 2px 0 var(--tecla-base),inset 0 1px 0 rgba(243,237,226,.08);transition:transform .05s}
+.key .m{flex:1;display:flex;align-items:center;justify-content:center;font:600 15px var(--body);letter-spacing:.02em}
+.key .b{height:15px;background:var(--tecla-base);font:600 9.5px/15px var(--body);color:var(--areia);text-align:center;white-space:nowrap}
+.key.num .m{font:500 19px var(--display)}
+.key.op .m{font:500 21px var(--display)}
+.key.kf{background:var(--marrom-claro);color:var(--marinho)} .key.kf .m{font:500 22px var(--display)}
+.key.kg{background:var(--areia);color:var(--marinho)} .key.kg .m{font:500 22px var(--display)}
+.key.kf .b,.key.kg .b{background:rgba(27,42,65,.18)}
+.key .m.small{font-size:12.5px}
+.key:active,.key.down{transform:translateY(2px);box-shadow:0 0 0 var(--tecla-base)}
+.key:focus-visible,.tools button:focus-visible{outline:2px solid var(--marrom-claro);outline-offset:2px}
+.cell.enter .key .m{writing-mode:horizontal-tb;font-size:14px;letter-spacing:.12em}
+.clear-br{position:absolute;top:140px;height:10px;border:1px solid var(--marrom-claro);border-bottom:0;border-radius:3px 3px 0 0;pointer-events:none}
+.clear-br span{position:absolute;left:50%;top:-7px;transform:translateX(-50%);background:var(--marinho);padding:0 6px;font:600 8.5px var(--body);letter-spacing:.2em;color:var(--marrom-claro)}
+
+/* painel flutuante */
+#pop{position:absolute;right:18px;top:60px;width:300px;background:var(--creme);color:var(--marinho);border-radius:10px;padding:14px 16px;box-shadow:0 12px 30px rgba(0,0,0,.35);font-size:12.5px;line-height:1.5;z-index:5}
+#pop h3{font:400 17px var(--display);margin:0 0 8px}
+#pop .lbl{font:600 9.5px var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--marrom);margin:10px 0 4px}
+#pop .row{display:flex;gap:6px;flex-wrap:wrap}
+#pop button{font:600 11px var(--body);border:1px solid var(--marinho);background:transparent;color:var(--marinho);border-radius:6px;padding:6px 10px;cursor:pointer}
+#pop button.sel{background:var(--marinho);color:var(--creme)}
+#pop button.danger{border-color:var(--marrom);color:var(--marrom)}
+#pop .close{position:absolute;right:10px;top:8px;border:0;font-size:16px;padding:2px 6px}
+#pop p{margin:4px 0}
+
+/* manual */
+#manual{width:440px;flex:none;background:var(--creme);border-left:1px solid var(--linha);display:flex;flex-direction:column;height:100%}
+#manual[hidden]{display:none}
+body.overlay #manual{position:fixed;inset:0 0 0 auto;width:min(440px,100%);z-index:10;box-shadow:-10px 0 30px rgba(27,42,65,.3)}
+.mhead{padding:16px 20px 10px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:1px solid var(--linha)}
+.mhead .eyebrow{font:600 10px var(--body);letter-spacing:.2em;text-transform:uppercase;color:var(--marrom)}
+.mhead h2{font:400 22px/1.2 var(--display);margin:4px 0 0;text-wrap:balance}
+.mhead button{border:1px solid var(--marinho);background:transparent;border-radius:999px;font:600 10px var(--body);letter-spacing:.14em;text-transform:uppercase;padding:7px 11px;color:var(--marinho);cursor:pointer}
+.mnav{display:flex;flex-wrap:wrap;gap:6px;padding:10px 20px 12px;border-bottom:1px solid var(--linha)}
+.mnav button{font:500 11.5px var(--body);border:1px solid var(--linha);background:transparent;border-radius:999px;padding:5px 10px;cursor:pointer;color:var(--marinho)}
+.mnav button[aria-current="true"]{background:var(--marinho);border-color:var(--marinho);color:var(--creme)}
+.mbody{flex:1;overflow-y:auto;padding:6px 20px 28px;font-size:13.5px;line-height:1.55}
+.mbody h3{font:400 18px/1.3 var(--display);margin:20px 0 6px;text-wrap:balance}
+.mbody p{margin:8px 0;max-width:65ch}
+.mbody ul{margin:6px 0;padding-left:18px} .mbody li{margin:4px 0}
+.steps{width:100%;border-collapse:collapse;margin:10px 0 6px;font-size:12.5px}
+.steps th{font:600 9.5px var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--cinza);text-align:left;padding:4px 6px;border-bottom:1px solid var(--marinho)}
+.steps td{padding:6px;border-bottom:1px solid var(--linha);vertical-align:top}
+.steps td.v{font:500 14px var(--display);font-variant-numeric:tabular-nums lining-nums;white-space:pre;text-align:right;color:var(--marinho)}
+.steps td.c{color:var(--cinza);font-size:12px}
+.steps tr.play{cursor:pointer}
+.steps tr.play:hover td{background:rgba(196,154,108,.14)}
+.hint{font-size:11.5px;color:var(--cinza)}
+kbd{display:inline-block;font:600 10.5px/1 var(--body);background:var(--marinho);color:var(--creme);border-radius:4px;padding:3px 5px;margin:1px 1px;white-space:nowrap}
+kbd.kf{background:var(--marrom-claro);color:var(--marinho)}
+kbd.kg{background:var(--areia);color:var(--marinho)}
+kbd.fn-f{background:transparent;color:var(--marrom);border:1px solid var(--marrom-claro)}
+kbd.fn-g{background:transparent;color:var(--marinho);border:1px solid var(--areia)}
+.mode[hidden]{display:none}
+.mode{display:inline-flex;border:1px solid var(--marinho);border-radius:999px;overflow:hidden;margin-top:10px}
+.mode button{border:0;background:transparent;font:600 10px var(--body);letter-spacing:.14em;text-transform:uppercase;padding:6px 12px;color:var(--marinho);cursor:pointer;border-radius:0}
+.mode button[aria-pressed="true"]{background:var(--marinho);color:var(--creme)}
+.gprog{display:flex;align-items:center;gap:10px;margin:14px 0 4px}
+.gprog .lbl{font:600 9.5px var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--marrom);white-space:nowrap}
+.gbar{flex:1;height:3px;background:var(--linha);border-radius:2px;overflow:hidden}
+.gbar i{display:block;height:100%;background:var(--marrom)}
+.gctx h3{margin-top:12px}
+.gact{margin:14px 0 10px;border:1px solid var(--marinho);border-radius:10px;padding:12px 14px;background:#EEE6D8}
+.gact .lbl{font:600 9.5px var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--cinza);margin-bottom:5px}
+.gact .keys-line{font-size:14px;line-height:2}
+.gact .keys-line kbd{font-size:12px;padding:4px 7px}
+.gexp{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--linha)}
+.gexp .v{font:500 22px var(--display);font-variant-numeric:tabular-nums lining-nums;white-space:pre}
+.gcom{color:var(--cinza);font-size:12.5px;margin-top:4px}
+.gstat{display:inline-flex;align-items:center;gap:6px;font:600 10px var(--body);letter-spacing:.14em;text-transform:uppercase;padding:5px 9px;border-radius:999px;border:1px solid var(--linha);color:var(--cinza);white-space:nowrap}
+.gstat.ok{background:var(--marinho);border-color:var(--marinho);color:var(--creme)}
+.gstat.off{color:var(--marrom);border-color:var(--marrom-claro)}
+.gnote{font-size:12px;color:var(--cinza);margin:6px 0}
+.gbtns{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.gbtns button{font:600 11px var(--body);border:1px solid var(--marinho);background:transparent;color:var(--marinho);border-radius:6px;padding:7px 11px;cursor:pointer}
+.gbtns button.pri{background:var(--marinho);color:var(--creme);margin-left:auto}
+.gbtns button:disabled{opacity:.4;cursor:not-allowed}
+.gbtns .link{border:0;padding:7px 4px;text-decoration:underline;color:var(--cinza)}
+.gdone{margin:20px 0;padding:16px;border-radius:10px;background:var(--marinho);color:var(--creme)}
+.gdone h3{color:var(--creme);margin:0 0 6px}
+.gdone button{margin-top:10px;font:600 11px var(--body);border:0;background:var(--marrom-claro);color:var(--marinho);border-radius:6px;padding:8px 12px;cursor:pointer}
+#tip{position:absolute;z-index:6;width:262px;background:var(--creme);color:var(--marinho);border:1px solid var(--marrom-claro);border-radius:9px;padding:10px 12px;box-shadow:0 10px 24px rgba(0,0,0,.35);font-size:11.5px;line-height:1.45;pointer-events:none}
+#tip[hidden]{display:none}
+#tip .tt{font:500 15px/1.25 var(--display);margin:0 0 4px}
+#tip .tf{font:400 13px var(--display);color:var(--marrom);margin:6px 0 2px}
+#tip .tl{font:600 8.5px var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--cinza);margin-top:7px}
+#tip kbd{font-size:9.5px;padding:2px 4px}
+#tip .tr{font:500 13px var(--display);font-variant-numeric:tabular-nums lining-nums;white-space:pre}
+.legal{position:absolute;left:16px;right:16px;bottom:8px;text-align:center;font-size:10.5px;line-height:1.4;color:var(--cinza)}
+.legal a{color:var(--marrom)}
+body.janela .legal{display:none}
+.qscore{display:flex;justify-content:space-between;align-items:center;margin:14px 0 4px;font-size:12px;color:var(--cinza)}
+.qscore button{border:0;background:transparent;text-decoration:underline;color:var(--cinza);font:500 11.5px var(--body);cursor:pointer}
+.qtema{font:600 9.5px var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--marrom);margin-top:12px}
+.qstem{font-size:14.5px;line-height:1.55;margin:8px 0 12px}
+.qopts{display:flex;flex-direction:column;gap:8px}
+.qopts button{display:flex;gap:10px;align-items:baseline;text-align:left;border:1px solid var(--linha);background:#FBF8F2;color:var(--marinho);border-radius:8px;padding:10px 12px;font:500 13.5px var(--body);cursor:pointer}
+.qopts button:hover:not(:disabled){border-color:var(--marinho)}
+.qopts button b{font:500 15px var(--display);color:var(--marrom);min-width:16px}
+.qopts button.right{border-color:var(--marinho);background:var(--marinho);color:var(--creme)} .qopts button.right b{color:var(--marrom-claro)}
+.qopts button.wrong{border-color:var(--marrom);color:var(--marrom);text-decoration:line-through}
+.qopts button:disabled{cursor:default}
+.qfeed{margin:12px 0;padding:12px 14px;border-radius:10px;border:1px solid var(--linha);background:#EEE6D8}
+.qfeed .lbl{font:600 9.5px var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--marrom)}
+.qnote{font-size:11px;color:var(--cinza);margin-top:18px;border-top:1px solid var(--linha);padding-top:10px}
+.mnav button.ok{background:var(--marinho);color:var(--creme);border-color:var(--marinho)}
+.mnav button.no{border-color:var(--marrom);color:var(--marrom)}
+.mnav button.qn{min-width:34px}
+.mnav button[aria-current="true"]{outline:2px solid var(--marrom-claro);outline-offset:1px}
+.errs{width:100%;border-collapse:collapse;font-size:12.5px}
+.errs td{padding:6px;border-bottom:1px solid var(--linha);vertical-align:top}
+.errs td:first-child{font:500 14px var(--display);white-space:nowrap;color:var(--marrom)}
+</style>
+</head>
+<body>
+<div id="app">
+  <main id="stage">
+    <div id="holder">
+      <div id="calc" role="application" aria-label="Calculadora financeira RPN">
+        <div class="top">
+          <div class="lcd-frame"><div class="lcd" id="lcd">
+            <div id="disp" aria-live="polite"></div>
+            <div class="ann" aria-hidden="true"><span class="a-f">f</span><span class="a-g">g</span><span class="a-begin">BEGIN</span><span class="a-c">C</span><span class="a-dmy">D.MY</span><span class="a-prgm">PRGM</span></div>
+          </div></div>
+          <div class="side">
+            <div class="tools">
+              <button id="b-manual" type="button" aria-pressed="false">Manual</button>
+              <button id="b-quiz" type="button" aria-pressed="false">Questões</button>
+              <button id="b-win" type="button">Janela</button>
+              <button id="b-set" type="button" aria-pressed="false">Ajustes</button>
+            </div>
+            <img class="logo" alt="Sans. Soluções em finanças" src="data:image/png;base64,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">
+          </div>
+        </div>
+        <div class="keys" id="keys"></div>
+        <div id="pop" hidden></div>
+        <div id="tip" hidden role="tooltip"></div>
+      </div>
+    </div>
+    <footer class="legal">© 2026 <a href="https://sansfinancas.com.br/">Sans · Soluções em finanças</a>. Calculadora independente, compatível com o funcionamento da HP 12c. HP e HP 12c são marcas da HP Inc.; CFA® e Chartered Financial Analyst® são marcas registradas do CFA Institute. Sem afiliação ou endosso dessas empresas.</footer>
+  </main>
+  <aside id="manual" hidden aria-label="Manual">
+    <div class="mhead">
+      <div><div class="eyebrow">Manual</div><h2 id="m-title"></h2><div class="mode" role="group" aria-label="Modo do manual"><button type="button" id="mode-g" aria-pressed="true">Guiado</button><button type="button" id="mode-c" aria-pressed="false">Consulta</button></div></div>
+      <button id="m-close" type="button">Fechar</button>
+    </div>
+    <nav class="mnav" id="m-nav"></nav>
+    <div class="mbody" id="m-body"></div>
+  </aside>
+</div>
+<script>
+/* Motor de calculadora financeira RPN compatível com a HP 12c.
+   Comportamento baseado no HP 12c Owner's Handbook / User's Guide (Hewlett-Packard). */
+(function (root) {
+'use strict';
+
+var CODE = {n:11,i:12,PV:13,PMT:14,FV:15,CHS:16,'7':7,'8':8,'9':9,div:10,
+  yx:21,inv:22,pctT:23,dpct:24,pct:25,EEX:26,'4':4,'5':5,'6':6,mul:20,
+  RS:31,SST:32,Rdn:33,xy:34,CLx:35,ENTER:36,'1':1,'2':2,'3':3,sub:30,
+  ON:41,f:42,g:43,STO:44,RCL:45,'0':0,dot:48,sigma:49,add:40};
+var F_MAP = {n:'AMORT',i:'INT',PV:'NPV',PMT:'RND',FV:'IRR',yx:'PRICE',inv:'YTM',pctT:'SL',dpct:'SOYD',pct:'DB',
+  RS:'PR',SST:'CLRSIG',Rdn:'CLRPRGM',xy:'CLRFIN',CLx:'CLRREG',ENTER:'CLRPREFIX'};
+var G_MAP = {n:'12x',i:'12div',PV:'CF0',PMT:'CFj',FV:'Nj',CHS:'DATE','7':'BEG','8':'END','9':'MEM',
+  yx:'SQRT',inv:'EXP',pctT:'LN',dpct:'FRAC',pct:'INTG',EEX:'DDYS','4':'DMY','5':'MDY','6':'XW',mul:'X2',
+  RS:'PSE',SST:'BST',Rdn:'GTO',xy:'XLEY',CLx:'XEQ0',ENTER:'LSTX','1':'XHAT','2':'YHAT','3':'FACT',
+  '0':'MEAN',dot:'SDEV',sigma:'SIGMINUS'};
+var NONPROG = {ON:1,SST:1,BST:1,PR:1,CLRPRGM:1,CLRPREFIX:1,MEM:1,GTODOT:1};
+var FINKEYS = {n:'n',i:'i',PV:'pv',PMT:'pmt',FV:'fv'};
+var DIG = /^[0-9]$/;
+
+function CalcError(code){ this.code = code; }
+function err(c){ throw new CalcError(c); }
+function r10(x){
+  if (!isFinite(x)) return x;
+  if (x === 0) return 0;
+  return Number(x.toPrecision(10));
+}
+function pad2(n){ n = String(n); return n.length < 2 ? '0' + n : n; }
+function isInt(x){ return Math.abs(x - Math.round(x)) < 1e-9; }
+
+function defaultState(){
+  var reg = [], nj = [];
+  for (var k = 0; k < 20; k++){ reg.push(0); nj.push(1); }
+  return { x:0,y:0,z:0,t:0,lastx:0, reg:reg, nj:nj,
+    fin:{n:0,i:0,pv:0,pmt:0,fv:0}, beg:false, dmy:false, cflag:false,
+    fix:2, sci:false, comma:false, prog:[null], pc:0, prgm:false, lift:true, finFlag:false, on:true };
+}
+
+function Calc(saved){
+  this.s = defaultState();
+  if (saved) { try { var o = JSON.parse(saved); for (var k in o) this.s[k] = o[k]; } catch(e){} }
+  this.entry = null; this.prefix = null; this.buf = '';
+  this.error = null; this.msg = null; this.running = false; this.overflow = false;
+  this.mantUntil = 0;
+}
+var P = Calc.prototype;
+P.serialize = function(){ return JSON.stringify(this.s); };
+
+/* ---------- pilha ---------- */
+P.liftStack = function(){ var s=this.s; s.t=s.z; s.z=s.y; s.y=s.x; };
+P.setX = function(v){
+  v = r10(v);
+  if (isNaN(v)) err(0);
+  if (Math.abs(v) >= 1e100 || !isFinite(v)) { v = (v < 0 ? -1 : 1) * 9.999999999e99; this.overflow = true; }
+  else if (Math.abs(v) < 1e-99) v = 0;
+  this.s.x = v;
+};
+P.chk = function(v){ v = r10(v); if (isNaN(v)) err(0); if (!isFinite(v) || Math.abs(v) >= 1e100) { this.overflow = true; return (v<0?-1:1)*9.999999999e99; } return Math.abs(v)<1e-99?0:v; };
+P.push = function(v, force){ if (this.s.lift || force) this.liftStack(); this.setX(v); this.s.lift = true; };
+P.binary = function(f){ var s=this.s, x=s.x, y=s.y, r=f(y,x); s.lastx=x; s.y=s.z; s.z=s.t; this.setX(r); s.lift=true; };
+P.unary = function(f){ var s=this.s, x=s.x, r=f(x); s.lastx=x; this.setX(r); s.lift=true; };
+
+/* ---------- entrada de números ---------- */
+P.entryValue = function(){
+  var e=this.entry, m=parseFloat(e.mant || '0'); if (isNaN(m)) m=0;
+  var ex = e.exp===null ? 0 : parseInt(e.exp || '0',10) * (e.eneg?-1:1);
+  return (e.neg?-1:1) * m * Math.pow(10, ex);
+};
+P.startEntry = function(){
+  if (this.s.lift) this.liftStack();
+  this.entry = {mant:'', neg:false, exp:null, eneg:false};
+};
+P.syncEntry = function(){ var v=this.entryValue(); v=r10(v); this.s.x = isFinite(v)?v:0; };
+P.digit = function(d){
+  if (!this.entry) this.startEntry();
+  var e=this.entry;
+  if (e.exp !== null) { e.exp = (e.exp + d).slice(-2); }
+  else { if (e.mant.replace('.','').length >= 10) return; e.mant += d; }
+  this.syncEntry();
+};
+P.dotKey = function(){
+  if (!this.entry) this.startEntry();
+  var e=this.entry; if (e.exp!==null) return;
+  if (e.mant.indexOf('.')<0) e.mant = (e.mant||'0') + '.';
+  this.syncEntry();
+};
+P.eex = function(){
+  if (!this.entry) { this.startEntry(); this.entry.mant='1'; }
+  if (this.entry.exp===null) this.entry.exp='';
+  this.syncEntry();
+};
+P.endEntry = function(){ this.entry = null; };
+
+/* ---------- registradores ---------- */
+P.progLen = function(){ return this.s.prog.length - 1; };
+P.availRegs = function(){ var L=this.progLen(); return L<=8 ? 20 : 20 - Math.ceil((L-8)/7); };
+P.regIdx = function(r){ var idx = typeof r==='string' && r.charAt(0)==='.' ? 10+ +r.charAt(1) : +r; if (idx >= this.availRegs()) err(6); return idx; };
+
+/* ---------- valor do dinheiro no tempo ---------- */
+P.tvmParts = function(p, n){
+  var k=Math.floor(n), f=n-k;
+  if (f<1e-9) f=0; if (1-f<1e-9){k+=1;f=0;}
+  var odd = f===0 ? 1 : (this.s.cflag ? Math.pow(1+p,f) : 1+p*f);
+  var vk = Math.pow(1+p,-k), ak = Math.abs(p)<1e-15 ? k : (1-vk)/p;
+  return {odd:odd,k:k,vk:vk,ak:ak};
+};
+P.tvmResid = function(p, F){
+  var t=this.tvmParts(p,F.n), S=this.s.beg?1:0;
+  return F.pv*t.odd + (1+p*S)*F.pmt*t.ak + F.fv*t.vk;
+};
+P.solveRoot = function(fn, lo, hi){
+  // procura raízes em grade e escolhe a mais próxima de zero; refina por bisseção
+  var pts=[], q;
+  for (q=1e-7; q<=0.9999; q*=1.12) pts.push(-q);
+  pts.push(-0.99999);
+  pts.push(0);
+  for (q=1e-7; q<=(hi||100); q*=1.12) pts.push(q);
+  pts.sort(function(a,b){return a-b;});
+  var best=null, vals=pts.map(function(p){ var v; try{ v=fn(p);}catch(e){v=NaN;} return v; });
+  for (var j=0;j<pts.length;j++){ if (vals[j]===0){ if(best===null||Math.abs(pts[j])<Math.abs(best)) best=pts[j]; } }
+  var br=null;
+  for (j=0;j<pts.length-1;j++){
+    var a=vals[j], b=vals[j+1];
+    if (isFinite(a)&&isFinite(b)&&a*b<0){
+      var mid=(pts[j]+pts[j+1])/2;
+      if (br===null || Math.abs(mid)<Math.abs((br[0]+br[1])/2)) br=[pts[j],pts[j+1],a];
+    }
+  }
+  if (br===null) return best;
+  var A=br[0], B=br[1], fa=br[2];
+  for (var it=0; it<200; it++){
+    var M=(A+B)/2, fm=fn(M);
+    if (fm===0){ A=B=M; break; }
+    if (fa*fm<0) B=M; else { A=M; fa=fm; }
+    if (Math.abs(B-A) < 1e-15*Math.max(1,Math.abs(M))) break;
+  }
+  var root=(A+B)/2;
+  if (best!==null && Math.abs(best)<Math.abs(root)) return best;
+  return root;
+};
+P.finCompute = function(key){
+  var s=this.s, F=s.fin, p=F.i/100, S=s.beg?1:0, t, r;
+  if (key!=='i' && p<=-1) err(5);
+  if (key==='n'){
+    if (Math.abs(p)<1e-15){ if (F.pmt===0) err(5); r=-(F.pv+F.fv)/F.pmt; }
+    else {
+      var A=F.pmt*(1+p*S)/p, num=-(F.pv+A), den=F.fv-A;
+      if (den===0) err(5);
+      var ratio=num/den; if (!(ratio>0)) err(5);
+      r=-Math.log(ratio)/Math.log(1+p);
+    }
+    if (!isFinite(r) || r<=0) err(5);
+    r = Math.abs(r-Math.round(r))<1e-7 ? Math.round(r) : Math.ceil(r);
+    F.n=r;
+  } else if (key==='i'){
+    if (F.n<=0) err(5);
+    var self=this;
+    r=this.solveRoot(function(q){ return self.tvmResid(q,F); }, -0.99999, 100);
+    if (r===null || !isFinite(r)) err(5);
+    var scale=Math.max(Math.abs(F.pv),Math.abs(F.pmt),Math.abs(F.fv),1);
+    if (Math.abs(this.tvmResid(r,F))>1e-6*scale) err(5);
+    r=r*100; F.i=r10(r); r=F.i;
+  } else if (key==='pv'){
+    t=this.tvmParts(p,F.n); if (t.odd===0) err(5);
+    r=-((1+p*S)*F.pmt*t.ak + F.fv*t.vk)/t.odd; F.pv=r10(r);
+  } else if (key==='pmt'){
+    t=this.tvmParts(p,F.n); var d=(1+p*S)*t.ak; if (d===0) err(5);
+    r=-(F.pv*t.odd + F.fv*t.vk)/d; F.pmt=r10(r);
+  } else if (key==='fv'){
+    t=this.tvmParts(p,F.n); if (t.vk===0) err(5);
+    r=-(F.pv*t.odd + (1+p*S)*F.pmt*t.ak)/t.vk; F.fv=r10(r);
+  }
+  return r;
+};
+
+/* ---------- fluxos de caixa ---------- */
+P.cfList = function(){
+  var s=this.s, N=s.fin.n; if (!isInt(N) || N<0 || N>19) err(6); N=Math.round(N);
+  var out=[{v:s.reg[0],c:1}];
+  for (var j=1;j<=N;j++) out.push({v:s.reg[j], c:s.nj[j]});
+  return out;
+};
+P.npvAt = function(p, list){
+  var sum=0, t=0;
+  for (var j=0;j<list.length;j++){
+    for (var c=0;c<list[j].c;c++){ sum += list[j].v/Math.pow(1+p,t); t++; }
+  }
+  return sum;
+};
+
+/* ---------- datas ---------- */
+P.parseDate = function(x){
+  if (x<0) err(8);
+  var str=Math.abs(x).toFixed(6), parts=str.split('.'), a=+parts[0], b=+parts[1].slice(0,2), yr=+parts[1].slice(2,6);
+  var d=this.s.dmy?a:b, m=this.s.dmy?b:a;
+  if (m<1||m>12||d<1) err(8);
+  var dim=new Date(Date.UTC(2000,m,0)).getUTCDate(); var tmp=new Date(0); tmp.setUTCFullYear(yr,m,0); dim=tmp.getUTCDate();
+  if (d>dim) err(8);
+  var serial=dayNum(yr,m,d);
+  if (serial<dayNum(1582,10,15) || serial>dayNum(4046,11,25)) err(8);
+  return {y:yr,m:m,d:d,serial:serial};
+};
+function dayNum(y,m,d){ var t=new Date(0); t.setUTCFullYear(y,m-1,d); t.setUTCHours(0,0,0,0); return Math.round(t.getTime()/86400000); }
+function fromDayNum(n){ var t=new Date(n*86400000); return {y:t.getUTCFullYear(), m:t.getUTCMonth()+1, d:t.getUTCDate(), w:t.getUTCDay()}; }
+P.dateNum = function(o){ return this.s.dmy ? o.d + o.m/100 + o.y/1e6 : o.m + o.d/100 + o.y/1e6; };
+function addMonths(o, k){
+  var y=o.y, m=o.m-1+k; y += Math.floor(m/12); m=((m%12)+12)%12;
+  var t=new Date(0); t.setUTCFullYear(y,m+1,0); var dim=t.getUTCDate();
+  return {y:y,m:m+1,d:Math.min(o.d,dim)};
+}
+
+/* ---------- títulos (base actual/actual, cupons semestrais) ---------- */
+P.bondSetup = function(){
+  var s=this.s, S=this.parseDate(s.y), M=this.parseDate(s.x);
+  if (S.serial>=M.serial) err(8);
+  var k=0, ncd=M, pcd;
+  while (true){ pcd=addMonths(M,-6*(k+1)); var ps=dayNum(pcd.y,pcd.m,pcd.d); if (ps<=S.serial) break; ncd=pcd; k++; if (k>400) err(8); }
+  var ns=dayNum(ncd.y,ncd.m,ncd.d), ps2=dayNum(pcd.y,pcd.m,pcd.d);
+  return {N:k+1, E:ns-ps2, A:S.serial-ps2, DSC:ns-S.serial};
+};
+function bondPrice(Y, R, b){
+  var y=Y/200, c=R/2, P;
+  if (b.N===1) P=(100+c)/(1+(b.DSC/b.E)*y) - (b.A/b.E)*c;
+  else {
+    var e=b.DSC/b.E; P=100/Math.pow(1+y,b.N-1+e);
+    for (var k=1;k<=b.N;k++) P+=c/Math.pow(1+y,k-1+e);
+    P-=(b.A/b.E)*c;
+  }
+  return P;
+}
+
+/* ---------- estatística ---------- */
+P.statSums = function(){ var r=this.s.reg; return {n:r[1],sx:r[2],sx2:r[3],sy:r[4],sy2:r[5],sxy:r[6]}; };
+P.regression = function(){
+  var q=this.statSums(); if (q.n<=0) err(2);
+  var dx=q.n*q.sx2-q.sx*q.sx, dy=q.n*q.sy2-q.sy*q.sy, nxy=q.n*q.sxy-q.sx*q.sy;
+  if (dx===0) err(2);
+  var B=nxy/dx, A=(q.sy-B*q.sx)/q.n, den=Math.sqrt(dx*dy);
+  var r= den===0 ? 0 : nxy/den;
+  if (dy<=0 || dx<=0) err(2);
+  return {A:A,B:B,r:r};
+};
+
+/* ---------- formato de exibição ---------- */
+P.decimals = function(){ return this.s.sci ? 6 : this.s.fix; };
+P.roundDisp = function(v){ var d=this.decimals(); if (this.s.sci){ if(v===0) return 0; var e=Math.floor(Math.log10(Math.abs(v))); return r10(Number((v/Math.pow(10,e)).toFixed(6))*Math.pow(10,e)); } return r10(Number(v.toFixed(Math.min(d,10)))); };
+P.marks = function(){ return this.s.comma ? {dm:',',gp:'.'} : {dm:'.',gp:','}; };
+function group(ip, gp){ return ip.replace(/\B(?=(\d{3})+(?!\d))/g, gp); }
+P.fmtSci = function(x){
+  var mk=this.marks(), neg=x<0, a=Math.abs(x);
+  if (a===0) return '0'+mk.dm+'000000  00';
+  var e=Math.floor(Math.log10(a)), m=a/Math.pow(10,e);
+  m=Number(m.toFixed(6)); if (m>=10){ m/=10; e++; } if (m<1){ m*=10; e--; }
+  if (e>99){ m=9.999999; e=99; }
+  return (neg?'-':'') + m.toFixed(6).replace('.',mk.dm) + ' ' + (e<0?'-':' ') + pad2(Math.abs(e));
+};
+P.fmt = function(x){
+  var s=this.s, mk=this.marks();
+  if (s.sci) return this.fmtSci(x);
+  var neg=x<0, a=Math.abs(x);
+  if (a===0) return '0' + mk.dm + '0'.repeat(s.fix);
+  if (a>=1e10) return this.fmtSci(x);
+  var ipLen=Math.max(1, Math.floor(Math.log10(a))+1);
+  var d=Math.max(0, Math.min(s.fix, 10-ipLen));
+  var str=a.toFixed(d), ip=str.split('.')[0];
+  if (ip.length>10) return this.fmtSci(x);
+  if (ip.length+d>10){ d=10-ip.length; str=a.toFixed(d); ip=str.split('.')[0]; }
+  if (Number(str)===0) return this.fmtSci(x);
+  var fp=str.split('.')[1]||'';
+  return (neg?'-':'') + group(ip,mk.gp) + mk.dm + fp;
+};
+P.fmtEntry = function(){
+  var e=this.entry, mk=this.marks(), m=e.mant||'0', parts=m.split('.');
+  var ip=parts[0]||'0', fp=parts.length>1?parts[1]:'';
+  var str=(e.neg?'-':'') + group(ip,mk.gp) + mk.dm + fp;
+  if (e.exp!==null){ var ex=(e.exp+'').length<2 ? ('00'+e.exp).slice(-2) : e.exp; str += ' ' + (e.eneg?'-':' ') + ex; }
+  return str;
+};
+P.mantissa = function(x){ if (x===0) return '0000000000'; return Math.abs(x).toExponential(9).split('e')[0].replace('.',''); };
+P.codeStr = function(op){
+  if (!op) return '';
+  if (op.op==='GTO') return '43,33 ' + pad2(op.arg);
+  return op.codes.map(function(c){ return c<10 ? ' '+c : ''+c; }).join(' ');
+};
+P.lineStr = function(n){ return pad2(n) + '-' + (n===0 ? '' : '  ' + this.codeStr(this.s.prog[n])); };
+
+P.display = function(now){
+  var s=this.s, ann={f:this.prefix==='f', g:this.prefix==='g'||this.prefix==='GTO'||this.prefix==='RCLg', begin:s.beg, c:s.cflag, dmy:s.dmy, prgm:s.prgm};
+  if (!s.on) return {text:'', ann:{}, off:true};
+  var text;
+  if (this.error!==null) text = this.error==='Pr' ? 'Pr Error' : 'Error ' + this.error;
+  else if (this.running && !this.pausing) text = 'running';
+  else if (this.msg) text = this.msg;
+  else if (s.prgm) {
+    if (this.prefix==='GTO' || this.prefix==='GTODOT') text = this.lineStr(s.pc);
+    else text = this.lineStr(s.pc);
+  }
+  else if (now && now < this.mantUntil) text = this.mantissa(s.x);
+  else if (this.entry) text = this.fmtEntry();
+  else text = this.fmt(s.x);
+  return {text:text, ann:ann, blink:this.overflow && !this.entry};
+};
+
+/* ---------- teclas ---------- */
+P.mk = function(op, codes, arg){ return {op:op, codes:codes, arg:arg}; };
+P.press = function(k){
+  var s=this.s;
+  if (!s.on){ if (k==='ON'){ s.on=true; this.error=null; } return; }
+  if (k==='ON' && this.prefix===null){ s.on=false; this.running=false; this.entry=null; return; }
+  if (this.running){ this.running=false; return; }
+  if (this.error!==null){ this.error=null; return; }
+  this.msg=null; this.overflow=false; this.mantUntil=0;
+  var op=this.decode(k);
+  if (!op) return;
+  if (s.prgm && !NONPROG[op.op]) { this.record(op); return; }
+  this.execute(op, false);
+};
+P.decode = function(k){
+  var pf=this.prefix, c=CODE[k];
+  if (pf===null){
+    if (k==='f'||k==='g'||k==='STO'||k==='RCL'){ this.prefix=k; return null; }
+    if (DIG.test(k)) return this.mk('DIGIT',[+k],k);
+    return this.mk(k,[c]);
+  }
+  if (pf==='f'){
+    if (k==='f') return null; if (k==='g'){ this.prefix='g'; return null; }
+    this.prefix=null;
+    if (DIG.test(k)) return this.mk('FIX',[42,+k],+k);
+    if (k==='dot') return this.mk('SCI',[42,48]);
+    if (F_MAP[k]) return this.mk(F_MAP[k],[42,c]);
+    return this.decode(k);
+  }
+  if (pf==='g'){
+    if (k==='g') return null; if (k==='f'){ this.prefix='f'; return null; }
+    if (k==='Rdn'){ this.prefix='GTO'; this.buf=''; return null; }
+    this.prefix=null;
+    if (G_MAP[k]) return this.mk(G_MAP[k],[43,c]);
+    return this.decode(k);
+  }
+  if (pf==='GTO'||pf==='GTODOT'){
+    if (k==='dot' && pf==='GTO' && this.buf===''){ this.prefix='GTODOT'; return null; }
+    if (DIG.test(k)){
+      this.buf+=k;
+      if (this.buf.length<2) return null;
+      var nn=+this.buf; var dot=pf==='GTODOT'; this.prefix=null; this.buf='';
+      return dot ? this.mk('GTODOT',[],nn) : this.mk('GTO',[43,33,nn],nn);
+    }
+    this.prefix=null; this.buf=''; return this.decode(k);
+  }
+  if (pf==='STO'||pf==='RCL'){
+    var base=pf==='STO'?44:45;
+    if (DIG.test(k)){ this.prefix=null; return this.mk(pf,[base,+k],k); }
+    if (k==='dot'){ this.prefix=pf+'.'; return null; }
+    if (FINKEYS[k]){ this.prefix=null; return this.mk(pf+'FIN',[base,c],FINKEYS[k]); }
+    if (pf==='STO' && k==='EEX'){ this.prefix=null; return this.mk('STOEEX',[44,26]); }
+    if (pf==='STO' && (k==='add'||k==='sub'||k==='mul'||k==='div')){ this.prefix='STO'+k; return null; }
+    if (pf==='RCL' && k==='g'){ this.prefix='RCLg'; return null; }
+    if (k===pf) return null;
+    this.prefix=null; return this.decode(k);
+  }
+  if (pf==='STO.'||pf==='RCL.'){
+    if (DIG.test(k)){ var b=pf==='STO.'?'STO':'RCL'; this.prefix=null; return this.mk(b,[b==='STO'?44:45,48,+k],'.'+k); }
+    this.prefix=null; return this.decode(k);
+  }
+  if (pf==='RCLg'){
+    this.prefix=null;
+    if (k==='PMT') return this.mk('RCLCFJ',[45,43,14]);
+    if (k==='FV') return this.mk('RCLNJ',[45,43,15]);
+    return this.decode(k);
+  }
+  if (/^STO(add|sub|mul|div)$/.test(pf)){
+    if (DIG.test(k) && +k<=4){ var opn=pf.slice(3); this.prefix=null; return this.mk('STOARITH',[44,CODE[opn],+k],{op:opn,r:+k}); }
+    if (DIG.test(k)) return null;
+    this.prefix=null; return this.decode(k);
+  }
+  this.prefix=null; return null;
+};
+P.record = function(op){
+  var s=this.s;
+  if (s.pc>=99) { this.error=4; return; }
+  if (op.op!=='DIGIT' && op.op!=='dot' && op.op!=='EEX' && op.op!=='CHS') this.entry=null;
+  s.pc++; s.prog[s.pc]=op;
+  var newAvail=this.availRegs();
+  for (var k=newAvail;k<20;k++) s.reg[k]=0;
+};
+
+P.execute = function(op, inProg){
+  var s=this.s, res=null;
+  try { res=this.exec(op, inProg); }
+  catch(e){
+    if (e instanceof CalcError){ this.error=e.code; this.entry=null; this.running=false; return {halt:true}; }
+    throw e;
+  }
+  return res;
+};
+
+P.exec = function(o, inProg){
+  var s=this.s, self=this, op=o.op, F=s.fin;
+  var keepEntry = (op==='DIGIT'||op==='dot'||op==='EEX'||(op==='CHS'&&this.entry));
+  if (!keepEntry) this.endEntry();
+  var isFin = !!FINKEYS[op];
+  var prevFin = s.finFlag;
+  if (!isFin) s.finFlag=false;
+  switch(op){
+  case 'DIGIT': this.digit(o.arg); return;
+  case 'dot': this.dotKey(); return;
+  case 'EEX': this.eex(); return;
+  case 'CHS':
+    if (this.entry){ if (this.entry.exp!==null) this.entry.eneg=!this.entry.eneg; else this.entry.neg=!this.entry.neg; this.syncEntry(); }
+    else { s.x = s.x===0?0:-s.x; }
+    return;
+  case 'ENTER': this.liftStack(); s.lift=false; return;
+  case 'CLx': s.x=0; s.lift=false; return;
+  case 'add': this.binary(function(y,x){return y+x;}); return;
+  case 'sub': this.binary(function(y,x){return y-x;}); return;
+  case 'mul': this.binary(function(y,x){return y*x;}); return;
+  case 'div': this.binary(function(y,x){ if (x===0) err(0); return y/x;}); return;
+  case 'yx': this.binary(function(y,x){
+      if (y===0 && x<=0) err(0);
+      if (y<0 && !isInt(x)) err(0);
+      return Math.pow(y,x); }); return;
+  case 'inv': this.unary(function(x){ if (x===0) err(0); return 1/x; }); return;
+  case 'pct': s.lastx=s.x; this.setX(s.y*s.x/100); s.lift=true; return;
+  case 'dpct': if (s.y===0) err(0); s.lastx=s.x; this.setX(100*(s.x-s.y)/s.y); s.lift=true; return;
+  case 'pctT': if (s.y===0) err(0); s.lastx=s.x; this.setX(100*s.x/s.y); s.lift=true; return;
+  case 'Rdn': var x=s.x; s.x=s.y; s.y=s.z; s.z=s.t; s.t=x; s.lift=true; return;
+  case 'xy': var tmp=s.x; s.x=s.y; s.y=tmp; s.lift=true; return;
+  case 'LSTX': this.push(s.lastx); return;
+  case 'SQRT': this.unary(function(x){ if (x<0) err(0); return Math.sqrt(x); }); return;
+  case 'EXP': this.unary(function(x){ return Math.exp(x); }); return;
+  case 'LN': this.unary(function(x){ if (x<=0) err(0); return Math.log(x); }); return;
+  case 'FRAC': this.unary(function(x){ return x-Math.trunc(x); }); return;
+  case 'INTG': this.unary(function(x){ return Math.trunc(x); }); return;
+  case 'X2': this.unary(function(x){ return x*x; }); return;
+  case 'FACT': this.unary(function(x){ if (x<0||!isInt(x)||x>69) err(0); var r=1; for (var k=2;k<=Math.round(x);k++) r*=k; return r; }); return;
+  case 'RND': s.lastx=s.x; this.setX(this.roundDisp(s.x)); s.lift=true; return;
+  case 'FIX': s.fix=o.arg; s.sci=false; s.lift=true; return;
+  case 'SCI': s.sci=true; s.lift=true; return;
+  case 'CLRPREFIX': this.mantUntil = Date.now()+1500; return;
+  case 'BEG': s.beg=true; s.lift=true; return;
+  case 'END': s.beg=false; s.lift=true; return;
+  case 'DMY': s.dmy=true; s.lift=true; return;
+  case 'MDY': s.dmy=false; s.lift=true; return;
+  case 'STOEEX': s.cflag=!s.cflag; s.lift=true; return;
+
+  case 'STO': s.reg[this.regIdx(o.arg)]=s.x; s.lift=true; return;
+  case 'RCL': this.push(s.reg[this.regIdx(o.arg)]); return;
+  case 'STOARITH':
+    var r=this.regIdx(o.arg.r), cur=s.reg[r], v;
+    if (o.arg.op==='add') v=cur+s.x; else if (o.arg.op==='sub') v=cur-s.x; else if (o.arg.op==='mul') v=cur*s.x; else { if (s.x===0) err(0); v=cur/s.x; }
+    v=r10(v); if (Math.abs(v)>=1e100) err(1); s.reg[r]=v; s.lift=true; return;
+  case 'STOFIN': F[o.arg]=s.x; s.finFlag=true; s.lift=true; return;
+  case 'RCLFIN': this.push(F[o.arg]); return;
+
+  case 'n': case 'i': case 'PV': case 'PMT': case 'FV':
+    var key=FINKEYS[op];
+    if (prevFin){ var val=this.finCompute(key); this.push(F[key]); s.finFlag=true; return; }
+    F[key]=s.x; s.finFlag=true; s.lift=true; return;
+  case '12x': s.lastx=s.x; this.setX(s.x*12); F.n=s.x; s.finFlag=true; s.lift=true; return;
+  case '12div': s.lastx=s.x; this.setX(s.x/12); F.i=s.x; s.finFlag=true; s.lift=true; return;
+
+  case 'CF0': s.reg[0]=s.x; F.n=0; s.lift=true; return;
+  case 'CFj':
+    var N=Math.round(F.n)+1; if (N>19 || N>=this.availRegs()) err(6);
+    F.n=N; s.reg[N]=s.x; s.nj[N]=1; s.lift=true; return;
+  case 'Nj':
+    if (!isInt(s.x) || s.x<1 || s.x>99) err(6);
+    s.nj[Math.round(F.n)]=Math.round(s.x); s.lift=true; return;
+  case 'RCLCFJ':
+    var j=Math.round(F.n); this.push(s.reg[j]); if (j>0) F.n=j-1; return;
+  case 'RCLNJ': this.push(s.nj[Math.round(F.n)]); return;
+  case 'NPV':
+    var list=this.cfList(), npv=this.npvAt(F.i/100,list); if (F.i<=-100) err(5);
+    F.pv=r10(npv); this.push(npv); return;
+  case 'IRR':
+    var L=this.cfList(), pos=false, neg=false;
+    L.forEach(function(c){ if (c.v>0) pos=true; if (c.v<0) neg=true; });
+    if (!pos||!neg) err(7);
+    var irr=this.solveRoot(function(q){ return self.npvAt(q,L); }, -0.99999, 100);
+    if (irr===null || !isFinite(irr)) err(3);
+    F.i=r10(irr*100); this.push(F.i); return;
+
+  case 'AMORT':
+    var cnt=s.x; if (!isInt(cnt) || cnt<=0) err(5); cnt=Math.round(cnt);
+    var p=F.i/100, d=this.decimals(), pv=F.pv, ti=0, tp=0;
+    for (var k=1;k<=cnt;k++){
+      var intr = (s.beg && Math.round(F.n)+k===1) ? 0 : Number((pv*p).toFixed(d));
+      var I=-intr, Pp=F.pmt-I; pv=pv+Pp; ti+=I; tp+=Pp;
+    }
+    F.pv=r10(pv); F.n=r10(F.n+cnt);
+    s.lastx=s.x; s.t=s.y; s.z=cnt; s.y=this.chk(tp); this.setX(ti); s.lift=true; return;
+  case 'INT':
+    var i360=-F.pv*F.i/100*F.n/360, i365=-F.pv*F.i/100*F.n/365;
+    s.lastx=s.x; s.t=s.y; s.z=this.chk(i365); s.y=this.chk(-F.pv); this.setX(i360); s.lift=true; return;
+  case 'SL': case 'SOYD': case 'DB':
+    var yr=s.x; if (!isInt(yr) || yr<=0 || !isInt(F.n) || F.n<=0) err(5); yr=Math.round(yr);
+    var life=Math.round(F.n), base=F.pv-F.fv, dep, rem;
+    if (op==='SL'){ var a=base/life; if (yr>life){ dep=0; rem=0; } else { dep=a; rem=base-a*yr; } }
+    else if (op==='SOYD'){ var syd=life*(life+1)/2, acc=0; dep=0; for (var j2=1;j2<=Math.min(yr,life);j2++){ dep=base*(life-j2+1)/syd; acc+=dep; } if (yr>life) dep=0; rem=base-acc; }
+    else { var rate=F.i/100/life, bv=F.pv; dep=0; for (var j3=1;j3<=yr;j3++){ dep=bv*rate; if (bv-dep<F.fv) dep=Math.max(0,bv-F.fv); bv-=dep; } rem=bv-F.fv; }
+    s.lastx=s.x; s.t=s.z; s.z=s.y; s.y=this.chk(rem); this.setX(dep); s.lift=true; return;
+  case 'PRICE':
+    var b=this.bondSetup(), pr=bondPrice(F.i, F.pmt, b), ai=(b.A/b.E)*F.pmt/2;
+    s.lastx=s.x; s.y=this.chk(ai); this.setX(pr); F.pv=r10(pr); s.lift=true; return;
+  case 'YTM':
+    var bb=this.bondSetup(), target=F.pv;
+    var yv=this.solveRoot(function(q){ return bondPrice(q*100, F.pmt, bb)-target; }, -0.9, 100);
+    if (yv===null) err(5);
+    var aii=(bb.A/bb.E)*F.pmt/2;
+    s.lastx=s.x; s.y=this.chk(aii); F.i=r10(yv*100); this.setX(yv*100); s.lift=true; return;
+  case 'DATE':
+    var dd=this.parseDate(s.y); if (!isInt(s.x)) err(8);
+    var res=fromDayNum(dd.serial+Math.round(s.x));
+    if (res.y<1582||res.y>4046) err(8);
+    var dn=this.dateNum(res), w=res.w===0?7:res.w;
+    s.lastx=s.x; s.y=s.z; s.z=s.t; this.setX(dn); s.lift=true;
+    var mk=this.marks(), a1=this.s.dmy?res.d:res.m, b1=this.s.dmy?res.m:res.d;
+    this.msg = a1 + mk.dm + pad2(b1) + mk.dm + res.y + '   ' + w;
+    return;
+  case 'DDYS':
+    var d1=this.parseDate(s.y), d2=this.parseDate(s.x), act=d2.serial-d1.serial;
+    var D1=d1.d, D2=d2.d; if (D1===31) D1=30; if (D2===31 && D1===30) D2=30;
+    var d360=(d2.y-d1.y)*360+(d2.m-d1.m)*30+(D2-D1);
+    s.lastx=s.x; s.y=d360; this.setX(act); s.lift=true; return;
+
+  case 'sigma': case 'SIGMINUS':
+    var sg=op==='sigma'?1:-1, R=s.reg, xx=s.x, yy=s.y;
+    if (this.availRegs()<7) err(6);
+    R[1]=r10(R[1]+sg); R[2]=r10(R[2]+sg*xx); R[3]=r10(R[3]+sg*xx*xx); R[4]=r10(R[4]+sg*yy); R[5]=r10(R[5]+sg*yy*yy); R[6]=r10(R[6]+sg*xx*yy);
+    s.lastx=xx; s.x=R[1]; s.lift=false; return;
+  case 'MEAN':
+    var q=this.statSums(); if (q.n===0) err(2);
+    this.push(q.sy/q.n); this.push(q.sx/q.n, true); return;
+  case 'SDEV':
+    var q2=this.statSums(); if (q2.n<=1) err(2);
+    var vx=(q2.sx2-q2.sx*q2.sx/q2.n)/(q2.n-1), vy=(q2.sy2-q2.sy*q2.sy/q2.n)/(q2.n-1);
+    if (vx<0||vy<0){ if (vx<-1e-9||vy<-1e-9) err(2); vx=Math.max(0,vx); vy=Math.max(0,vy); }
+    this.push(Math.sqrt(vy)); this.push(Math.sqrt(vx), true); return;
+  case 'XW':
+    var q3=this.statSums(); if (q3.sx===0) err(2);
+    this.push(q3.sxy/q3.sx); return;
+  case 'YHAT': case 'XHAT':
+    var rg=this.regression(), xin=s.x, est;
+    if (op==='YHAT') est=rg.A+rg.B*xin; else { if (rg.B===0) err(2); est=(xin-rg.A)/rg.B; }
+    s.lastx=xin; s.x=this.chk(rg.r); this.push(est, true); return;
+
+  case 'CLRSIG': for (var c1=1;c1<=6;c1++) s.reg[c1]=0; s.x=s.y=s.z=s.t=0; return;
+  case 'CLRFIN': F.n=F.i=F.pv=F.pmt=F.fv=0; return;
+  case 'CLRREG':
+    for (var c2=0;c2<20;c2++){ s.reg[c2]=0; s.nj[c2]=1; }
+    F.n=F.i=F.pv=F.pmt=F.fv=0; s.x=s.y=s.z=s.t=s.lastx=0; return;
+  case 'CLRPRGM':
+    if (s.prgm){ s.prog=[null]; s.pc=0; } else s.pc=0; return;
+  case 'PR': s.prgm=!s.prgm; s.pc=0; return;
+  case 'MEM':
+    var av=this.availRegs(); this.msg='P-'+pad2(8+7*(20-av))+' r-'+pad2(av); return;
+
+  case 'XLEY': return {skip: !(s.x<=s.y)};
+  case 'XEQ0': return {skip: !(s.x===0)};
+  case 'GTO':
+    if (o.arg>this.progLen()) err(4);
+    if (inProg) return {jump:o.arg};
+    s.pc=Math.max(0,o.arg-1); return;
+  case 'GTODOT':
+    if (o.arg>this.progLen()) err(4);
+    s.pc= s.prgm ? o.arg : Math.max(0,o.arg-1); return;
+  case 'PSE': return {pause:true};
+  case 'RS':
+    if (inProg) return {halt:true};
+    this.running=true; if (s.pc===0) s.pc=0; return;
+  case 'SST':
+    if (s.prgm){ s.pc = s.pc>=this.progLen() ? 0 : s.pc+1; return; }
+    this.stepOne(); return;
+  case 'BST':
+    if (s.prgm){ s.pc = s.pc<=0 ? this.progLen() : s.pc-1; return; }
+    if (s.pc>0) s.pc--; this.msg=this.lineStr(s.pc); return;
+  }
+};
+
+/* execução de programa: pc aponta a última linha executada */
+P.step = function(){
+  var s=this.s, L=this.progLen();
+  var line=s.pc+1;
+  if (line>L){ s.pc=0; this.running=false; this.endEntry(); return 'halt'; }
+  s.pc=line;
+  var op=s.prog[line];
+  var r=this.execute(op, true);
+  if (this.error!==null){ this.running=false; return 'halt'; }
+  if (r){
+    if (r.halt){ this.running=false; this.endEntry(); return 'halt'; }
+    if (r.jump!==undefined){ if (r.jump===0){ s.pc=0; this.running=false; this.endEntry(); return 'halt'; } s.pc=r.jump-1; }
+    if (r.skip) s.pc=s.pc+1>L ? L : s.pc+1;
+    if (r.pause) return 'pause';
+  }
+  return 'ok';
+};
+P.backspace = function(){
+  if (this.s.prgm || this.error!==null || this.running) return false;
+  if (!this.entry){ this.press('CLx'); return true; }
+  var e=this.entry;
+  if (e.exp!==null){ if (e.exp.length) e.exp=e.exp.slice(0,-1); else e.exp=null; }
+  else if (e.mant.length) e.mant=e.mant.slice(0,-1);
+  else { this.entry=null; this.s.x=0; this.s.lift=false; return true; }
+  this.syncEntry(); return true;
+};
+P.guideBaseline = function(){
+  var s=this.s; this.prefix=null; this.buf=''; this.entry=null; this.error=null; this.msg=null; this.running=false; this.pausing=false; this.overflow=false; this.mantUntil=0;
+  s.beg=false; s.fix=2; s.sci=false; s.prgm=false; s.pc=0; s.cflag=false; s.lift=true; s.finFlag=false; s.on=true;
+};
+P.stepOne = function(){ this.running=true; var r=this.step(); this.running=false; if (this.entry && false) this.endEntry(); return r; };
+P.runToHalt = function(max){
+  max=max||100000;
+  while (this.running && max-->0){ this.step(); }
+  this.running=false;
+};
+
+root.HP12Engine = { Calc:Calc, CODE:CODE, F_MAP:F_MAP, G_MAP:G_MAP };
+if (typeof module!=='undefined') module.exports = root.HP12Engine;
+})(typeof window!=='undefined' ? window : globalThis);
+
+var KEYMAP = {
+ prim:{'CHS':'CHS','n':'n','i':'i','PV':'PV','PMT':'PMT','FV':'FV','+':'add','−':'sub','×':'mul','÷':'div','ENTER':'ENTER','CLx':'CLx','x≷y':'xy','R↓':'Rdn','yˣ':'yx','1/x':'inv','%T':'pctT','Δ%':'dpct','%':'pct','EEX':'EEX','STO':'STO','RCL':'RCL','R/S':'RS','SST':'SST','Σ+':'sigma','.':'dot','f':'f','g':'g','ON':'ON'},
+ f:{'AMORT':'n','INT':'i','NPV':'PV','RND':'PMT','IRR':'FV','PRICE':'yx','YTM':'inv','SL':'pctT','SOYD':'dpct','DB':'pct','P/R':'RS','CLEAR Σ':'SST','CLEAR PRGM':'Rdn','CLEAR FIN':'xy','CLEAR REG':'CLx','PREFIX':'ENTER'},
+ g:{'12×':'n','12÷':'i','CF₀':'PV','CFⱼ':'PMT','Nⱼ':'FV','DATE':'CHS','BEG':'7','END':'8','MEM':'9','√x':'yx','eˣ':'inv','LN':'pctT','FRAC':'dpct','INTG':'pct','ΔDYS':'EEX','D.MY':'4','M.DY':'5','x̄w':'6','x²':'mul','PSE':'RS','BST':'SST','GTO':'Rdn','x≤y':'xy','x=0':'CLx','LSTx':'ENTER','x̂,r':'1','ŷ,r':'2','n!':'3','x̄':'0','s':'dot','Σ−':'sigma'}
+};
+function seqToKeys(str){
+  var out=[], re=/\{([^}]+)\}|([0-9.])/g, m;
+  while((m=re.exec(str))){
+    if (m[2]!==undefined){ out.push(m[2]==='.'?'dot':m[2]); continue; }
+    var t=m[1];
+    if (t.indexOf('f ')===0 && KEYMAP.f[t.slice(2)]){ out.push('f', KEYMAP.f[t.slice(2)]); }
+    else if (t.indexOf('g ')===0 && KEYMAP.g[t.slice(2)]){ out.push('g', KEYMAP.g[t.slice(2)]); }
+    else if (KEYMAP.prim[t]) out.push(KEYMAP.prim[t]);
+    else throw new Error('tecla desconhecida: '+t);
+  }
+  return out;
+}
+if (typeof module!=='undefined') module.exports={KEYMAP:KEYMAP,seqToKeys:seqToKeys};
+
+/* Conteúdo do manual. Notação: {CHS} = tecla; {f AMORT} = f e a função dourada; {g 12×} = g e a função em areia.
+   Linhas de passo: [teclas, visor, comentário]. Resultados conferidos na própria calculadora. */
+var MANUAL = [
+{id:'inicio', title:'Primeiros passos', blocks:[
+ {p:'Esta calculadora segue o funcionamento da HP 12c: lógica RPN (notação polonesa reversa), pilha de quatro registradores e as mesmas funções nas mesmas teclas. O visor mostra 10 dígitos. Ela serve para estudo; no dia da prova do CFA só vale a calculadora física aprovada.'},
+ {h:'Teclas de prefixo'},
+ {list:[
+  'A função escrita em cima da tecla (cor marrom claro) é acionada com {f} antes da tecla.',
+  'A função escrita na faixa inferior da tecla (cor areia) é acionada com {g} antes da tecla.',
+  'Se apertar {f} ou {g} por engano, {f PREFIX} cancela o prefixo. Os indicadores f e g aparecem no visor enquanto o prefixo está ativo.']},
+ {h:'RPN e a pilha'},
+ {p:'No RPN você digita os números primeiro e a operação depois. {ENTER} separa dois números. A pilha tem quatro registradores: X (o que está no visor), Y, Z e T. Uma operação usa X e Y e devolve o resultado em X; a pilha desce.'},
+ {steps:[
+  ['3 {ENTER} 4 {+}','7.00','3 vai para Y, 4 fica em X; + soma'],
+  ['5 {×}','35.00','(3 + 4) × 5, sem parênteses']]},
+ {list:[
+  '{CLx} zera o visor (registrador X). Use para corrigir um número digitado errado.',
+  '{CHS} troca o sinal. Para digitar −250, digite 250 {CHS}.',
+  '{EEX} digita expoente: 6.02 {EEX} 23 = 6,02 × 10²³.',
+  '{x≷y} troca X e Y. {R↓} gira a pilha para baixo, para ver Y, Z e T.',
+  '{g LSTx} traz de volta o último valor de X usado numa operação.']},
+ {h:'Formato do visor'},
+ {list:[
+  '{f} seguido de um dígito (0 a 9) fixa as casas decimais. O padrão é 2. A calculadora guarda o número completo; só a exibição é arredondada.',
+  '{f} {.} muda para notação científica. Volte com {f} 2, por exemplo.',
+  '{f PREFIX} mostra por um instante todos os 10 dígitos do número em X.',
+  'Separador decimal: em Ajustes, escolha ponto (padrão da HP) ou vírgula.']},
+ {h:'Memória contínua e limpeza'},
+ {p:'Os números, registradores e programas ficam guardados neste navegador quando você fecha a calculadora, como na memória contínua da HP. Para começar do zero, use as limpezas:'},
+ {list:[
+  '{f CLEAR FIN}: limpa os registradores financeiros (n, i, PV, PMT, FV). Faça antes de cada problema de juros.',
+  '{f CLEAR Σ}: limpa os registradores de estatística (R1 a R6) e a pilha.',
+  '{f CLEAR REG}: limpa tudo, menos o programa.',
+  '{f CLEAR PRGM}: no modo de programação, apaga o programa.']},
+ {h:'Teclado do computador'},
+ {list:[
+  'Números, ponto ou vírgula, + − × ÷ (as teclas + - * /).',
+  'Enter = {ENTER}. Backspace apaga o último dígito digitado; sem digitação em curso, faz {CLx}.',
+  'F = {f}, G = {g}, Esc cancela um prefixo.']},
+ {h:'Abrir em janela própria'},
+ {p:'O botão Janela abre a calculadora numa janela do tamanho dela. Pelo link publicado, o navegador costuma bloquear essa janela; use então o arquivo HTML salvo no computador, que abre a janela normalmente. A calculadora se ajusta a qualquer tamanho de janela.'}
+]},
+
+{id:'aritmetica', title:'Aritmética básica', blocks:[
+ {h:'Contas em cadeia'},
+ {p:'Resolva de dentro para fora, como faria à mão. Exemplo: (12 × 3 + 4 × 5) ÷ 7.'},
+ {steps:[
+  ['12 {ENTER} 3 {×}','36.00',''],
+  ['4 {ENTER} 5 {×}','20.00','36 sobe para Y'],
+  ['{+}','56.00',''],
+  ['7 {÷}','8.00','']]},
+ {h:'Porcentagens'},
+ {p:'As três teclas de porcentagem mantêm o valor base em Y, o que permite continuar a conta.'},
+ {steps:[
+  ['200 {ENTER} 15 {%}','30.00','15% de 200'],
+  ['{+}','230.00','200 mais 15%'],
+  ['80 {ENTER} 92 {Δ%}','15.00','variação de 80 para 92: +15%'],
+  ['500 {ENTER} 120 {%T}','24.00','120 representa 24% de 500']]},
+ {h:'Potências, raízes e logaritmos'},
+ {steps:[
+  ['1.05 {ENTER} 10 {yˣ}','1.63','fator de capitalização: 5% por 10 períodos'],
+  ['{f PREFIX}','1628894627','os 10 dígitos: 1,628894627'],
+  ['2 {g √x}','1.41','raiz quadrada'],
+  ['.08 {g eˣ} 1 {−}','0.08','taxa efetiva com capitalização contínua de 8%'],
+  ['{f} 4','0.0833','= 8,33% ao ano'],
+  ['{f} 2 5 {g n!}','120.00','fatorial (inteiros de 0 a 69)']]},
+ {list:[
+  '{1/x} inverte X. {g x²} eleva ao quadrado. {g LN} é o logaritmo natural.',
+  '{g INTG} deixa só a parte inteira; {g FRAC} só a parte fracionária.',
+  '{f RND} arredonda o número guardado para as casas do visor. Útil para usar uma parcela "redonda" em contas seguintes.',
+  'Raiz n-ésima: x {ENTER} n {1/x} {yˣ}. Exemplo: 1.5 {ENTER} 10 {1/x} {yˣ} = 1,0414 (taxa média de 10 períodos que acumula 50%).']},
+ {h:'Registradores de memória'},
+ {p:'Há 20 registradores: R0 a R9 e R.0 a R.9. {STO} 1 guarda X em R1; {RCL} 1 traz de volta. Para R.5: {STO} {.} 5. A aritmética direta em registrador vale para R0 a R4.'},
+ {steps:[
+  ['3 {STO} 1','3.00','guarda 3 em R1'],
+  ['9 {STO} {+} 1','9.00','R1 = 3 + 9'],
+  ['{RCL} 1','12.00','']]},
+ {p:'Os registradores R1 a R6 também guardam as somas de estatística, e R0 em diante guardam os fluxos de caixa. Evite usá-los para outras coisas durante esses cálculos.'}
+]},
+
+{id:'tvm', title:'Finanças: valor do dinheiro no tempo', blocks:[
+ {h:'As cinco teclas'},
+ {list:[
+  '{n}: número de períodos. {i}: taxa por período, em %. {PV}: valor presente. {PMT}: parcela. {FV}: valor futuro.',
+  'Para guardar: digite o número e aperte a tecla. Para calcular: aperte a tecla logo depois de guardar ou calcular outra das cinco.',
+  'Convenção de sinais: dinheiro que sai do seu bolso é negativo ({CHS}); o que entra é positivo. Se PV e FV tiverem o mesmo sinal num problema que precisa de troca, a calculadora mostra Error 5.',
+  'Antes de cada problema: {f CLEAR FIN}. Taxa e prazo precisam estar no mesmo período (mensal com mensal).']},
+ {h:'Exemplo 1: valor futuro'},
+ {p:'Você investe 10.000 a 6% ao ano por 5 anos. Quanto terá no fim?'},
+ {steps:[
+  ['{f CLEAR FIN}','',''],
+  ['10000 {CHS} {PV}','-10,000.00','saída de caixa'],
+  ['6 {i} 5 {n}','5.00',''],
+  ['{FV}','13,382.26','valor futuro']]},
+ {h:'Exemplo 2: anuidade e anuidade antecipada'},
+ {p:'Qual o valor presente de 10 recebimentos anuais de 1.000, a 8% ao ano? E se os recebimentos forem no início de cada ano?'},
+ {steps:[
+  ['{f CLEAR FIN} 1000 {PMT}','1,000.00',''],
+  ['8 {i} 10 {n} {PV}','-6,710.08','parcelas no fim do período (END)'],
+  ['{g BEG} 1000 {PMT} {PV}','-7,246.89','parcelas no início (BEGIN no visor); guarde um valor de novo antes de calcular'],
+  ['{g END}','','volte ao padrão']]},
+ {h:'Exemplo 3: financiamento mensal'},
+ {p:'Financiamento de 250.000 em 30 anos a 6% ao ano, parcelas mensais. {g 12×} multiplica por 12 e guarda em n; {g 12÷} divide por 12 e guarda em i.'},
+ {steps:[
+  ['{f CLEAR FIN}','',''],
+  ['30 {g 12×}','360.00','n = 360 meses'],
+  ['6 {g 12÷}','0.50','i = 0,5% ao mês'],
+  ['250000 {PV} {PMT}','-1,498.88','parcela mensal']]},
+ {h:'Exemplo 4: taxa e prazo'},
+ {steps:[
+  ['{f CLEAR FIN} 1000 {CHS} {PV}','-1,000.00','aplica 1.000'],
+  ['1500 {FV} 5 {n} {i}','8.45','taxa anual que leva 1.000 a 1.500 em 5 anos'],
+  ['{f CLEAR FIN} 1000 {CHS} {PV} 2000 {FV} 7 {i} {n}','11.00','em quantos anos dobra a 7%?']]},
+ {p:'Atenção: ao calcular n, a HP 12c arredonda o resultado para cima, para o próximo inteiro. A resposta exata é 10,24 anos. Para obtê-la, use logaritmos:'},
+ {steps:[['2 {g LN} 1.07 {g LN} {÷}','10.24','n exato = ln 2 ÷ ln 1,07']]},
+ {h:'Exemplo 5: taxa efetiva anual (EAR)'},
+ {p:'Taxa nominal de 12% ao ano, capitalizada mensalmente. Qual a taxa efetiva?'},
+ {steps:[
+  ['{f CLEAR FIN} 100 {CHS} {PV}','-100.00',''],
+  ['12 {n} 1 {i} {FV}','112.68','EAR = 12,68%']]},
+ {h:'Períodos fracionários'},
+ {p:'Se n não for inteiro, a calculadora trata a fração como um período inicial com juros simples. Com {STO} {EEX} o indicador C acende e esse período passa a usar juros compostos. Aperte de novo para desligar.'}
+]},
+
+{id:'fluxos', title:'Finanças: fluxos de caixa (NPV e IRR)', blocks:[
+ {list:[
+  '{g CF₀}: fluxo inicial (data zero).',
+  '{g CFⱼ}: cada fluxo seguinte, na ordem. Até 20 fluxos no total.',
+  '{g Nⱼ}: quantas vezes seguidas o último fluxo se repete (até 99).',
+  '{f NPV}: valor presente líquido à taxa guardada em i. {f IRR}: taxa interna de retorno, por período.',
+  '{f CLEAR REG} antes de começar, para não sobrar fluxo de outro problema.']},
+ {h:'Exemplo: projeto de investimento'},
+ {p:'Investimento de 100.000. Retornos: 25.000 no ano 1, 30.000 nos anos 2, 3 e 4, e 40.000 no ano 5. Custo de capital de 10%. Qual o NPV e a IRR?'},
+ {steps:[
+  ['{f CLEAR REG}','0.00',''],
+  ['100000 {CHS} {g CF₀}','-100,000.00',''],
+  ['25000 {g CFⱼ}','25,000.00',''],
+  ['30000 {g CFⱼ} 3 {g Nⱼ}','3.00','30.000 repetido 3 vezes'],
+  ['40000 {g CFⱼ}','40,000.00',''],
+  ['10 {i} {f NPV}','15,387.36','NPV positivo: o projeto cria valor'],
+  ['{f IRR}','15.47','IRR = 15,47% ao ano']]},
+ {h:'Conferir os fluxos'},
+ {p:'{RCL} n mostra quantos fluxos (além do CF₀) foram digitados. {RCL} {g CFⱼ} mostra o último fluxo e recua um; repetindo, você percorre todos. {RCL} {g Nⱼ} mostra a repetição do fluxo atual. Para corrigir o fluxo j, digite o valor e {STO} j.'},
+ {p:'Error 3 indica que a IRR não foi encontrada (há fluxos que podem ter várias taxas ou nenhuma). Error 7 indica fluxos sem troca de sinal.'}
+]},
+
+{id:'amort', title:'Finanças: amortização e juros simples', blocks:[
+ {h:'Tabela de amortização'},
+ {p:'Com i, PV e PMT guardados, digite quantas parcelas quer amortizar e aperte {f AMORT}. O visor mostra os juros dessas parcelas; {x≷y} mostra o principal; {RCL} {PV} mostra o saldo devedor. O registrador n acumula as parcelas já amortizadas. Os juros de cada parcela são arredondados para as casas decimais do visor, como numa planilha bancária.'},
+ {p:'Exemplo: primeiro ano do financiamento de 250.000 (exemplo 3 de valor do dinheiro no tempo). Arredonde a parcela para centavos antes, como o banco faz.'},
+ {steps:[
+  ['{f CLEAR FIN} 30 {g 12×} 6 {g 12÷}','0.50',''],
+  ['250000 {PV} {PMT}','-1,498.88',''],
+  ['{f RND} {PMT}','-1,498.88','guarda a parcela arredondada'],
+  ['0 {n} 12 {f AMORT}','-14,916.50','juros pagos nos 12 meses'],
+  ['{x≷y}','-3,070.06','principal amortizado'],
+  ['{RCL} {PV}','246,929.94','saldo devedor após 12 parcelas']]},
+ {h:'Juros simples'},
+ {p:'Guarde o prazo em dias em n, a taxa anual em i e o principal em PV (com sinal negativo). {f INT} mostra os juros na base de 360 dias. Para ver a base de 365 dias: {R↓} {x≷y}.'},
+ {steps:[
+  ['{f CLEAR FIN} 60 {n} 7 {i}','7.00','60 dias, 7% ao ano'],
+  ['450 {CHS} {PV} {f INT}','5.25','juros, base 360'],
+  ['{+}','455.25','montante (juros + principal)'],
+  ['{f CLEAR FIN} 60 {n} 7 {i} 450 {CHS} {PV} {f INT} {R↓} {x≷y}','5.18','juros, base 365']]}
+]},
+
+{id:'titulos', title:'Finanças: títulos (PRICE e YTM)', blocks:[
+ {p:'As funções de títulos seguem a convenção de cupons semestrais e contagem de dias real/real (actual/actual). O preço sai por 100 de valor de face, sem os juros acumulados (preço limpo).'},
+ {list:[
+  'Guarde a taxa de cupom anual em {PMT} e o rendimento desejado (YTM anual) em {i}.',
+  'Digite a data de liquidação, {ENTER}, a data de vencimento e aperte {f PRICE}. O visor mostra o preço; {x≷y} mostra os juros acumulados; {+} soma os dois (preço sujo).',
+  'Para o YTM: guarde o preço em {PV}, o cupom em {PMT}, digite as datas e aperte {f YTM}.',
+  'As datas seguem o formato escolhido (veja o tema Datas). Os exemplos usam {g D.MY}.']},
+ {h:'Exemplo 1: preço na data do cupom'},
+ {p:'Título com cupom de 6% ao ano, vencimento em 01/03/2037, liquidação em 01/03/2027, YTM de 7%.'},
+ {steps:[
+  ['{g D.MY}','','acende D.MY no visor'],
+  ['7 {i} 6 {PMT}','6.00',''],
+  ['1.032027 {ENTER} 1.032037 {f PRICE}','92.89','preço: abaixo do par, pois YTM > cupom']]},
+ {p:'Na data do cupom, o resultado coincide com o cálculo pelas teclas de juros: n = 20 semestres, i = 3,5, PMT = 3, FV = 100.'},
+ {h:'Exemplo 2: preço entre cupons'},
+ {steps:[
+  ['7 {i} 6 {PMT}','6.00',''],
+  ['15.052027 {ENTER} 1.032037 {f PRICE}','92.98','preço limpo'],
+  ['{x≷y}','1.22','juros acumulados desde 01/03'],
+  ['{x≷y} {+}','94.21','preço sujo (pago na liquidação)']]},
+ {h:'Exemplo 3: YTM'},
+ {p:'O mesmo título, comprado a 105 em 01/03/2027.'},
+ {steps:[
+  ['105 {PV} 6 {PMT}','6.00',''],
+  ['1.032027 {ENTER} 1.032037 {f YTM}','5.35','YTM = 5,35% ao ano']]}
+]},
+
+{id:'deprec', title:'Finanças: depreciação', blocks:[
+ {p:'Guarde o custo em {PV}, o valor residual em {FV} e a vida útil em anos em {n}. Para o método de saldo decrescente, guarde o fator em % em {i} (200 para o dobro da linha reta). Digite o ano e aperte a função. O visor mostra a depreciação do ano; {x≷y} mostra quanto ainda falta depreciar.'},
+ {p:'Exemplo: ativo de 50.000, residual de 5.000, vida útil de 5 anos.'},
+ {steps:[
+  ['{f CLEAR FIN} 50000 {PV} 5000 {FV} 5 {n}','5.00',''],
+  ['1 {f SL}','9,000.00','linha reta, ano 1'],
+  ['{x≷y}','36,000.00','a depreciar depois do ano 1'],
+  ['1 {f SOYD}','15,000.00','soma dos dígitos dos anos, ano 1'],
+  ['200 {i} 1 {f DB}','20,000.00','saldo decrescente 200%, ano 1'],
+  ['2 {f DB}','12,000.00','ano 2']]},
+ {p:'No saldo decrescente, a depreciação para quando o valor contábil chega ao residual. A calculadora não troca sozinha para linha reta.'}
+]},
+
+{id:'datas', title:'Datas', blocks:[
+ {list:[
+  '{g D.MY}: datas como dia.mêsano. 15 de março de 2027 = 15.032027. O indicador D.MY aparece no visor.',
+  '{g M.DY}: datas como mês.diaano (padrão americano). 15 de março de 2027 = 3.152027.',
+  'Datas válidas: de 15/10/1582 a 25/11/4046.']},
+ {h:'Dias entre datas'},
+ {p:'{g ΔDYS} mostra os dias reais entre as datas; {x≷y} mostra os dias na base 30/360.'},
+ {steps:[
+  ['{g D.MY} 15.032027 {ENTER}','15.03','data inicial'],
+  ['15.092027 {g ΔDYS}','184.00','dias corridos'],
+  ['{x≷y}','180.00','dias na base 30/360']]},
+ {h:'Data futura ou passada'},
+ {p:'Digite a data, {ENTER}, o número de dias (negativo para voltar) e {g DATE}. O número à direita é o dia da semana: 1 = segunda, 7 = domingo.'},
+ {steps:[['15.032027 {ENTER} 90 {g DATE}','13.06.2027   7','13/06/2027, um domingo']]}
+]},
+
+{id:'estat', title:'Estatística', blocks:[
+ {p:'Cada {Σ+} acumula um dado (ou par de dados) em R1 a R6 e mostra quantos dados já entraram. Para um dado só, digite e aperte {Σ+}. Para pares (x, y), digite y {ENTER} x {Σ+}. Corrija um dado errado digitando-o de novo e apertando {g Σ−}. Comece com {f CLEAR Σ}.'},
+ {h:'Média e desvio-padrão'},
+ {p:'Retornos anuais de um fundo: 8%, −2%, 12%, 5% e 7%.'},
+ {steps:[
+  ['{f CLEAR Σ}','0.00',''],
+  ['8 {Σ+} 2 {CHS} {Σ+} 12 {Σ+} 5 {Σ+} 7 {Σ+}','5.00','5 dados'],
+  ['{g x̄}','6.00','retorno médio'],
+  ['{g s}','5.15','desvio-padrão amostral']]},
+ {p:'A tecla s calcula o desvio-padrão amostral (divide por n − 1). Para o populacional (divide por n), some a média como um dado a mais e calcule s de novo. Depois, retire esse dado com {g x̄} {g Σ−}.'},
+ {steps:[['{g x̄} {Σ+} {g s}','4.60','desvio-padrão populacional']]},
+ {h:'Média ponderada'},
+ {p:'Carteira com 60% num ativo que rende 10% e 40% num que rende 4%. Digite valor {ENTER} peso {Σ+}.'},
+ {steps:[
+  ['{f CLEAR Σ} 10 {ENTER} 60 {Σ+}','1.00',''],
+  ['4 {ENTER} 40 {Σ+}','2.00',''],
+  ['{g x̄w}','7.60','retorno ponderado: 7,6%']]},
+ {h:'Regressão linear (beta)'},
+ {p:'Retornos de mercado (x) e de uma ação (y) em 5 meses: (2; 3), (−1; −2), (4; 5), (3; 4), (−2; −3). A reta é y = a + b·x. {g ŷ,r} estima y para o x digitado e põe a correlação r em Y.'},
+ {steps:[
+  ['{f CLEAR Σ} 3 {ENTER} 2 {Σ+}','1.00','y {ENTER} x {Σ+}'],
+  ['2 {CHS} {ENTER} 1 {CHS} {Σ+}','2.00',''],
+  ['5 {ENTER} 4 {Σ+} 4 {ENTER} 3 {Σ+}','4.00',''],
+  ['3 {CHS} {ENTER} 2 {CHS} {Σ+}','5.00',''],
+  ['0 {g ŷ,r}','-0.28','ŷ para x = 0: o intercepto a (alfa)'],
+  ['{x≷y} {f} 4','0.9958','correlação r'],
+  ['{f} 2 1 {g ŷ,r} {STO} 0','1.12','ŷ para x = 1, guardado em R0'],
+  ['0 {g ŷ,r} {RCL} 0 {x≷y} {−}','1.40','b = ŷ(1) − ŷ(0): o beta']]},
+ {p:'{g x̂,r} faz o caminho inverso: estima x para o y digitado.'}
+]},
+
+{id:'prog', title:'Programação', blocks:[
+ {p:'Um programa grava uma sequência de teclas para repetir uma conta. Cabem até 99 linhas. As primeiras 8 linhas são livres; a partir daí, cada 7 linhas ocupam um registrador de memória, começando por R.9. {g MEM} mostra linhas (P) e registradores livres (r).'},
+ {h:'Gravar'},
+ {list:[
+  '{f P/R} entra no modo de programação: aparece PRGM e a linha 00.',
+  '{f CLEAR PRGM} apaga o programa anterior.',
+  'Digite as teclas. Cada linha mostra o número da linha e o código das teclas: linha e coluna da tecla (n = 11, ÷ = 10, STO = 44), e os algarismos aparecem como eles mesmos.',
+  '{f P/R} de novo volta ao modo normal.']},
+ {h:'Rodar e testar'},
+ {list:[
+  '{R/S} roda o programa a partir do início (ou de onde parou). Enquanto roda, o visor mostra running; qualquer tecla interrompe.',
+  'Uma instrução {R/S} dentro do programa para a execução, para você digitar um dado; {R/S} continua.',
+  '{g PSE} mostra o resultado parcial por um segundo e continua.',
+  '{SST} executa uma linha por vez; {g BST} volta uma linha.',
+  '{g GTO} nn desvia para a linha nn. {g x≤y} e {g x=0} são testes: se verdadeiro, executa a linha seguinte; se falso, pula uma linha.',
+  'No modo de programação, {g GTO} {.} nn posiciona na linha nn para conferir ou trocar instruções. Uma instrução digitada substitui a da linha seguinte (não há inserção, como na HP 12c).']},
+ {h:'Exemplo: taxa efetiva a partir da nominal'},
+ {p:'O programa calcula EAR = (1 + nominal/m)^m − 1, com m guardado em R1 e a taxa nominal em % no visor.'},
+ {steps:[
+  ['{f P/R} {f CLEAR PRGM}','00-','modo de programação'],
+  ['{RCL} 1','01-  45  1',''],
+  ['{÷}','02-  10','nominal/m'],
+  ['1 0 0 {÷}','06-  10','em decimal'],
+  ['1 {+}','08-  40',''],
+  ['{RCL} 1 {yˣ}','10-  21',''],
+  ['1 {−}','12-  30',''],
+  ['1 0 0 {×}','16-  20','em %'],
+  ['{f P/R}','','volta ao modo normal'],
+  ['12 {STO} 1 8 {R/S}','8.30','8% ao ano capitalizado mensalmente'],
+  ['4 {STO} 1 8 {R/S}','8.24','capitalização trimestral']]}
+]},
+
+{id:'erros', title:'Erros, diferenças e fontes', blocks:[
+ {p:'Qualquer tecla apaga a mensagem de erro; a tecla não é executada.'},
+ {table:[
+  ['Error 0','Matemática: divisão por zero, raiz de número negativo, logaritmo de zero ou negativo, fatorial fora de 0 a 69.'],
+  ['Error 1','Estouro de registrador na aritmética com STO.'],
+  ['Error 2','Estatística: sem dados suficientes ou divisão por zero (por exemplo, s com um só dado).'],
+  ['Error 3','IRR: taxa não encontrada.'],
+  ['Error 4','Memória: mais de 99 linhas de programa ou GTO para linha inexistente.'],
+  ['Error 5','Juros compostos: dados sem solução, sinais incoerentes ou taxa menor ou igual a −100%.'],
+  ['Error 6','Registradores: registrador inexistente ou ocupado pelo programa, mais de 20 fluxos de caixa, Nj fora de 1 a 99.'],
+  ['Error 7','IRR: fluxos de caixa sem troca de sinal.'],
+  ['Error 8','Datas: data inválida ou fora do intervalo.']]},
+ {h:'Diferenças em relação à HP 12c física'},
+ {list:[
+  'A conta interna usa precisão dupla, arredondada a 10 dígitos significativos em cada operação. Em contas longas, o último dígito pode diferir.',
+  'Não há modo algébrico, autoteste nem ajuste de bateria.',
+  'O nome e a marca da HP não são usados; o visual segue a identidade da Sans.']},
+ {h:'Fontes'},
+ {list:[
+  'Funcionamento das teclas, pilha, registradores, convenções de sinais, arredondamento de n, amortização, títulos, datas, estatística, programação e códigos de erro: HP-12C Owner’s Handbook and Problem-Solving Guide (Hewlett-Packard, ed. 2, 1992) e HP 12c Financial Calculator User’s Guide (Hewlett-Packard, ed. 5), disponíveis em literature.hpcalc.org.',
+  'Calculadoras permitidas no exame: CFA Institute, CFA Exam Calculator Policy (cfainstitute.org).',
+  'Exemplos numéricos: escritos para este manual e conferidos na própria calculadora; não foram retirados do material oficial do CFA.']}
+]}
+];
+if (typeof module!=='undefined') module.exports = MANUAL;
+
+/* Questões originais no estilo do CFA Level I. Não são questões oficiais do CFA Institute.
+   Cada resolução foi conferida na própria calculadora. ans = índice da alternativa correta. */
+var QUIZ = [
+{id:'q1', tema:'Valor do dinheiro no tempo',
+ q:'Um investidor aplica USD 15.000 hoje numa conta que rende 5,5% ao ano, com capitalização anual. Qual será o saldo ao fim de 8 anos?',
+ opts:['USD 21.600,00','USD 23.020,30','USD 23.267,21'], ans:1,
+ exp:'Valor futuro de um montante único: FV = PV × (1 + i)ⁿ. A alternativa A usa juros simples; a C capitaliza mensalmente.',
+ steps:[['{f CLEAR FIN} 15000 {CHS} {PV}','-15,000.00','saída de caixa hoje'],['5.5 {i} 8 {n}','8.00','taxa anual e prazo'],['{FV}','23,020.30','saldo no ano 8']]},
+{id:'q2', tema:'Valor do dinheiro no tempo',
+ q:'Você vai receber USD 50.000 daqui a 6 anos. Com taxa de desconto de 7% ao ano, quanto vale esse recebimento hoje?',
+ opts:['USD 29.000,00','USD 31.137,49','USD 33.317,11'], ans:2,
+ exp:'Valor presente: PV = FV ÷ (1 + i)ⁿ. A alternativa A desconta com juros simples; a B usa 7 anos em vez de 6.',
+ steps:[['{f CLEAR FIN} 50000 {FV}','50,000.00','recebimento futuro'],['7 {i} 6 {n}','6.00',''],['{PV}','-33,317.11','valor presente']]},
+{id:'q3', tema:'Anuidades',
+ q:'Qual o valor presente de 10 pagamentos anuais de USD 2.000, o primeiro daqui a um ano, com taxa de 6% ao ano?',
+ opts:['USD 14.720,17','USD 15.603,38','USD 20.000,00'], ans:0,
+ exp:'Anuidade postecipada (ordinary annuity): parcelas no fim de cada período, modo END. A alternativa B usa o modo BEG (anuidade antecipada).',
+ steps:[['{f CLEAR FIN} 2000 {PMT}','2,000.00','parcela anual'],['6 {i} 10 {n}','10.00',''],['{PV}','-14,720.17','valor presente (modo END)']]},
+{id:'q4', tema:'Anuidades',
+ q:'Uma pessoa deposita USD 5.000 no início de cada ano, por 15 anos, numa conta que rende 8% ao ano. Qual o saldo logo após 15 anos?',
+ opts:['USD 135.760,57','USD 146.621,42','USD 75.000,00'], ans:1,
+ exp:'Depósitos no início de cada período formam uma anuidade antecipada (annuity due): use o modo BEG. A alternativa A é o resultado em modo END.',
+ steps:[['{f CLEAR FIN} {g BEG}','','BEGIN acende no visor'],['5000 {CHS} {PMT}','-5,000.00','depósito anual'],['8 {i} 15 {n}','15.00',''],['{FV}','146,621.42','saldo final'],['{g END}','146,621.42','volte ao modo padrão']]},
+{id:'q5', tema:'Financiamentos',
+ q:'Um financiamento imobiliário de USD 300.000 tem prazo de 25 anos e taxa nominal de 7,2% ao ano, com pagamentos mensais. Qual a parcela mensal?',
+ opts:['USD 1.800,00','USD 2.158,77','USD 2.184,06'], ans:1,
+ exp:'Taxa e prazo precisam estar em meses: n = 25 × 12 = 300 e i = 7,2 ÷ 12 = 0,6% ao mês. A alternativa A paga só os juros do primeiro mês; a C calcula a parcela anual e divide por 12.',
+ steps:[['{f CLEAR FIN} 25 {g 12×}','300.00','n = 300 meses'],['7.2 {g 12÷}','0.60','i = 0,6% ao mês'],['300000 {PV}','300,000.00','valor financiado'],['{PMT}','-2,158.77','parcela mensal']]},
+{id:'q6', tema:'Valor do dinheiro no tempo',
+ q:'Um ativo comprado por USD 10.000 foi vendido por USD 18.000 depois de 7 anos, sem fluxos intermediários. Qual o retorno anual composto?',
+ opts:['8,76%','11,43%','12,00%'], ans:0,
+ exp:'Taxa composta: i = (FV ÷ PV)^(1/n) − 1. A alternativa B divide o ganho total de 80% por 7 anos (taxa simples).',
+ steps:[['{f CLEAR FIN} 10000 {CHS} {PV}','-10,000.00','compra'],['18000 {FV} 7 {n}','7.00','venda e prazo'],['{i}','8.76','retorno anual composto, em %']]},
+{id:'q7', tema:'Taxas efetivas',
+ q:'Uma aplicação paga taxa nominal de 9% ao ano com capitalização trimestral. Qual a taxa efetiva anual (EAR)?',
+ opts:['9,00%','9,20%','9,31%'], ans:2,
+ exp:'EAR = (1 + 0,09 ÷ 4)⁴ − 1. Com n = 4 trimestres e i = 2,25% ao trimestre, 100 viram 109,31.',
+ steps:[['{f CLEAR FIN} 100 {CHS} {PV}','-100.00','base de 100'],['4 {n} 2.25 {i}','2.25','4 trimestres a 2,25%'],['{FV}','109.31','montante ao fim de um ano'],['100 {−}','9.31','EAR em %']]},
+{id:'q8', tema:'Taxas efetivas',
+ q:'Qual a taxa efetiva anual equivalente a 6% ao ano com capitalização contínua?',
+ opts:['6,00%','6,17%','6,18%'], ans:2,
+ exp:'Capitalização contínua: EAR = e^r − 1 = e^0,06 − 1. A alternativa B é a capitalização mensal (12 períodos).',
+ steps:[['.06 {g eˣ}','1.06','e elevado a 0,06'],['1 {−} 100 {×}','6.18','EAR em %']]},
+{id:'q9', tema:'Ações: modelo de Gordon',
+ q:'Uma ação deve pagar dividendo de USD 2,10 daqui a um ano. O dividendo cresce 4% ao ano para sempre e o retorno exigido é 9%. Qual o valor da ação pelo modelo de Gordon?',
+ opts:['USD 23,33','USD 42,00','USD 43,68'], ans:1,
+ exp:'V₀ = D₁ ÷ (r − g) = 2,10 ÷ (0,09 − 0,04). A alternativa C aplica o crescimento ao dividendo de novo, como se 2,10 fosse D₀.',
+ steps:[['2.10 {ENTER}','2.10','D₁'],['.09 {ENTER} .04 {−}','0.05','r − g'],['{÷}','42.00','valor da ação']]},
+{id:'q10', tema:'Fluxos de caixa',
+ q:'Um projeto exige USD 250.000 hoje e gera USD 70.000 por ano nos anos 1 a 3 e USD 90.000 por ano nos anos 4 e 5. Com custo de capital de 10%, qual o NPV?',
+ opts:['USD 41.433,77','USD 140.000,00','USD 291.433,77'], ans:0,
+ exp:'NPV = soma dos fluxos descontados menos o investimento. A alternativa B não desconta os fluxos; a C esquece de subtrair o investimento.',
+ steps:[['{f CLEAR REG} 250000 {CHS} {g CF₀}','-250,000.00','investimento'],['70000 {g CFⱼ} 3 {g Nⱼ}','3.00','70.000 por 3 anos'],['90000 {g CFⱼ} 2 {g Nⱼ}','2.00','90.000 por 2 anos'],['10 {i} {f NPV}','41,433.77','NPV a 10%']]},
+{id:'q11', tema:'Fluxos de caixa',
+ q:'Para o mesmo projeto da questão anterior (−250.000; 70.000 nos anos 1 a 3; 90.000 nos anos 4 e 5), qual a IRR?',
+ opts:['10,00%','15,96%','22,40%'], ans:1,
+ exp:'A IRR é a taxa que zera o NPV. Como o NPV a 10% é positivo, a IRR tem de ser maior que 10%.',
+ steps:[['{f CLEAR REG} 250000 {CHS} {g CF₀} 70000 {g CFⱼ} 3 {g Nⱼ} 90000 {g CFⱼ} 2 {g Nⱼ}','2.00','fluxos digitados'],['{f IRR}','15.96','IRR em % ao ano']]},
+{id:'q12', tema:'Renda fixa',
+ q:'Um título de 10 anos paga cupom de 5% ao ano, em parcelas semestrais. Se o YTM é 6% ao ano (base semestral), qual o preço por 100 de face, numa data de cupom?',
+ opts:['92,56','92,64','100,00'], ans:0,
+ exp:'Use períodos semestrais: n = 20, i = 3%, PMT = 2,5. A alternativa B usa períodos anuais. Como o YTM é maior que o cupom, o título sai abaixo do par.',
+ steps:[['{f CLEAR FIN} 20 {n}','20.00','20 semestres'],['3 {i}','3.00','YTM semestral'],['2.5 {PMT} 100 {FV}','100.00','cupom semestral e resgate'],['{PV}','-92.56','preço']]},
+{id:'q13', tema:'Renda fixa',
+ q:'Um título de 8 anos com cupom de 7% ao ano, pago semestralmente, custa 104,50 por 100 de face numa data de cupom. Qual o YTM anual (base semestral)?',
+ opts:['6,28%','6,70%','7,00%'], ans:0,
+ exp:'Calcule a taxa semestral com n = 16 e PMT = 3,5 e multiplique por 2. Preço acima do par significa YTM abaixo do cupom.',
+ steps:[['{f CLEAR FIN} 16 {n}','16.00','16 semestres'],['104.5 {CHS} {PV}','-104.50','preço pago'],['3.5 {PMT} 100 {FV}','100.00','cupom e resgate'],['{i}','3.14','YTM semestral'],['2 {×}','6.28','YTM anual']]},
+{id:'q14', tema:'Renda fixa',
+ q:'Um título com cupom de 4,5% ao ano (semestral) vence em 15/03/2035 e é liquidado em 15/06/2027, com YTM de 5%. Pela contagem real/real, quais são o preço limpo e os juros acumulados por 100 de face?',
+ opts:['Preço 96,81; juros 1,13','Preço 97,94; juros 0,00','Preço 96,81; juros 2,25'], ans:0,
+ exp:'Entre cupons, o preço limpo exclui os juros acumulados desde o último cupom (15/03): 92 dos 184 dias do semestre, ou metade do cupom semestral de 2,25.',
+ steps:[['{g D.MY}','','datas em dia.mêsano'],['5 {i} 4.5 {PMT}','4.50','YTM e cupom anuais'],['15.062027 {ENTER} 15.032035 {f PRICE}','96.81','preço limpo'],['{x≷y}','1.13','juros acumulados']]},
+{id:'q15', tema:'Estatística',
+ q:'Os retornos anuais de um fundo foram 12%, −5%, 8%, 15% e −2%. Qual o desvio-padrão amostral?',
+ opts:['5,60%','7,81%','8,73%'], ans:2,
+ exp:'A tecla s divide por n − 1 (amostra). A alternativa B é o desvio-padrão populacional; a A é a média.',
+ steps:[['{f CLEAR Σ}','0.00',''],['12 {Σ+} 5 {CHS} {Σ+} 8 {Σ+} 15 {Σ+} 2 {CHS} {Σ+}','5.00','5 retornos'],['{g x̄}','5.60','média'],['{g s}','8.73','desvio-padrão amostral']]},
+{id:'q16', tema:'Estatística',
+ q:'Um fundo rendeu 10%, −20% e 15% em três anos seguidos. Qual o retorno médio geométrico anual?',
+ opts:['0,40%','1,20%','1,67%'], ans:0,
+ exp:'Média geométrica: (1,10 × 0,80 × 1,15)^(1/3) − 1. A alternativa C é a média aritmética, que superestima o retorno composto.',
+ steps:[['1.10 {ENTER} .80 {×} 1.15 {×}','1.01','fator acumulado em 3 anos'],['3 {1/x} {yˣ}','1.00','raiz cúbica: fator médio anual'],['1 {−} 100 {×}','0.40','retorno geométrico em %']]},
+{id:'q17', tema:'Estatística',
+ q:'Uma carteira tem 50% no ativo A (retorno de 8%), 30% no ativo B (12%) e 20% no ativo C (−4%). Qual o retorno da carteira?',
+ opts:['5,33%','6,80%','8,00%'], ans:1,
+ exp:'Média ponderada: 0,5 × 8 + 0,3 × 12 + 0,2 × (−4). A alternativa A é a média simples dos três retornos.',
+ steps:[['{f CLEAR Σ}','0.00',''],['8 {ENTER} 50 {Σ+}','1.00','retorno ENTER peso Σ+'],['12 {ENTER} 30 {Σ+}','2.00',''],['4 {CHS} {ENTER} 20 {Σ+}','3.00',''],['{g x̄w}','6.80','retorno ponderado']]},
+{id:'q18', tema:'Demonstrações financeiras',
+ q:'Um equipamento custa USD 120.000, tem valor residual de USD 20.000 e vida útil de 5 anos. Pelo método de saldo decrescente duplo (double-declining balance), qual a depreciação do ano 2?',
+ opts:['USD 20.000,00','USD 28.800,00','USD 48.000,00'], ans:1,
+ exp:'Taxa = 2 ÷ 5 = 40% sobre o valor contábil: 48.000 no ano 1; no ano 2, 40% de 72.000. O residual não entra na base, só limita o total. A alternativa A é a linha reta; a C é a depreciação do ano 1.',
+ steps:[['{f CLEAR FIN} 120000 {PV}','120,000.00','custo'],['20000 {FV} 5 {n} 200 {i}','200.00','residual, vida útil e fator de 200%'],['1 {f DB}','48,000.00','ano 1'],['2 {f DB}','28,800.00','ano 2']]},
+{id:'q19', tema:'Mercado monetário',
+ q:'Uma aplicação de USD 1.000.000 rende juros simples de 4% ao ano, base 360 dias, de 15/03/2027 a 10/09/2027 (dias corridos). Quanto rende no período?',
+ opts:['USD 19.444,44','USD 19.616,44','USD 19.888,89'], ans:2,
+ exp:'Juros = principal × taxa × dias ÷ 360, com 179 dias corridos. A alternativa A conta 175 dias pela convenção 30/360; a B divide por 365.',
+ steps:[['{g D.MY} 15.032027 {ENTER}','15.03','data de início'],['10.092027 {g ΔDYS}','179.00','dias corridos'],['{f CLEAR FIN} {n} 4 {i}','4.00','prazo em n, taxa em i'],['1000000 {CHS} {PV} {f INT}','19,888.89','juros, base 360']]},
+{id:'q20', tema:'Financiamentos',
+ q:'No financiamento da questão 5 (USD 300.000, 25 anos, 7,2% ao ano, parcelas mensais), qual o saldo devedor após as 12 primeiras parcelas?',
+ opts:['USD 274.094,76','USD 278.544,96','USD 295.549,80'], ans:2,
+ exp:'No começo do financiamento quase toda a parcela é juros: em 12 meses, só cerca de 4.450 de principal são amortizados. A alternativa A subtrai todas as parcelas pagas; a B subtrai os juros em vez do principal.',
+ steps:[['{f CLEAR FIN} 25 {g 12×} 7.2 {g 12÷} 300000 {PV} {PMT}','-2,158.77','parcela'],['{f RND} {PMT}','-2,158.77','parcela arredondada em centavos'],['0 {n} 12 {f AMORT}','-21,455.04','juros pagos em 12 meses'],['{RCL} {PV}','295,549.80','saldo devedor']]}
+];
+if (typeof module!=='undefined') module.exports = QUIZ;
+
+/* Dicas das teclas. Chave: p:<tecla> (função principal), f:<função dourada>, g:<função areia>.
+   t = nome, d = o que faz, f = fórmula, e = exemplo (teclas), r = visor ao fim do exemplo (conferido na calculadora). */
+var TVM_F = 'PV·(1+i)ⁿ + PMT·[(1+i)ⁿ − 1]/i + FV = 0';
+var TIPS = {
+ 'p:n':{t:'n · número de períodos', d:'Guarda ou calcula o número de períodos. Ao calcular, arredonda para cima.', f:TVM_F, e:'{f CLEAR FIN} 1000 {CHS} {PV} 1210 {FV} 10 {i} {n}', r:'2.00'},
+ 'p:i':{t:'i · taxa por período', d:'Guarda ou calcula a taxa de juros por período, em %.', f:TVM_F, e:'{f CLEAR FIN} 1000 {CHS} {PV} 1210 {FV} 2 {n} {i}', r:'10.00'},
+ 'p:PV':{t:'PV · valor presente', d:'Guarda ou calcula o valor na data zero. Saída de caixa é negativa.', f:'PV = FV ÷ (1+i)ⁿ (sem parcelas)', e:'{f CLEAR FIN} 1100 {FV} 10 {i} 1 {n} {PV}', r:'-1,000.00'},
+ 'p:PMT':{t:'PMT · parcela', d:'Guarda ou calcula a parcela igual de cada período.', f:'PMT = PV·i ÷ [1 − (1+i)⁻ⁿ]', e:'{f CLEAR FIN} 1000 {PV} 10 {i} 2 {n} {PMT}', r:'-576.19'},
+ 'p:FV':{t:'FV · valor futuro', d:'Guarda ou calcula o valor no fim do prazo.', f:'FV = PV·(1+i)ⁿ (sem parcelas)', e:'{f CLEAR FIN} 100 {CHS} {PV} 10 {i} 2 {n} {FV}', r:'121.00'},
+ 'p:CHS':{t:'CHS · troca o sinal', d:'Troca o sinal do número no visor. Use para digitar valores negativos, como saídas de caixa.', e:'5 {ENTER} {CHS}', r:'-5.00'},
+ 'p:div':{t:'÷ · divisão', d:'Divide Y por X.', f:'Y ÷ X', e:'12 {ENTER} 4 {÷}', r:'3.00'},
+ 'p:mul':{t:'× · multiplicação', d:'Multiplica Y por X.', f:'Y × X', e:'6 {ENTER} 7 {×}', r:'42.00'},
+ 'p:sub':{t:'− · subtração', d:'Subtrai X de Y.', f:'Y − X', e:'10 {ENTER} 4 {−}', r:'6.00'},
+ 'p:add':{t:'+ · soma', d:'Soma Y e X.', f:'Y + X', e:'3 {ENTER} 4 {+}', r:'7.00'},
+ 'p:yx':{t:'yˣ · potência', d:'Eleva Y à potência X. Útil para fatores de juros compostos.', f:'Yˣ', e:'1.1 {ENTER} 2 {yˣ}', r:'1.21'},
+ 'p:inv':{t:'1/x · inverso', d:'Divide 1 pelo número no visor.', f:'1 ÷ X', e:'4 {1/x}', r:'0.25'},
+ 'p:pctT':{t:'%T · percentual do total', d:'Quanto X representa de Y, em %. Y continua na pilha.', f:'100 × X ÷ Y', e:'500 {ENTER} 120 {%T}', r:'24.00'},
+ 'p:dpct':{t:'Δ% · variação percentual', d:'Variação de Y para X, em %.', f:'100 × (X − Y) ÷ Y', e:'80 {ENTER} 92 {Δ%}', r:'15.00'},
+ 'p:pct':{t:'% · porcentagem', d:'Calcula X% de Y. Y continua na pilha para somar ou subtrair.', f:'Y × X ÷ 100', e:'200 {ENTER} 15 {%}', r:'30.00'},
+ 'p:EEX':{t:'EEX · expoente', d:'Digita números em potência de 10.', f:'mantissa × 10^expoente', e:'3 {EEX} 6 {ENTER}', r:'3,000,000.00'},
+ 'p:RS':{t:'R/S · rodar ou parar', d:'Roda o programa gravado. Durante a execução, interrompe.'},
+ 'p:SST':{t:'SST · passo a passo', d:'Executa uma linha do programa por vez. No modo de programação, avança uma linha.'},
+ 'p:Rdn':{t:'R↓ · gira a pilha', d:'Desce a pilha um nível: Y vai para X, Z para Y, T para Z e X para T. Serve para ver o que está guardado na pilha.'},
+ 'p:xy':{t:'x≷y · troca X e Y', d:'Troca os dois números de baixo da pilha. Útil para ver o segundo resultado de uma função.', e:'1 {ENTER} 2 {x≷y}', r:'1.00'},
+ 'p:CLx':{t:'CLx · zera o visor', d:'Zera o registrador X. Use para corrigir um número digitado errado.'},
+ 'p:ENTER':{t:'ENTER · separa números', d:'Copia X para Y, para digitar o segundo número de uma conta.', e:'8 {ENTER} 2 {÷}', r:'4.00'},
+ 'p:ON':{t:'ON · liga e desliga', d:'Liga ou desliga a calculadora. Os dados continuam guardados.'},
+ 'p:f':{t:'f · prefixo dourado', d:'Ativa a função escrita em cima da próxima tecla. Passe o mouse em outra tecla depois de apertar f para ver a função dourada.'},
+ 'p:g':{t:'g · prefixo areia', d:'Ativa a função escrita na faixa inferior da próxima tecla. Passe o mouse em outra tecla depois de apertar g para ver a função.'},
+ 'p:STO':{t:'STO · guardar', d:'Guarda o visor num registrador (0 a 9 ou . 0 a . 9). STO + 1 soma ao que já está em R1.', e:'5 {STO} 1 {CLx} {RCL} 1', r:'5.00'},
+ 'p:RCL':{t:'RCL · trazer de volta', d:'Traz para o visor o conteúdo de um registrador ou de n, i, PV, PMT, FV.', e:'5 {STO} 1 {CLx} {RCL} 1', r:'5.00'},
+ 'p:dot':{t:'· · ponto decimal', d:'Separa a parte inteira da decimal. Com f antes, liga a notação científica.'},
+ 'p:sigma':{t:'Σ+ · acumula dado', d:'Acumula um dado estatístico (ou par y ENTER x) e mostra quantos já entraram.', e:'{f CLEAR Σ} 4 {Σ+} 6 {Σ+} {g x̄}', r:'5.00'},
+ 'p:digit':{t:'Algarismo', d:'Digita o algarismo. Com f antes, define as casas decimais do visor; com g antes, aciona a função da faixa inferior.'},
+
+ 'f:AMORT':{t:'f AMORT · amortização', d:'Amortiza as próximas X parcelas: mostra os juros; x≷y mostra o principal; RCL PV mostra o saldo.', f:'juros = saldo × i; principal = parcela − juros', e:'{f CLEAR FIN} 10 {i} 1000 {PV} 576.19 {CHS} {PMT} 1 {f AMORT}', r:'-100.00'},
+ 'f:INT':{t:'f INT · juros simples', d:'Juros simples sobre PV, com n em dias e i ao ano. Mostra a base 360; R↓ x≷y mostra a base 365.', f:'PV × i × dias ÷ 360', e:'{f CLEAR FIN} 30 {n} 12 {i} 1000 {CHS} {PV} {f INT}', r:'10.00'},
+ 'f:NPV':{t:'f NPV · valor presente líquido', d:'Desconta os fluxos CF₀, CFⱼ à taxa guardada em i.', f:'NPV = Σ CFⱼ ÷ (1+i)ʲ', e:'{f CLEAR REG} 100 {CHS} {g CF₀} 60 {g CFⱼ} 60 {g CFⱼ} 10 {i} {f NPV}', r:'4.13'},
+ 'f:RND':{t:'f RND · arredonda', d:'Arredonda o número guardado para as casas do visor.', e:'1 {ENTER} 3 {÷} {f RND} 3 {×}', r:'0.99'},
+ 'f:IRR':{t:'f IRR · taxa interna de retorno', d:'Calcula a taxa que zera o NPV dos fluxos digitados.', f:'Σ CFⱼ ÷ (1+IRR)ʲ = 0', e:'{f CLEAR REG} 100 {CHS} {g CF₀} 60 {g CFⱼ} 60 {g CFⱼ} {f IRR}', r:'13.07'},
+ 'f:PRICE':{t:'f PRICE · preço do título', d:'Preço limpo por 100, com YTM em i, cupom em PMT, liquidação ENTER vencimento. x≷y mostra os juros acumulados.', f:'Σ cupom ÷ (1+y/2)ᵗ + 100 ÷ (1+y/2)ᴺ', e:'{g D.MY} 6 {i} 6 {PMT} 1.012027 {ENTER} 1.012037 {f PRICE}', r:'100.00'},
+ 'f:YTM':{t:'f YTM · rendimento até o vencimento', d:'Calcula o YTM anual com o preço em PV, cupom em PMT e as datas.', e:'{g D.MY} 100 {PV} 6 {PMT} 1.012027 {ENTER} 1.012037 {f YTM}', r:'6.00'},
+ 'f:SL':{t:'f SL · depreciação linear', d:'Depreciação do ano X. Custo em PV, residual em FV, vida útil em n.', f:'(PV − FV) ÷ n', e:'{f CLEAR FIN} 1000 {PV} 100 {FV} 3 {n} 1 {f SL}', r:'300.00'},
+ 'f:SOYD':{t:'f SOYD · soma dos dígitos', d:'Depreciação do ano X pela soma dos dígitos dos anos.', f:'(PV − FV) × (n − X + 1) ÷ [n(n+1)/2]', e:'{f CLEAR FIN} 1000 {PV} 100 {FV} 3 {n} 1 {f SOYD}', r:'450.00'},
+ 'f:DB':{t:'f DB · saldo decrescente', d:'Depreciação do ano X sobre o valor contábil, com o fator em % em i (200 = duplo).', f:'valor contábil × (i ÷ 100) ÷ n', e:'{f CLEAR FIN} 1000 {PV} 0 {FV} 4 {n} 200 {i} 1 {f DB}', r:'500.00'},
+ 'f:PR':{t:'f P/R · modo de programação', d:'Entra e sai do modo de programação (PRGM no visor).'},
+ 'f:CLRSIG':{t:'f CLEAR Σ', d:'Limpa os registradores de estatística (R1 a R6) e a pilha.'},
+ 'f:CLRPRGM':{t:'f CLEAR PRGM', d:'No modo de programação, apaga o programa. Fora dele, volta à linha 00.'},
+ 'f:CLRFIN':{t:'f CLEAR FIN', d:'Zera n, i, PV, PMT e FV. Use antes de cada problema de juros.'},
+ 'f:CLRREG':{t:'f CLEAR REG', d:'Zera a pilha, os registradores e os financeiros. O programa fica.'},
+ 'f:CLRPREFIX':{t:'f PREFIX', d:'Cancela um prefixo apertado por engano e mostra por um instante os 10 dígitos do visor.'},
+ 'f:FIX':{t:'f e algarismo · casas decimais', d:'Define quantas casas decimais o visor mostra. O número guardado não muda.', e:'2 {ENTER} 3 {÷} {f} 4', r:'0.6667'},
+ 'f:SCI':{t:'f · · notação científica', d:'Mostra os números em notação científica. f 2 volta ao normal.', e:'123456 {ENTER} {f} {.}', r:'1.234560 05'},
+
+ 'g:12x':{t:'g 12× · anos em meses', d:'Multiplica X por 12 e guarda em n.', f:'n = X × 12', e:'30 {g 12×}', r:'360.00'},
+ 'g:12div':{t:'g 12÷ · taxa anual em mensal', d:'Divide X por 12 e guarda em i.', f:'i = X ÷ 12', e:'6 {g 12÷}', r:'0.50'},
+ 'g:CF0':{t:'g CF₀ · fluxo inicial', d:'Guarda o fluxo da data zero.', e:'{f CLEAR REG} 100 {CHS} {g CF₀} 60 {g CFⱼ} 60 {g CFⱼ} 10 {i} {f NPV}', r:'4.13'},
+ 'g:CFj':{t:'g CFⱼ · próximo fluxo', d:'Guarda o fluxo seguinte, em ordem. Até 20 fluxos.', e:'{f CLEAR REG} 100 {CHS} {g CF₀} 60 {g CFⱼ} 60 {g CFⱼ} {f IRR}', r:'13.07'},
+ 'g:Nj':{t:'g Nⱼ · repetições', d:'Quantas vezes seguidas o último fluxo se repete (até 99).', e:'{f CLEAR REG} 100 {CHS} {g CF₀} 60 {g CFⱼ} 2 {g Nⱼ} 10 {i} {f NPV}', r:'4.13'},
+ 'g:DATE':{t:'g DATE · data futura', d:'Soma X dias à data em Y. O número à direita é o dia da semana (1 = segunda).', e:'{g D.MY} 1.012027 {ENTER} 30 {g DATE}', r:'31.01.2027 7'},
+ 'g:BEG':{t:'g BEG · parcelas no início', d:'Parcelas no início de cada período (anuidade antecipada). Acende BEGIN.'},
+ 'g:END':{t:'g END · parcelas no fim', d:'Parcelas no fim de cada período (padrão).'},
+ 'g:MEM':{t:'g MEM · memória', d:'Mostra as linhas de programa (P) e os registradores livres (r).'},
+ 'g:SQRT':{t:'g √x · raiz quadrada', d:'Raiz quadrada de X.', f:'√X', e:'9 {g √x}', r:'3.00'},
+ 'g:EXP':{t:'g eˣ · exponencial', d:'Eleva e (2,718…) a X. Usada em capitalização contínua.', f:'eˣ', e:'1 {g eˣ}', r:'2.72'},
+ 'g:LN':{t:'g LN · logaritmo natural', d:'Logaritmo natural de X. Usado para achar prazos exatos.', f:'ln X', e:'10 {g LN}', r:'2.30'},
+ 'g:FRAC':{t:'g FRAC · parte fracionária', d:'Deixa só a parte depois da vírgula.', e:'3.75 {g FRAC}', r:'0.75'},
+ 'g:INTG':{t:'g INTG · parte inteira', d:'Deixa só a parte inteira.', e:'3.75 {g INTG}', r:'3.00'},
+ 'g:DDYS':{t:'g ΔDYS · dias entre datas', d:'Dias reais entre a data em Y e a data em X; x≷y mostra a base 30/360.', e:'{g D.MY} 1.012027 {ENTER} 1.032027 {g ΔDYS}', r:'59.00'},
+ 'g:DMY':{t:'g D.MY · formato dia.mês', d:'Datas como dia.mêsano: 15.032027 = 15/03/2027.'},
+ 'g:MDY':{t:'g M.DY · formato mês.dia', d:'Datas como mês.diaano (padrão americano): 3.152027 = 15/03/2027.'},
+ 'g:XW':{t:'g x̄w · média ponderada', d:'Média de y ponderada por x, com dados entrados como valor ENTER peso Σ+.', f:'Σ(x·y) ÷ Σx', e:'{f CLEAR Σ} 10 {ENTER} 60 {Σ+} 4 {ENTER} 40 {Σ+} {g x̄w}', r:'7.60'},
+ 'g:X2':{t:'g x² · quadrado', d:'Eleva X ao quadrado.', f:'X²', e:'3 {g x²}', r:'9.00'},
+ 'g:PSE':{t:'g PSE · pausa', d:'Num programa, mostra o visor por um segundo e continua.'},
+ 'g:BST':{t:'g BST · volta uma linha', d:'Volta uma linha do programa.'},
+ 'g:GTO':{t:'g GTO · ir para linha', d:'GTO nn desvia o programa para a linha nn. GTO . nn posiciona na linha.'},
+ 'g:XLEY':{t:'g x≤y · teste', d:'Num programa: se X ≤ Y, executa a linha seguinte; senão, pula uma.'},
+ 'g:XEQ0':{t:'g x=0 · teste', d:'Num programa: se X = 0, executa a linha seguinte; senão, pula uma.'},
+ 'g:LSTX':{t:'g LSTx · último X', d:'Traz de volta o último X usado numa operação.', e:'5 {ENTER} 2 {×} {g LSTx}', r:'2.00'},
+ 'g:XHAT':{t:'g x̂,r · estimativa de x', d:'Pela reta de regressão, estima x para o y no visor; r vai para Y.', f:'x̂ = (y − a) ÷ b', e:'{f CLEAR Σ} 2 {ENTER} 1 {Σ+} 4 {ENTER} 2 {Σ+} 6 {g x̂,r}', r:'3.00'},
+ 'g:YHAT':{t:'g ŷ,r · estimativa de y', d:'Pela reta de regressão, estima y para o x no visor; a correlação r vai para Y.', f:'ŷ = a + b·x', e:'{f CLEAR Σ} 2 {ENTER} 1 {Σ+} 4 {ENTER} 2 {Σ+} 3 {g ŷ,r}', r:'6.00'},
+ 'g:FACT':{t:'g n! · fatorial', d:'Fatorial de inteiros de 0 a 69.', f:'n! = 1 × 2 × … × n', e:'5 {g n!}', r:'120.00'},
+ 'g:MEAN':{t:'g x̄ · média', d:'Média dos dados acumulados com Σ+ (média de y em Y).', f:'Σx ÷ n', e:'{f CLEAR Σ} 4 {Σ+} 6 {Σ+} {g x̄}', r:'5.00'},
+ 'g:SDEV':{t:'g s · desvio-padrão', d:'Desvio-padrão amostral (divide por n − 1).', f:'√[Σ(x − x̄)² ÷ (n − 1)]', e:'{f CLEAR Σ} 2 {Σ+} 4 {Σ+} {g s}', r:'1.41'},
+ 'g:SIGMINUS':{t:'g Σ− · retira dado', d:'Retira um dado acumulado com Σ+, para corrigir erros.'}
+};
+if (typeof module!=='undefined') module.exports = TIPS;
+
+(function(){
+'use strict';
+var KEYS=[
+ [['n','n','AMORT','12×'],['i','i','INT','12÷'],['PV','PV','NPV','CF₀'],['PMT','PMT','RND','CFⱼ'],['FV','FV','IRR','Nⱼ'],['CHS','CHS','','DATE'],['7','7','','BEG','num'],['8','8','','END','num'],['9','9','','MEM','num'],['div','÷','','','op']],
+ [['yx','yˣ','PRICE','√x'],['inv','1/x','YTM','eˣ'],['pctT','%T','SL','LN'],['dpct','Δ%','SOYD','FRAC'],['pct','%','DB','INTG'],['EEX','EEX','','ΔDYS'],['4','4','','D.MY','num'],['5','5','','M.DY','num'],['6','6','','x̄w','num'],['mul','×','','x²','op']],
+ [['RS','R/S','P/R','PSE'],['SST','SST','Σ','BST'],['Rdn','R↓','PRGM','GTO'],['xy','x≷y','FIN','x≤y'],['CLx','CLx','REG','x=0'],['ENTER','ENTER','PREFIX','LSTx','enter'],['1','1','','x̂,r','num'],['2','2','','ŷ,r','num'],['3','3','','n!','num'],['sub','−','','','op']],
+ [['ON','ON','',''],['f','f','','','kf'],['g','g','','','kg'],['STO','STO','',''],['RCL','RCL','',''],null,['0','0','','x̄','num'],['dot','·','','s','num'],['sigma','Σ+','','Σ−'],['add','+','','','op']]
+];
+var STORE='sans-calc-rpn-v1', calc, store=null;
+try{ store=window.localStorage; calc=new HP12Engine.Calc(store.getItem(STORE)); }catch(e){ calc=new HP12Engine.Calc(); }
+calc.s.on=true;
+var isWin = location.hash==='#janela';
+if (isWin) document.body.classList.add('janela');
+
+/* teclado */
+var keysEl=document.getElementById('keys'), btnByKey={};
+KEYS.forEach(function(row,r){ row.forEach(function(k,c){
+  if(!k) return;
+  var cell=document.createElement('div'); cell.className='cell'+(k[4]==='enter'?' enter':'');
+  cell.style.gridRow = k[4]==='enter' ? (r+1)+' / span 2' : String(r+1);
+  cell.style.gridColumn=String(c+1);
+  var gold=document.createElement('div'); gold.className='gold'; gold.textContent=(r===2&&c>=1&&c<=4)?'':k[2];
+  if (r===2&&c>=1&&c<=4) gold.innerHTML='<span style="position:relative;top:5px">'+k[2]+'</span>';
+  var b=document.createElement('button'); b.type='button'; b.className='key'+(k[4]&&k[4]!=='enter'?' '+k[4]:'');
+  b.dataset.k=k[0];
+  var lab=[k[1], k[2]?('f '+k[2]):'', k[3]?('g '+k[3]):''].filter(Boolean).join(', ');
+  b.setAttribute('aria-label',lab);
+  b.innerHTML='<span class="m'+(k[1].length>3?' small':'')+'">'+k[1]+'</span><span class="b">'+k[3]+'</span>';
+  cell.appendChild(gold); cell.appendChild(b); keysEl.appendChild(cell); btnByKey[k[0]]=b;
+});});
+var br=document.createElement('div'); br.className='clear-br'; br.innerHTML='<span>CLEAR</span>'; keysEl.appendChild(br);
+function placeBracket(){ var a=btnByKey.SST.parentNode, z=btnByKey.CLx.parentNode; br.style.left=(a.offsetLeft+6)+'px'; br.style.width=(z.offsetLeft+z.offsetWidth-a.offsetLeft-12)+'px'; br.style.top=(a.offsetTop+1)+'px'; }
+
+/* visor */
+var dispEl=document.getElementById('disp'), lcd=document.getElementById('lcd'), annEls={};
+['f','g','begin','c','dmy','prgm'].forEach(function(n){ annEls[n]=lcd.querySelector('.a-'+n); });
+function render(){
+  var d=calc.display(Date.now());
+  lcd.classList.toggle('off',!!d.off);
+  dispEl.textContent=d.text;
+  dispEl.classList.toggle('small', d.text.length>13);
+  dispEl.classList.toggle('blink',!!d.blink);
+  for (var n in annEls) annEls[n].classList.toggle('on', !!(d.ann&&d.ann[n]));
+}
+function save(){ try{ if(store) store.setItem(STORE, calc.serialize()); }catch(e){} }
+
+var mantTimer=null;
+function press(k){
+  calc.press(k);
+  if (calc.mantUntil>Date.now()){ clearTimeout(mantTimer); mantTimer=setTimeout(render, calc.mantUntil-Date.now()+20); }
+  if (calc.running) runLoop();
+  render(); save();
+  if (guideActive()){ G.presses++; guideCheck(); }
+  if (tipKey && !tipEl.hidden) showTip(tipKey);
+}
+function runLoop(){
+  function tick(){
+    if(!calc.running){ render(); save(); return; }
+    for (var k=0;k<200 && calc.running;k++){
+      var r=calc.step();
+      if (r==='pause'){ calc.pausing=true; render(); setTimeout(function(){ calc.pausing=false; tick(); },1000); return; }
+    }
+    render();
+    if (calc.running) setTimeout(tick,0); else { save(); guideCheck(); }
+  }
+  setTimeout(tick,0);
+}
+function flash(k){ var b=btnByKey[k]; if(!b) return; b.classList.add('down'); setTimeout(function(){ b.classList.remove('down'); },110); }
+keysEl.addEventListener('pointerdown',function(e){ var b=e.target.closest('.key'); if(!b) return; e.preventDefault(); press(b.dataset.k); });
+keysEl.addEventListener('keydown',function(e){ if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('key')){ e.preventDefault(); e.stopPropagation(); press(e.target.dataset.k); flash(e.target.dataset.k);} });
+
+/* ---------- dicas ao passar o mouse ---------- */
+var tipEl=document.getElementById('tip'), tipKey=null, tipTimer=null;
+function tipId(k){
+  var pf=calc.prefix, isDig=/^[0-9]$/.test(k);
+  if (pf==='f'){ if (isDig) return 'f:FIX'; if (k==='dot') return 'f:SCI'; if (HP12Engine.F_MAP[k]) return 'f:'+HP12Engine.F_MAP[k]; }
+  if (pf==='g'){ if (HP12Engine.G_MAP[k]) return 'g:'+HP12Engine.G_MAP[k]; }
+  return isDig ? 'p:digit' : 'p:'+k;
+}
+function showTip(k){
+  var d=TIPS[tipId(k)]; if(!d){ tipEl.hidden=true; return; }
+  var h='<div class="tt">'+esc(d.t)+'</div><div>'+esc(d.d)+'</div>';
+  if (d.f) h+='<div class="tf">'+esc(d.f)+'</div>';
+  if (d.e) h+='<div class="tl">Exemplo</div><div>'+keysHTML(d.e)+' → <span class="tr">'+esc(marks(d.r))+'</span></div>';
+  tipEl.innerHTML=h; tipEl.hidden=false;
+  var b=btnByKey[k], cell=b.parentNode, kx=keysEl.offsetLeft+cell.offsetLeft, ky=keysEl.offsetTop+cell.offsetTop;
+  var tw=tipEl.offsetWidth, th=tipEl.offsetHeight, x=kx+cell.offsetWidth/2-tw/2;
+  x=Math.max(8,Math.min(x,680-tw-8));
+  var y=ky-th-4; if (y<8) y=ky+cell.offsetHeight+4;
+  tipEl.style.left=x+'px'; tipEl.style.top=y+'px';
+}
+keysEl.addEventListener('pointerover',function(e){
+  if (e.pointerType && e.pointerType!=='mouse') return;
+  var b=e.target.closest('.key'); if(!b || b.dataset.k===tipKey) return;
+  tipKey=b.dataset.k; clearTimeout(tipTimer); tipEl.hidden=true;
+  tipTimer=setTimeout(function(){ if (tipKey) showTip(tipKey); },380);
+});
+keysEl.addEventListener('pointerout',function(e){
+  var b=e.target.closest('.key'); if(!b) return;
+  if (e.relatedTarget && b.contains(e.relatedTarget)) return;
+  tipKey=null; clearTimeout(tipTimer); tipEl.hidden=true;
+});
+var KB={'+':'add','-':'sub','*':'mul','/':'div','.':'dot',',':'dot','Enter':'ENTER','f':'f','F':'f','g':'g','G':'g'};
+document.addEventListener('keydown',function(e){
+  if (e.ctrlKey||e.metaKey||e.altKey) return;
+  if (e.target.closest && e.target.closest('#manual,#pop')) return;
+  var k=null;
+  if (/^[0-9]$/.test(e.key)) k=e.key; else if (KB[e.key]) k=KB[e.key];
+  if (e.key==='Backspace'){ e.preventDefault(); if(calc.backspace()){ flash('CLx'); render(); save(); if(guideActive()){ G.presses++; guideCheck(); } } return; }
+  if (e.key==='Escape'){ calc.prefix=null; calc.buf=''; render(); return; }
+  if (!k) return;
+  e.preventDefault(); flash(k); press(k);
+});
+
+/* escala */
+var holder=document.getElementById('holder'), stage=document.getElementById('stage'), calcEl=document.getElementById('calc');
+function fit(){
+  var pad=isWin?0:72, w=stage.clientWidth-pad, h=stage.clientHeight-pad;
+  var sc=Math.max(0.3, Math.min(w/680, h/430));
+  if (!isWin) sc=Math.min(sc,1.7);
+  calcEl.style.transform='scale('+sc+')';
+  holder.style.width=(680*sc)+'px'; holder.style.height=(430*sc)+'px';
+  document.body.classList.toggle('overlay', window.innerWidth<980);
+}
+window.addEventListener('resize',fit);
+
+/* painel de ajustes e avisos */
+var pop=document.getElementById('pop'), bSet=document.getElementById('b-set');
+function openPop(html){ pop.innerHTML='<button class="close" type="button" aria-label="Fechar">×</button>'+html; pop.hidden=false; }
+function closePop(){ pop.hidden=true; bSet.setAttribute('aria-pressed','false'); }
+function settingsHTML(){
+  var c=calc.s.comma;
+  return '<h3>Ajustes</h3>'+
+   '<div class="lbl">Separador decimal</div><div class="row"><button type="button" data-a="dot" class="'+(c?'':'sel')+'">1,234.56</button><button type="button" data-a="comma" class="'+(c?'sel':'')+'">1.234,56</button></div>'+
+   '<div class="lbl">Teclado do computador</div><p>Números, ponto ou vírgula, + − * /, Enter, Backspace (apaga dígito), F e G para os prefixos, Esc cancela o prefixo.</p>'+
+   '<div class="lbl">Memória contínua</div><p>Registradores e programa ficam salvos neste navegador.</p><div class="row"><button type="button" class="danger" data-a="wipe">Apagar tudo</button></div>';
+}
+bSet.addEventListener('click',function(){ if(!pop.hidden&&bSet.getAttribute('aria-pressed')==='true'){ closePop(); return; } openPop(settingsHTML()); bSet.setAttribute('aria-pressed','true'); });
+pop.addEventListener('click',function(e){
+  var t=e.target.closest('button'); if(!t) return;
+  if (t.classList.contains('close')){ closePop(); return; }
+  var a=t.dataset.a;
+  if (a==='dot'||a==='comma'){ calc.s.comma=(a==='comma'); save(); render(); openPop(settingsHTML()); }
+  if (a==='wipe'){ t.textContent='Confirmar: apagar tudo'; t.dataset.a='wipe2'; }
+  else if (a==='wipe2'){ var comma=calc.s.comma; calc=new HP12Engine.Calc(); calc.s.comma=comma; save(); render(); closePop(); }
+});
+
+/* janela própria */
+var WIN_W=680, WIN_H=430, MAN_W=440;
+document.getElementById('b-win').addEventListener('click',function(){
+  if (isWin){ openPop('<h3>Janela própria</h3><p>Você já está na janela da calculadora. Arraste a borda para mudar o tamanho; a calculadora acompanha.</p>'); return; }
+  var w=null, url=location.href.split('#')[0]+'#janela';
+  try{ w=window.open(url,'sansCalcRPN','popup=yes,width='+WIN_W+',height='+WIN_H); }catch(e){ w=null; }
+  if (!w){
+    openPop('<h3>Janela própria</h3><p>O navegador não permitiu abrir outra janela a partir desta página.</p><p>Use o arquivo HTML salvo no computador: aberto por ele, este botão abre a calculadora numa janela do tamanho dela.</p><p>Outra opção: abra esta página numa janela separada do navegador e reduza a janela; a calculadora se ajusta ao tamanho.</p>');
+  }
+});
+
+/* manual */
+var man=document.getElementById('manual'), mNav=document.getElementById('m-nav'), mBody=document.getElementById('m-body'), mTitle=document.getElementById('m-title'), bMan=document.getElementById('b-manual');
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function keysHTML(str){
+  return esc(str).replace(/\{([^}]+)\}/g,function(_,t){
+    if (t.indexOf('f ')===0) return '<kbd class="kf">f</kbd><kbd class="fn-f">'+t.slice(2)+'</kbd>';
+    if (t.indexOf('g ')===0) return '<kbd class="kg">g</kbd><kbd class="fn-g">'+t.slice(2)+'</kbd>';
+    if (t==='f') return '<kbd class="kf">f</kbd>';
+    if (t==='g') return '<kbd class="kg">g</kbd>';
+    return '<kbd>'+t+'</kbd>';
+  });
+}
+var current=null, mode='g';
+function showTopic(id){ if(mode==='g'){ guideOpen(id,0,true); return; } showRef(id); }
+function showRef(id){
+  var t=MANUAL.filter(function(x){return x.id===id;})[0]||MANUAL[0]; current=t.id;
+  mTitle.textContent=t.title;
+  Array.prototype.forEach.call(mNav.children,function(b){ b.setAttribute('aria-current', b.dataset.id===t.id?'true':'false'); });
+  var h='';
+  t.blocks.forEach(function(b){
+    if (b.h) h+='<h3>'+esc(b.h)+'</h3>';
+    if (b.p) h+='<p>'+keysHTML(b.p)+'</p>';
+    if (b.list) h+='<ul>'+b.list.map(function(i){return '<li>'+keysHTML(i)+'</li>';}).join('')+'</ul>';
+    if (b.table) h+='<table class="errs"><tbody>'+b.table.map(function(r){return '<tr><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td></tr>';}).join('')+'</tbody></table>';
+    if (b.steps){
+      h+='<table class="steps"><thead><tr><th>Teclas</th><th style="text-align:right">Visor</th><th>Comentário</th></tr></thead><tbody>'+
+        b.steps.map(function(s){ return '<tr class="play" data-seq="'+esc(s[0]).replace(/"/g,'&quot;')+'" title="Clique para fazer na calculadora"><td>'+keysHTML(s[0])+'</td><td class="v">'+esc(s[1])+'</td><td class="c">'+esc(s[2])+'</td></tr>'; }).join('')+
+        '</tbody></table><p class="hint">Clique numa linha para a calculadora repetir as teclas. Faça as linhas em ordem.</p>';
+    }
+  });
+  mBody.innerHTML=h; mBody.scrollTop=0;
+  try{ store&&store.setItem(STORE+'-topic',t.id); }catch(e){}
+}
+/* ---------- modo guiado ---------- */
+var G={kind:'manual', topic:null, idx:0, cards:[], chain:null, matched:false, matchedText:'', presses:0, note:''};
+function norm(s){ return String(s).replace(/ +/g,' ').trim(); }
+function marks(s){ return calc.s.comma ? s.replace(/[.,]/g,function(c){return c==='.'?',':'.';}) : s; }
+function blockHTML(b){
+  var h='';
+  if (b.p) h+='<p>'+keysHTML(b.p)+'</p>';
+  if (b.list) h+='<ul>'+b.list.map(function(i){return '<li>'+keysHTML(i)+'</li>';}).join('')+'</ul>';
+  if (b.table) h+='<table class="errs"><tbody>'+b.table.map(function(r){return '<tr><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td></tr>';}).join('')+'</tbody></table>';
+  return h;
+}
+function buildCards(t){
+  var groups=[], g={h:null, html:'', rows:[]};
+  t.blocks.forEach(function(b){
+    if (b.h){ if (g.html||g.rows.length) groups.push(g); g={h:b.h, html:'', rows:[]}; return; }
+    if (b.steps){ b.steps.forEach(function(r){ g.rows.push(r); }); return; }
+    g.html+=blockHTML(b);
+  });
+  if (g.html||g.rows.length||g.h) groups.push(g);
+  var cards=[];
+  groups.forEach(function(gr){
+    if (!gr.rows.length){ cards.push({type:'read', h:gr.h, html:gr.html}); return; }
+    gr.rows.forEach(function(r,k){ cards.push({type:'step', h:gr.h, html:gr.html, keys:r[0], exp:r[1], com:r[2], n:k+1, of:gr.rows.length}); });
+  });
+  return cards;
+}
+function prevStep(i){ for (var j=i-1;j>=0;j--) if (G.cards[j].type==='step') return j; return -1; }
+function replayTo(i){
+  calc.guideBaseline();
+  for (var j=0;j<i;j++){ var c=G.cards[j]; if (c.type!=='step') continue;
+    var ks; try{ ks=seqToKeys(c.keys); }catch(e){ continue; }
+    ks.forEach(function(k){ calc.press(k); if (calc.running){ calc.runToHalt(); } });
+  }
+  calc.msg=null; calc.mantUntil=0;
+  G.chain=prevStep(i); render(); save();
+}
+function guideOpen(id, idx, fresh){
+  var t=MANUAL.filter(function(x){return x.id===id;})[0]||MANUAL[0];
+  if (G.kind!=='manual' || G.topic!==t.id || fresh){ G.kind='manual'; G.topic=t.id; G.cards=buildCards(t); G.chain=null; }
+  current=t.id; mTitle.textContent=t.title;
+  Array.prototype.forEach.call(mNav.children,function(b){ b.setAttribute('aria-current', b.dataset.id===t.id?'true':'false'); });
+  guideGo(idx||0);
+}
+function guideGo(i){
+  G.token=(G.token||0)+1; gPlaying=false;
+  G.idx=Math.max(0,Math.min(i,G.cards.length)); G.matched=false; G.presses=0; G.note='';
+  var c=G.cards[G.idx];
+  if (c && c.type==='step'){
+    var p=prevStep(G.idx);
+    if (G.chain!==p){
+      replayTo(G.idx);
+      if (p>=0) G.note='A calculadora foi preparada com os passos anteriores deste tema.';
+    }
+  }
+  try{ store&&store.setItem(STORE+'-guide', JSON.stringify({t:G.topic,i:G.idx})); }catch(e){}
+  guideRender(true);
+}
+function guideCheck(){
+  if (!guideActive()) return;
+  var c=G.cards[G.idx]; if (!c || c.type!=='step' || !c.exp) return;
+  var len=0; try{ len=seqToKeys(c.keys).length; }catch(e){}
+  var now=norm(calc.display(Date.now()).text);
+  G.matched = G.presses>=len && now===norm(marks(c.exp));
+  if (G.matched) G.matchedText=now;
+  guideStatus();
+}
+function guideStatus(){
+  var el=document.getElementById('g-stat'), nx=document.getElementById('g-next'); var c=G.cards[G.idx];
+  if (!el||!c||c.type!=='step') return;
+  if (!c.exp){ el.className='gstat'; el.textContent='Sem conferência'; return; }
+  var sk=mBody.querySelector('[data-g="skip"]'); if (sk) sk.hidden=!!G.matched;
+  if (G.matched){ el.className='gstat ok'; el.textContent='✓ Confere'; if(nx) nx.disabled=false; return; }
+  var now=norm(calc.display(Date.now()).text);
+  if (G.presses>0){ el.className='gstat off'; el.textContent='Visor: '+now; } else { el.className='gstat'; el.textContent='Aguardando'; }
+  if (nx) nx.disabled=true;
+}
+
+function guideRender(scrollTop){
+  var t=MANUAL.filter(function(x){return x.id===G.topic;})[0], n=G.cards.length, i=G.idx, c=G.cards[i], h='';
+  var pct=Math.round(100*Math.min(i,n)/n);
+  if (!c && G.kind==='quiz'){
+    var qi=QUIZ_IDX, nq=(qi+1)%QUIZ.length;
+    h='<div class="gprog"><span class="lbl">Resolução concluída</span><span class="gbar"><i style="width:100%"></i></span></div>'+
+      '<div class="gdone"><h3>Questão '+(qi+1)+': resolvida</h3><p>Você refez o cálculo inteiro na calculadora.</p><button type="button" data-g="qnext">Próxima questão</button></div>'+
+      '<div class="gbtns"><button type="button" data-g="prev">Anterior</button><button type="button" data-g="qback">Voltar à questão</button></div>';
+    mBody.innerHTML=h; if(scrollTop) mBody.scrollTop=0; return;
+  }
+  if (!c){
+    var k=MANUAL.indexOf(t), nxt=MANUAL[(k+1)%MANUAL.length];
+    h='<div class="gprog"><span class="lbl">Tema concluído</span><span class="gbar"><i style="width:100%"></i></span></div>'+
+      '<div class="gdone"><h3>'+esc(t.title)+': concluído</h3><p>Você passou pelos '+n+' passos deste tema.</p><button type="button" data-g="topic" data-id="'+nxt.id+'">Próximo tema: '+esc(nxt.title)+'</button></div>'+
+      '<div class="gbtns"><button type="button" data-g="prev">Anterior</button><button type="button" data-g="restart">Refazer o tema</button></div>';
+    mBody.innerHTML=h; if(scrollTop) mBody.scrollTop=0; return;
+  }
+  h+='<div class="gprog"><span class="lbl">Passo '+(i+1)+' de '+n+'</span><span class="gbar"><i style="width:'+pct+'%"></i></span></div>';
+  h+='<div class="gctx">'+(c.h?'<h3>'+esc(c.h)+'</h3>':'')+c.html+'</div>';
+  if (c.type==='step'){
+    h+='<div class="gact"><div class="lbl">Faça'+(c.of>1?' · etapa '+c.n+' de '+c.of:'')+'</div><div class="keys-line">'+keysHTML(c.keys)+'</div>';
+    h+='<div class="gexp"><div><div class="lbl">Visor esperado</div><div class="v">'+(c.exp?esc(marks(c.exp)):'—')+'</div></div><span id="g-stat" class="gstat">Aguardando</span></div>';
+    if (c.com) h+='<div class="gcom">'+esc(c.com)+'</div>';
+    h+='</div>';
+    if (G.note) h+='<p class="gnote">'+esc(G.note)+'</p>';
+    var needCheck=!!c.exp && !G.matched;
+    h+='<div class="gbtns"><button type="button" data-g="prev"'+(i===0?' disabled':'')+'>Anterior</button><button type="button" data-g="show">Mostrar</button><button type="button" data-g="redo">Recomeçar passo</button>'+
+       (needCheck?'<button type="button" class="link" data-g="skip">Pular</button>':'')+
+       '<button type="button" class="pri" id="g-next" data-g="next"'+(needCheck?' disabled':'')+'>Próximo</button></div>';
+  } else {
+    h+='<div class="gbtns"><button type="button" data-g="prev"'+(i===0?' disabled':'')+'>Anterior</button><button type="button" class="pri" data-g="next">Próximo</button></div>';
+  }
+  mBody.innerHTML=h; if(scrollTop) mBody.scrollTop=0;
+  guideStatus();
+}
+var gPlaying=false;
+mBody.addEventListener('click',function(e){
+  var b=e.target.closest('[data-g]'); if(!b||b.disabled) return;
+  var a=b.dataset.g, c=G.cards[G.idx];
+  if (a==='qnext'){ showQuestion((QUIZ_IDX+1)%QUIZ.length); return; }
+  if (a==='qback'){ showQuestion(QUIZ_IDX); return; }
+  if (a==='topic'){ guideOpen(b.dataset.id,0,true); return; }
+  if (a==='restart'){ guideOpen(G.topic,0,true); return; }
+  if (a==='prev'){ guideGo(G.idx-1); return; }
+  if (a==='skip'){ guideGo(G.idx+1); return; }
+  if (a==='next'){
+    if (c && c.type==='step'){
+      var len=0; try{ len=seqToKeys(c.keys).length; }catch(err){}
+      var ok = c.exp ? (G.matched && norm(calc.display(Date.now()).text)===G.matchedText) : G.presses>=len;
+      if (ok) G.chain=G.idx;
+    }
+    guideGo(G.idx+1); return;
+  }
+  if (a==='redo'){ G.token=(G.token||0)+1; gPlaying=false; replayTo(G.idx); G.matched=false; G.presses=0; G.note='Passo recomeçado: a calculadora voltou ao ponto de partida deste passo.'; guideRender(false); return; }
+  if (a==='show' && !gPlaying){
+    if (G.presses>0 || G.chain!==prevStep(G.idx)) replayTo(G.idx);
+    var seq; try{ seq=seqToKeys(c.keys); }catch(err){ return; }
+    gPlaying=true; var j=0, tok=G.token;
+    (function next(){ if(tok!==G.token){ return; } var k=seq[j++]; flash(k); press(k); if (j>=seq.length){ gPlaying=false; return; } setTimeout(next,260); })();
+  }
+});
+function buildManualNav(){ mNav.innerHTML=''; MANUAL.forEach(function(t){ var b=document.createElement('button'); b.type='button'; b.dataset.id=t.id; var nm=t.title.replace('Finanças: ',''); b.textContent=nm.charAt(0).toUpperCase()+nm.slice(1); mNav.appendChild(b); }); }
+buildManualNav();
+mNav.addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; if (panel==='quiz') showQuestion(+b.dataset.q); else showTopic(b.dataset.id); });
+var playing=false;
+mBody.addEventListener('click',function(e){
+  var tr=e.target.closest('tr.play'); if(!tr||playing) return;
+  var seq; try{ seq=seqToKeys(tr.dataset.seq); }catch(err){ return; }
+  playing=true; var i=0;
+  (function next(){ if(i>=seq.length){ playing=false; return; } var k=seq[i++]; flash(k); press(k); setTimeout(next,170); })();
+});
+function setManual(open){
+  var was=!man.hidden;
+  if (open && panel!=='manual'){ panel='manual'; current=null; buildManualNav(); }
+  man.hidden=!open; bMan.setAttribute('aria-pressed',open&&panel==='manual'?'true':'false'); bQuiz.setAttribute('aria-pressed','false');
+  document.querySelector('.mode').hidden=false; document.querySelector('.mhead .eyebrow').textContent='Manual';
+  if (open && !current){
+    var gl=null; try{ gl=JSON.parse(store&&store.getItem(STORE+'-guide')||'null'); }catch(e){}
+    if (mode==='g'){ if (gl&&gl.t){ guideOpen(gl.t, gl.i, true); } else guideOpen(MANUAL[0].id,0,true); }
+    else { var last=null; try{ last=store&&store.getItem(STORE+'-topic'); }catch(e){} showRef(last||MANUAL[0].id); }
+  }
+  if (isWin && open!==was){ try{ window.resizeBy(open?MAN_W:-MAN_W,0); }catch(e){} }
+  setTimeout(function(){ fit(); placeBracket(); },60);
+}
+/* ---------- questões estilo CFA ---------- */
+var panel='manual', QUIZ_IDX=0, quizView='q', QA={};
+var bQuiz=document.getElementById('b-quiz');
+try{ QA=JSON.parse(store&&store.getItem(STORE+'-quiz')||'{}')||{}; }catch(e){ QA={}; }
+function saveQA(){ try{ store&&store.setItem(STORE+'-quiz',JSON.stringify(QA)); }catch(e){} }
+function guideActive(){ if (man.hidden) return false; return (panel==='manual' && mode==='g') || (panel==='quiz' && quizView==='guide'); }
+var LET=['A','B','C'];
+function buildQuizNav(){
+  mNav.innerHTML='';
+  QUIZ.forEach(function(q,i){ var b=document.createElement('button'); b.type='button'; b.className='qn'; b.dataset.q=i; b.textContent=String(i+1);
+    var a=QA[q.id]; if (a!==undefined) b.classList.add(a===q.ans?'ok':'no');
+    b.setAttribute('aria-label','Questão '+(i+1)+' · '+q.tema+(a===undefined?'':(a===q.ans?' · acertou':' · errou')));
+    b.setAttribute('aria-current', i===QUIZ_IDX?'true':'false'); mNav.appendChild(b); });
+}
+function scoreHTML(){
+  var n=0,ok=0; QUIZ.forEach(function(q){ if (QA[q.id]!==undefined){ n++; if (QA[q.id]===q.ans) ok++; } });
+  return '<div class="qscore"><span>Acertos: '+ok+' de '+n+' respondidas ('+QUIZ.length+' no total)</span>'+(n?'<button type="button" data-q="reset">Zerar respostas</button>':'')+'</div>';
+}
+var QNOTE='<p class="qnote">Questões originais, escritas no estilo do CFA Level I para praticar a calculadora. Não são questões oficiais. CFA® e Chartered Financial Analyst® são marcas registradas do CFA Institute, que não endossa nem tem relação com este material.</p>';
+function showQuestion(i){
+  QUIZ_IDX=i; quizView='q'; G.token=(G.token||0)+1;
+  var q=QUIZ[i], a=QA[q.id];
+  mTitle.textContent='Questão '+(i+1)+' de '+QUIZ.length;
+  buildQuizNav();
+  var h=scoreHTML()+'<div class="qtema">'+esc(q.tema)+'</div><p class="qstem">'+esc(q.q)+'</p><div class="qopts">';
+  q.opts.forEach(function(o,k){
+    var cls=''; if (a!==undefined){ if (k===q.ans) cls='right'; else if (k===a) cls='wrong'; }
+    h+='<button type="button" data-q="ans" data-k="'+k+'" class="'+cls+'"'+(a!==undefined?' disabled':'')+'><b>'+LET[k]+'</b><span>'+esc(o)+'</span></button>';
+  });
+  h+='</div>';
+  if (a!==undefined){
+    h+='<div class="qfeed"><div class="lbl">'+(a===q.ans?'Resposta certa':'Resposta errada · a correta é '+LET[q.ans])+'</div><p>'+esc(q.exp)+'</p></div>'+
+       '<div class="gbtns"><button type="button" data-q="solve">Resolver na calculadora</button><button type="button" class="pri" data-q="next">Próxima questão</button></div>';
+  } else {
+    h+='<div class="gbtns"><button type="button" class="link" data-q="solve">Ver a resolução sem responder</button></div>';
+  }
+  h+=QNOTE;
+  mBody.innerHTML=h; mBody.scrollTop=0;
+  try{ store&&store.setItem(STORE+'-qidx',String(i)); }catch(e){}
+}
+function startSolve(){
+  var q=QUIZ[QUIZ_IDX], ctx='<p class="qstem">'+esc(q.q)+'</p><p><strong>Resposta: '+LET[q.ans]+') '+esc(q.opts[q.ans])+'</strong></p>';
+  G.kind='quiz'; G.topic='quiz-'+q.id; G.chain=null;
+  G.cards=q.steps.map(function(r,k){ return {type:'step', h:'Resolução', html:ctx, keys:r[0], exp:r[1], com:r[2], n:k+1, of:q.steps.length}; });
+  quizView='guide'; mTitle.textContent='Questão '+(QUIZ_IDX+1)+' · resolução';
+  guideGo(0);
+}
+mBody.addEventListener('click',function(e){
+  if (panel!=='quiz') return;
+  var b=e.target.closest('[data-q]'); if(!b||b.disabled) return;
+  var a=b.dataset.q, q=QUIZ[QUIZ_IDX];
+  if (a==='ans'){ QA[q.id]=+b.dataset.k; saveQA(); showQuestion(QUIZ_IDX); }
+  else if (a==='solve') startSolve();
+  else if (a==='next') showQuestion((QUIZ_IDX+1)%QUIZ.length);
+  else if (a==='reset'){ QA={}; saveQA(); showQuestion(0); }
+});
+function setQuiz(open){
+  var was=!man.hidden;
+  panel='quiz'; current=null;
+  man.hidden=!open; bQuiz.setAttribute('aria-pressed',open?'true':'false'); bMan.setAttribute('aria-pressed','false');
+  document.querySelector('.mode').hidden=true; document.querySelector('.mhead .eyebrow').textContent='Questões estilo CFA';
+  if (open){ var qi=0; try{ qi=+(store&&store.getItem(STORE+'-qidx'))||0; }catch(e){} showQuestion(Math.min(qi,QUIZ.length-1)); }
+  if (isWin && open!==was){ try{ window.resizeBy(open?MAN_W:-MAN_W,0); }catch(e){} }
+  setTimeout(function(){ fit(); placeBracket(); },60);
+}
+bQuiz.addEventListener('click',function(){ setQuiz(man.hidden || panel!=='quiz'); });
+bMan.addEventListener('click',function(){ setManual(man.hidden || panel!=='manual'); });
+function setMode(m){ mode=m; document.getElementById('mode-g').setAttribute('aria-pressed',m==='g'?'true':'false'); document.getElementById('mode-c').setAttribute('aria-pressed',m==='c'?'true':'false');
+  try{ store&&store.setItem(STORE+'-mode',m); }catch(e){}
+  if (m==='g') guideOpen(current||MANUAL[0].id, current===G.topic?G.idx:0, current!==G.topic); else showRef(current||MANUAL[0].id); }
+document.getElementById('mode-g').addEventListener('click',function(){ if(mode!=='g') setMode('g'); });
+document.getElementById('mode-c').addEventListener('click',function(){ if(mode!=='c') setMode('c'); });
+try{ var sm=store&&store.getItem(STORE+'-mode'); if(sm==='c'||sm==='g'){ mode=sm; document.getElementById('mode-g').setAttribute('aria-pressed',sm==='g'?'true':'false'); document.getElementById('mode-c').setAttribute('aria-pressed',sm==='c'?'true':'false'); } }catch(e){}
+document.getElementById('m-close').addEventListener('click',function(){ if (panel==='quiz') setQuiz(false); else setManual(false); });
+
+fit(); placeBracket(); render();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ placeBracket(); render(); });
+})();
+</script>
+</body>
+</html>
