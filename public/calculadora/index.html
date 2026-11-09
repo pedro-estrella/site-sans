@@ -68,7 +68,11 @@ body.janela #calc{border-radius:0;box-shadow:none}
 .keys{display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(4,68px);column-gap:9px;margin-top:12px;position:relative}
 .cell{display:flex;flex-direction:column;align-items:stretch}
 .gold{height:18px;font:600 10px/18px var(--body);letter-spacing:.06em;color:var(--marrom-claro);text-align:center;white-space:nowrap}
-.key{touch-action:none;-webkit-touch-callout:none;flex:1;margin-bottom:8px;display:flex;flex-direction:column;border:0;padding:0;border-radius:6px;overflow:hidden;cursor:pointer;background:var(--tecla);color:var(--creme);box-shadow:0 2px 0 var(--tecla-base),inset 0 1px 0 rgba(243,237,226,.08);transition:transform .05s}
+.key{-webkit-tap-highlight-color:transparent}
+.key:focus:not(:focus-visible){outline:none}
+.key .ki{display:flex;flex-direction:column;width:100%;height:100%;pointer-events:none}
+.key .b{display:block;width:100%}
+.key{touch-action:none;-webkit-touch-callout:none;flex:1;margin-bottom:8px;display:block;width:100%;border:0;padding:0;border-radius:6px;overflow:hidden;cursor:pointer;background:var(--tecla);color:var(--creme);box-shadow:0 2px 0 var(--tecla-base),inset 0 1px 0 rgba(243,237,226,.08);transition:transform .05s}
 .key .m{flex:1;display:flex;align-items:center;justify-content:center;font:600 15px var(--body);letter-spacing:.02em}
 .key .b{height:15px;background:var(--tecla-base);font:600 9.5px/15px var(--body);color:var(--areia);text-align:center;white-space:nowrap}
 .key.num .m{font:500 19px var(--display)}
@@ -211,6 +215,20 @@ body.mobile #manual.open #mstrip{height:44px}
 #mstrip button.pri{background:var(--marinho);color:var(--creme)}
 #mstrip button:disabled{opacity:.4}
 #mstrip .s-t{font:600 9.5px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--cinza);white-space:nowrap}
+/* celular deitado: coluna creme à esquerda (logo, visor, botões) e teclado ocupando o resto */
+body.mlayout{background:linear-gradient(to right,var(--creme) 50%,var(--marinho) 50%)}
+body.mlayout #stage{padding:0}
+body.mlayout #calc{position:fixed;border-radius:0;box-shadow:none;padding:0;display:grid;grid-template-columns:272px 1fr;overflow:hidden}
+body.mlayout .top{flex-direction:column;height:auto;margin:0;padding:14px 16px;gap:10px;border-bottom:0;border-right:3px solid var(--marrom);justify-content:space-between;align-items:stretch}
+body.mlayout .side{display:contents}
+body.mlayout .logo{order:0;width:150px;margin:2px auto 0}
+body.mlayout .lcd-frame{order:1;width:100%;height:96px;align-self:stretch}
+body.mlayout .tools{order:2;flex-wrap:wrap;justify-content:center}
+body.mlayout #disp{font-size:27px;height:32px}
+body.mlayout #disp.small{font-size:22px}
+body.mlayout .keys{margin:0;padding:10px 14px 12px;grid-template-rows:repeat(4,1fr);height:100%;min-height:0}
+body.mlayout #pop{top:16px;right:16px}
+#probe{position:fixed;left:env(safe-area-inset-left);right:env(safe-area-inset-right);top:0;height:0;visibility:hidden;pointer-events:none}
 .errs{width:100%;border-collapse:collapse;font-size:12.5px}
 .errs td{padding:6px;border-bottom:1px solid var(--linha);vertical-align:top}
 .errs td:first-child{font:500 14px var(--display);white-space:nowrap;color:var(--marrom)}
@@ -218,6 +236,7 @@ body.mobile #manual.open #mstrip{height:44px}
 </head>
 <body>
 <div id="rotate" role="dialog" aria-label="Gire o celular"><svg viewBox="0 0 72 72" aria-hidden="true"><g class="ph"><rect x="24" y="10" width="24" height="52" rx="5" fill="none" stroke="#1B2A41" stroke-width="3"/><circle cx="36" cy="55" r="2" fill="#7A5638"/></g></svg><h2>Gire o celular</h2><p>A calculadora segue o formato horizontal da HP 12c. Deite o aparelho para usar.</p></div>
+<div id="probe"></div>
 <div id="app">
   <main id="stage">
     <div id="holder">
@@ -1425,7 +1444,7 @@ KEYS.forEach(function(row,r){ row.forEach(function(k,c){
   b.dataset.k=k[0];
   var lab=[k[1], k[2]?('f '+k[2]):'', k[3]?('g '+k[3]):''].filter(Boolean).join(', ');
   b.setAttribute('aria-label',lab);
-  b.innerHTML='<span class="m'+(k[1].length>3?' small':'')+'">'+k[1]+'</span><span class="b">'+k[3]+'</span>';
+  b.innerHTML='<span class="ki"><span class="m'+(k[1].length>3?' small':'')+'">'+k[1]+'</span><span class="b">'+k[3]+'</span></span>';
   cell.appendChild(gold); cell.appendChild(b); keysEl.appendChild(cell); btnByKey[k[0]]=b;
 });});
 var br=document.createElement('div'); br.className='clear-br'; br.innerHTML='<span>CLEAR</span>'; keysEl.appendChild(br);
@@ -1568,13 +1587,24 @@ document.addEventListener('keydown',function(e){
 var holder=document.getElementById('holder'), stage=document.getElementById('stage'), calcEl=document.getElementById('calc');
 function fit(){
   var mob=false; try{ mob=(matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints>0) && Math.min(innerWidth,innerHeight)<600; }catch(e){}
-  document.body.classList.toggle('mobile',mob); document.body.classList.toggle('portrait',innerHeight>innerWidth);
+  var vv=window.visualViewport, VW=vv?vv.width:innerWidth, VH=vv?vv.height:innerHeight;
+  var portrait=VH>VW;
+  document.body.classList.toggle('mobile',mob); document.body.classList.toggle('portrait',portrait);
+  var ml=mob && !portrait; document.body.classList.toggle('mlayout',ml);
   var fill=isWin && !mob; document.body.classList.toggle('fill',fill);
   var sheetOn=mob && !man.hidden;
-  stage.style.paddingBottom = sheetOn ? '58px' : '';
+  stage.style.paddingBottom = (sheetOn && !ml) ? '58px' : '';
   var cw=680, ch=430, sc, w, h;
-  if (fill){
-    w=stage.clientWidth; h=stage.clientHeight-(sheetOn?58:0);
+  calcEl.style.left=''; calcEl.style.top='';
+  if (ml){
+    var pr=document.getElementById('probe').getBoundingClientRect();
+    var L=pr.left, W=Math.max(200, pr.width||VW);
+    var top=vv?vv.offsetTop:0, H=VH-(sheetOn?58:0);
+    ch=380; sc=H/ch; cw=W/sc;
+    calcEl.style.left=L+'px'; calcEl.style.top=top+'px';
+    holder.style.width='0px'; holder.style.height='0px';
+  } else if (fill){
+    w=stage.clientWidth; h=stage.clientHeight;
     sc=Math.max(0.3, Math.min(w/680, h/430));
     cw=w/sc; ch=h/sc;
   } else if (mob){
@@ -1586,11 +1616,13 @@ function fit(){
   }
   calcEl.style.width=cw+'px'; calcEl.style.height=ch+'px';
   calcEl.style.transform='scale('+sc+')';
-  holder.style.width=(cw*sc)+'px'; holder.style.height=(ch*sc)+'px';
+  if (!ml){ holder.style.width=(cw*sc)+'px'; holder.style.height=(ch*sc)+'px'; }
   document.body.style.background='';
   document.body.classList.toggle('overlay', window.innerWidth<980 && !mob);
+  if (ml) window.scrollTo(0,0);
 }
 window.addEventListener('resize',function(){ fit(); placeBracket(); });
+if (window.visualViewport){ visualViewport.addEventListener('resize',function(){ fit(); placeBracket(); }); visualViewport.addEventListener('scroll',function(){ if(document.body.classList.contains('mlayout')) fit(); }); }
 window.addEventListener('orientationchange',function(){ setTimeout(function(){ fit(); placeBracket(); },250); });
 
 /* painel de ajustes e avisos */
