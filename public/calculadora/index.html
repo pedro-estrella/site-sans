@@ -68,7 +68,7 @@ body.janela #calc{border-radius:0;box-shadow:none}
 .keys{display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(4,68px);column-gap:9px;margin-top:12px;position:relative}
 .cell{display:flex;flex-direction:column;align-items:stretch}
 .gold{height:18px;font:600 10px/18px var(--body);letter-spacing:.06em;color:var(--marrom-claro);text-align:center;white-space:nowrap}
-.key{flex:1;margin-bottom:8px;display:flex;flex-direction:column;border:0;padding:0;border-radius:6px;overflow:hidden;cursor:pointer;background:var(--tecla);color:var(--creme);box-shadow:0 2px 0 var(--tecla-base),inset 0 1px 0 rgba(243,237,226,.08);transition:transform .05s}
+.key{touch-action:none;-webkit-touch-callout:none;flex:1;margin-bottom:8px;display:flex;flex-direction:column;border:0;padding:0;border-radius:6px;overflow:hidden;cursor:pointer;background:var(--tecla);color:var(--creme);box-shadow:0 2px 0 var(--tecla-base),inset 0 1px 0 rgba(243,237,226,.08);transition:transform .05s}
 .key .m{flex:1;display:flex;align-items:center;justify-content:center;font:600 15px var(--body);letter-spacing:.02em}
 .key .b{height:15px;background:var(--tecla-base);font:600 9.5px/15px var(--body);color:var(--areia);text-align:center;white-space:nowrap}
 .key.num .m{font:500 19px var(--display)}
@@ -84,7 +84,7 @@ body.janela #calc{border-radius:0;box-shadow:none}
 .clear-br span{position:absolute;left:50%;top:-7px;transform:translateX(-50%);background:var(--marinho);padding:0 6px;font:600 8.5px var(--body);letter-spacing:.2em;color:var(--marrom-claro)}
 
 /* painel flutuante */
-#pop{position:absolute;right:18px;top:60px;width:300px;background:var(--creme);color:var(--marinho);border-radius:10px;padding:14px 16px;box-shadow:0 12px 30px rgba(0,0,0,.35);font-size:12.5px;line-height:1.5;z-index:5}
+#pop{position:absolute;right:18px;top:60px;width:300px;max-height:356px;overflow-y:auto;background:var(--creme);color:var(--marinho);border-radius:10px;padding:14px 16px;box-shadow:0 12px 30px rgba(0,0,0,.35);font-size:12.5px;line-height:1.5;z-index:5}
 #pop h3{font:400 17px var(--display);margin:0 0 8px}
 #pop .lbl{font:600 9.5px var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--marrom);margin:10px 0 4px}
 #pop .row{display:flex;gap:6px;flex-wrap:wrap}
@@ -178,12 +178,39 @@ body.janela .legal{display:none}
 .mnav button.no{border-color:var(--marrom);color:var(--marrom)}
 .mnav button.qn{min-width:34px}
 .mnav button[aria-current="true"]{outline:2px solid var(--marrom-claro);outline-offset:1px}
+/* ---------- celular ---------- */
+#rotate{display:none}
+body.mobile.portrait #rotate{display:flex;position:fixed;inset:0;z-index:50;background:var(--creme);flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:32px;text-align:center}
+#rotate h2{font:400 24px/1.25 var(--display);margin:0;text-wrap:balance}
+#rotate p{margin:0;max-width:30ch;color:var(--cinza);font-size:14px;line-height:1.5}
+#rotate svg{width:72px;height:72px}
+@media (prefers-reduced-motion:no-preference){ #rotate svg .ph{transform-origin:36px 36px;animation:turn 2.4s ease-in-out infinite} }
+@keyframes turn{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+body.mobile #stage{padding:4px}
+body.mobile .legal{display:none}
+body.mobile #b-win{display:none}
+#mstrip{display:none}
+body.mobile #manual{position:fixed;left:0;right:0;bottom:0;top:auto;width:100%;height:58px;z-index:20;border-left:0;border-top:2px solid var(--marrom);box-shadow:0 -8px 24px rgba(27,42,65,.25)}
+body.mobile #manual.open{height:88%}
+body.mobile #manual:not(.open) .mhead, body.mobile #manual:not(.open) .mnav, body.mobile #manual:not(.open) .mbody{display:none}
+body.mobile #mstrip{display:flex;align-items:center;gap:10px;height:56px;flex:none;padding:0 12px;border-bottom:1px solid var(--linha);cursor:pointer}
+body.mobile #manual.open #mstrip{height:44px}
+#mstrip .s-l{font:600 9.5px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--marrom);white-space:nowrap}
+#mstrip .s-k{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12.5px}
+#mstrip .s-k kbd{font-size:10px;padding:2px 4px}
+#mstrip .s-v{font:500 15px var(--display);font-variant-numeric:tabular-nums lining-nums;white-space:pre}
+#mstrip .gstat{padding:4px 7px;font-size:9px}
+#mstrip button{font:600 11px var(--body);border:1px solid var(--marinho);background:transparent;color:var(--marinho);border-radius:6px;padding:7px 10px;cursor:pointer;white-space:nowrap}
+#mstrip button.pri{background:var(--marinho);color:var(--creme)}
+#mstrip button:disabled{opacity:.4}
+#mstrip .s-t{font:600 9.5px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--cinza);white-space:nowrap}
 .errs{width:100%;border-collapse:collapse;font-size:12.5px}
 .errs td{padding:6px;border-bottom:1px solid var(--linha);vertical-align:top}
 .errs td:first-child{font:500 14px var(--display);white-space:nowrap;color:var(--marrom)}
 </style>
 </head>
 <body>
+<div id="rotate" role="dialog" aria-label="Gire o celular"><svg viewBox="0 0 72 72" aria-hidden="true"><g class="ph"><rect x="24" y="10" width="24" height="52" rx="5" fill="none" stroke="#1B2A41" stroke-width="3"/><circle cx="36" cy="55" r="2" fill="#7A5638"/></g></svg><h2>Gire o celular</h2><p>A calculadora segue o formato horizontal da HP 12c. Deite o aparelho para usar.</p></div>
 <div id="app">
   <main id="stage">
     <div id="holder">
@@ -211,6 +238,7 @@ body.janela .legal{display:none}
     <footer class="legal">© 2026 <a href="https://sansfinancas.com.br/">Sans · Soluções em finanças</a>. Calculadora independente, compatível com o funcionamento da HP 12c. HP e HP 12c são marcas da HP Inc.; CFA® e Chartered Financial Analyst® são marcas registradas do CFA Institute. Sem afiliação ou endosso dessas empresas.</footer>
   </main>
   <aside id="manual" hidden aria-label="Manual">
+    <div id="mstrip" role="button" tabindex="0" aria-label="Abrir ou recolher o painel"></div>
     <div class="mhead">
       <div><div class="eyebrow">Manual</div><h2 id="m-title"></h2><div class="mode" role="group" aria-label="Modo do manual"><button type="button" id="mode-g" aria-pressed="true">Guiado</button><button type="button" id="mode-c" aria-pressed="false">Consulta</button></div></div>
       <button id="m-close" type="button">Fechar</button>
@@ -1431,7 +1459,22 @@ function runLoop(){
   setTimeout(tick,0);
 }
 function flash(k){ var b=btnByKey[k]; if(!b) return; b.classList.add('down'); setTimeout(function(){ b.classList.remove('down'); },110); }
-keysEl.addEventListener('pointerdown',function(e){ var b=e.target.closest('.key'); if(!b) return; e.preventDefault(); press(b.dataset.k); });
+var lp=null;
+keysEl.addEventListener('pointerdown',function(e){
+  var b=e.target.closest('.key'); if(!b) return; e.preventDefault();
+  if (e.pointerType==='touch' || e.pointerType==='pen'){
+    if (!tipEl.hidden){ tipEl.hidden=true; tipKey=null; }
+    var k=b.dataset.k; b.classList.add('down');
+    lp={k:k, fired:false, t:setTimeout(function(){ if(!lp) return; lp.fired=true; b.classList.remove('down'); tipKey=k; showTip(k); },500)};
+    return;
+  }
+  press(b.dataset.k);
+});
+function endTouch(cancel){ if(!lp) return; clearTimeout(lp.t); var k=lp.k, fired=lp.fired; lp=null; btnByKey[k].classList.remove('down');
+  if (!fired && !cancel){ press(k); try{ navigator.vibrate&&navigator.vibrate(8); }catch(err){} } }
+keysEl.addEventListener('pointerup',function(){ endTouch(false); });
+keysEl.addEventListener('pointercancel',function(){ endTouch(true); });
+keysEl.addEventListener('contextmenu',function(e){ e.preventDefault(); });
 keysEl.addEventListener('keydown',function(e){ if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('key')){ e.preventDefault(); e.stopPropagation(); press(e.target.dataset.k); flash(e.target.dataset.k);} });
 
 /* ---------- dicas ao passar o mouse ---------- */
@@ -1461,10 +1504,47 @@ keysEl.addEventListener('pointerover',function(e){
   tipTimer=setTimeout(function(){ if (tipKey) showTip(tipKey); },380);
 });
 keysEl.addEventListener('pointerout',function(e){
+  if (e.pointerType && e.pointerType!=='mouse') return;
   var b=e.target.closest('.key'); if(!b) return;
   if (e.relatedTarget && b.contains(e.relatedTarget)) return;
   tipKey=null; clearTimeout(tipTimer); tipEl.hidden=true;
 });
+/* ---------- faixa do celular ---------- */
+var strip=document.getElementById('mstrip');
+function isMobile(){ return document.body.classList.contains('mobile'); }
+function stripRender(){
+  if (!strip || man.hidden) return;
+  var open=man.classList.contains('open'), h='';
+  var guiding=(panel==='manual'&&mode==='g') || (panel==='quiz'&&quizView==='guide');
+  if (guiding){
+    var c=G.cards[G.idx], n=G.cards.length;
+    if (!c){ h='<span class="s-l">Concluído</span><span class="s-k">Toque para ver as opções</span>'; }
+    else if (c.type==='read'){ h='<span class="s-l">Passo '+(G.idx+1)+'/'+n+'</span><span class="s-k">Leitura: '+esc(c.h||mTitle.textContent)+'</span><button type="button" class="pri" data-s="next">Próximo</button>'; }
+    else {
+      var st=document.getElementById('g-stat'), nx=document.getElementById('g-next');
+      h='<span class="s-l">Passo '+(G.idx+1)+'/'+n+'</span><span class="s-k">'+keysHTML(c.keys)+'</span>'+
+        (c.exp?'<span class="s-v">'+esc(marks(c.exp))+'</span>':'')+(st?'<span class="'+st.className+'">'+esc(st.textContent)+'</span>':'')+
+        '<button type="button" data-s="show">Mostrar</button><button type="button" class="pri" data-s="next"'+(nx&&nx.disabled?' disabled':'')+'>Próximo</button>';
+    }
+  } else if (panel==='quiz'){
+    var q=QUIZ[QUIZ_IDX];
+    h='<span class="s-l">Questão '+(QUIZ_IDX+1)+'/'+QUIZ.length+'</span><span class="s-k">'+esc(q.tema)+'</span>';
+  } else {
+    h='<span class="s-l">Manual</span><span class="s-k">'+esc(mTitle.textContent)+'</span>';
+  }
+  h+='<span class="s-t">'+(open?'Recolher ▾':'Abrir ▴')+'</span>';
+  strip.innerHTML=h;
+}
+function setSheet(open){ man.classList.toggle('open',!!open); stripRender(); }
+strip.addEventListener('click',function(e){
+  var b=e.target.closest('[data-s]');
+  if (b){ e.stopPropagation(); if (b.disabled) return;
+    var tgt=mBody.querySelector('[data-g="'+b.dataset.s+'"]'); if (!tgt) tgt=mBody.querySelector('.gbtns .pri');
+    if (b.dataset.s==='show') setSheet(false);
+    if (tgt && !tgt.disabled) tgt.click(); stripRender(); return; }
+  setSheet(!man.classList.contains('open'));
+});
+strip.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); setSheet(!man.classList.contains('open')); } });
 var KB={'+':'add','-':'sub','*':'mul','/':'div','.':'dot',',':'dot','Enter':'ENTER','f':'f','F':'f','g':'g','G':'g'};
 document.addEventListener('keydown',function(e){
   if (e.ctrlKey||e.metaKey||e.altKey) return;
@@ -1480,14 +1560,20 @@ document.addEventListener('keydown',function(e){
 /* escala */
 var holder=document.getElementById('holder'), stage=document.getElementById('stage'), calcEl=document.getElementById('calc');
 function fit(){
-  var pad=isWin?0:72, w=stage.clientWidth-pad, h=stage.clientHeight-pad;
+  var mob=false; try{ mob=(matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints>0) && Math.min(innerWidth,innerHeight)<600; }catch(e){}
+  document.body.classList.toggle('mobile',mob); document.body.classList.toggle('portrait',innerHeight>innerWidth);
+  var pad=isWin?0:(document.body.classList.contains('mobile')?8:72), w=stage.clientWidth-pad, h=stage.clientHeight-pad;
+  var sheetOn=document.body.classList.contains('mobile') && !man.hidden;
+  stage.style.paddingBottom = sheetOn ? '62px' : '';
+  if (sheetOn) h-=58;
   var sc=Math.max(0.3, Math.min(w/680, h/430));
   if (!isWin) sc=Math.min(sc,1.7);
   calcEl.style.transform='scale('+sc+')';
   holder.style.width=(680*sc)+'px'; holder.style.height=(430*sc)+'px';
-  document.body.classList.toggle('overlay', window.innerWidth<980);
+  document.body.classList.toggle('overlay', window.innerWidth<980 && !document.body.classList.contains('mobile'));
 }
-window.addEventListener('resize',fit);
+window.addEventListener('resize',function(){ fit(); placeBracket(); });
+window.addEventListener('orientationchange',function(){ setTimeout(function(){ fit(); placeBracket(); },250); });
 
 /* painel de ajustes e avisos */
 var pop=document.getElementById('pop'), bSet=document.getElementById('b-set');
@@ -1498,6 +1584,7 @@ function settingsHTML(){
   return '<h3>Ajustes</h3>'+
    '<div class="lbl">Separador decimal</div><div class="row"><button type="button" data-a="dot" class="'+(c?'':'sel')+'">1,234.56</button><button type="button" data-a="comma" class="'+(c?'sel':'')+'">1.234,56</button></div>'+
    '<div class="lbl">Teclado do computador</div><p>Números, ponto ou vírgula, + − * /, Enter, Backspace (apaga dígito), F e G para os prefixos, Esc cancela o prefixo.</p>'+
+   '<div class="lbl">Avisos</div><p>Calculadora independente, compatível com o funcionamento da HP 12c. HP e HP 12c são marcas da HP Inc.; CFA® é marca registrada do CFA Institute. Sem afiliação ou endosso dessas empresas.</p>'+
    '<div class="lbl">Memória contínua</div><p>Registradores e programa ficam salvos neste navegador.</p><div class="row"><button type="button" class="danger" data-a="wipe">Apagar tudo</button></div>';
 }
 bSet.addEventListener('click',function(){ if(!pop.hidden&&bSet.getAttribute('aria-pressed')==='true'){ closePop(); return; } openPop(settingsHTML()); bSet.setAttribute('aria-pressed','true'); });
@@ -1553,6 +1640,7 @@ function showRef(id){
   });
   mBody.innerHTML=h; mBody.scrollTop=0;
   try{ store&&store.setItem(STORE+'-topic',t.id); }catch(e){}
+  stripRender();
 }
 /* ---------- modo guiado ---------- */
 var G={kind:'manual', topic:null, idx:0, cards:[], chain:null, matched:false, matchedText:'', presses:0, note:''};
@@ -1625,10 +1713,11 @@ function guideStatus(){
   if (!el||!c||c.type!=='step') return;
   if (!c.exp){ el.className='gstat'; el.textContent='Sem conferência'; return; }
   var sk=mBody.querySelector('[data-g="skip"]'); if (sk) sk.hidden=!!G.matched;
-  if (G.matched){ el.className='gstat ok'; el.textContent='✓ Confere'; if(nx) nx.disabled=false; return; }
+  if (G.matched){ el.className='gstat ok'; el.textContent='✓ Confere'; if(nx) nx.disabled=false; stripRender(); return; }
   var now=norm(calc.display(Date.now()).text);
   if (G.presses>0){ el.className='gstat off'; el.textContent='Visor: '+now; } else { el.className='gstat'; el.textContent='Aguardando'; }
   if (nx) nx.disabled=true;
+  stripRender();
 }
 
 function guideRender(scrollTop){
@@ -1665,6 +1754,7 @@ function guideRender(scrollTop){
   }
   mBody.innerHTML=h; if(scrollTop) mBody.scrollTop=0;
   guideStatus();
+  stripRender();
 }
 var gPlaying=false;
 mBody.addEventListener('click',function(e){
@@ -1686,6 +1776,7 @@ mBody.addEventListener('click',function(e){
   }
   if (a==='redo'){ G.token=(G.token||0)+1; gPlaying=false; replayTo(G.idx); G.matched=false; G.presses=0; G.note='Passo recomeçado: a calculadora voltou ao ponto de partida deste passo.'; guideRender(false); return; }
   if (a==='show' && !gPlaying){
+    if (isMobile()) setSheet(false);
     if (G.presses>0 || G.chain!==prevStep(G.idx)) replayTo(G.idx);
     var seq; try{ seq=seqToKeys(c.keys); }catch(err){ return; }
     gPlaying=true; var j=0, tok=G.token;
@@ -1713,6 +1804,8 @@ function setManual(open){
     else { var last=null; try{ last=store&&store.getItem(STORE+'-topic'); }catch(e){} showRef(last||MANUAL[0].id); }
   }
   if (isWin && open!==was){ try{ window.resizeBy(open?MAN_W:-MAN_W,0); }catch(e){} }
+  if (open && !was) man.classList.add('open');
+  stripRender();
   setTimeout(function(){ fit(); placeBracket(); },60);
 }
 /* ---------- questões estilo CFA ---------- */
@@ -1754,6 +1847,7 @@ function showQuestion(i){
   h+=QNOTE;
   mBody.innerHTML=h; mBody.scrollTop=0;
   try{ store&&store.setItem(STORE+'-qidx',String(i)); }catch(e){}
+  stripRender();
 }
 function startSolve(){
   var q=QUIZ[QUIZ_IDX], ctx='<p class="qstem">'+esc(q.q)+'</p><p><strong>Resposta: '+LET[q.ans]+') '+esc(q.opts[q.ans])+'</strong></p>';
@@ -1778,6 +1872,8 @@ function setQuiz(open){
   document.querySelector('.mode').hidden=true; document.querySelector('.mhead .eyebrow').textContent='Questões estilo CFA';
   if (open){ var qi=0; try{ qi=+(store&&store.getItem(STORE+'-qidx'))||0; }catch(e){} showQuestion(Math.min(qi,QUIZ.length-1)); }
   if (isWin && open!==was){ try{ window.resizeBy(open?MAN_W:-MAN_W,0); }catch(e){} }
+  if (open && !was) man.classList.add('open');
+  stripRender();
   setTimeout(function(){ fit(); placeBracket(); },60);
 }
 bQuiz.addEventListener('click',function(){ setQuiz(man.hidden || panel!=='quiz'); });
@@ -1791,6 +1887,8 @@ try{ var sm=store&&store.getItem(STORE+'-mode'); if(sm==='c'||sm==='g'){ mode=sm
 document.getElementById('m-close').addEventListener('click',function(){ if (panel==='quiz') setQuiz(false); else setManual(false); });
 
 fit(); placeBracket(); render();
+window.addEventListener('load',function(){ fit(); placeBracket(); });
+setTimeout(function(){ fit(); placeBracket(); },300);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ placeBracket(); render(); });
 })();
 </script>
