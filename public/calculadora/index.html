@@ -263,6 +263,15 @@ body.mobile.mlayout #manual .qstem{font-size:13px}
 body.mobile.mlayout #manual .qopts button{padding:7px 10px;font-size:12.5px}
 #m-temas{display:none}
 body.mobile.mlayout #m-temas{display:inline-block}
+.gwhy{margin:0 0 10px;padding:10px 12px;border-left:3px solid var(--marrom);background:#FBF8F2}
+.gwhy .lbl{font:600 9.5px var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--marrom);margin-bottom:3px}
+.gwhy p{margin:0;font-size:13px;line-height:1.55}
+.steps td.c .cw{margin-top:4px;color:var(--marinho);font-size:11.5px;line-height:1.45}
+.qfeed h4,.mbody h4.qh{font:600 10px var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--marinho);margin:12px 0 4px}
+.qfeed ul,.qfeed ol{margin:4px 0;padding-left:18px} .qfeed li{margin:3px 0}
+.qfeed p{margin:4px 0}
+body.mobile.mlayout #manual .mbody.guide .gwhy{order:1;margin:0 0 6px}
+body.mobile.mlayout #manual .gwhy p{font-size:12px}
 .errs{width:100%;border-collapse:collapse;font-size:12.5px}
 .errs td{padding:6px;border-bottom:1px solid var(--linha);vertical-align:top}
 .errs td:first-child{font:500 14px var(--display);white-space:nowrap;color:var(--marrom)}
@@ -1257,109 +1266,358 @@ var MANUAL = [
 ];
 if (typeof module!=='undefined') module.exports = MANUAL;
 
+/* "Por que este passo": uma explicação por linha de exemplo do manual, na mesma ordem dos passos de cada tema. */
+var MANUAL_WHY = {
+inicio:[
+ 'O 3 vai para o registrador Y quando você aperta ENTER; o 4 fica no visor (X). A tecla + soma Y com X e o resultado volta para X. Na RPN não existe tecla de igual: a operação já é o "igual".',
+ 'O 7 do passo anterior continua no visor. Ao digitar 5, o 7 sobe para Y; a tecla × multiplica 7 por 5. Por isso não precisa de parênteses: a ordem das teclas já define a ordem da conta.'],
+aritmetica:[
+ 'Primeiro a multiplicação de dentro: 12 em Y, 3 em X, × deixa 36 no visor.',
+ 'Ao digitar 4, o 36 sobe automaticamente para Y e fica guardado. ENTER separa o 4 do 5, e × calcula 20. Agora a pilha tem 36 em Y e 20 em X.',
+ '+ soma os dois resultados parciais que estavam na pilha: 36 + 20.',
+ 'Por fim, a divisão: 56 em Y, 7 em X, ÷ faz Y dividido por X.',
+ 'A tecla % calcula X% de Y: 15% de 200. O 200 continua em Y, pronto para a próxima conta.',
+ 'Como o 200 ainda está em Y, + soma 200 + 30. É o jeito rápido de aplicar um acréscimo percentual.',
+ 'Δ% mede a variação de Y (valor antigo) para X (valor novo): (92 − 80) ÷ 80 × 100 = 15%.',
+ '%T diz quanto X representa do total Y: 120 ÷ 500 × 100 = 24%.',
+ 'yˣ eleva Y à potência X: 1,05¹⁰. É o fator que transforma 1 real em quanto ele vale depois de 10 períodos a 5%.',
+ 'O visor mostra só 2 casas, mas a calculadora guarda 10 dígitos. f PREFIX mostra todos por um instante: 1,628894627.',
+ 'g √x tira a raiz quadrada do número no visor. Não precisa de ENTER porque a função usa só X.',
+ 'eˣ eleva a constante e (2,718…) a 0,08. Subtrair 1 transforma o fator em taxa: 0,0833 = 8,33% de taxa efetiva com capitalização contínua.',
+ 'f seguido de 4 só muda a exibição para 4 casas decimais; o número guardado não muda.',
+ 'f 2 volta para 2 casas. g n! calcula o fatorial: 5 × 4 × 3 × 2 × 1 = 120.',
+ 'STO 1 copia o visor para a memória R1. O 3 continua no visor também.',
+ 'STO + 1 soma o visor ao que já está em R1: 3 + 9 = 12 fica guardado em R1. O visor continua mostrando 9.',
+ 'RCL 1 traz para o visor o conteúdo de R1, que agora é 12.'],
+tvm:[
+ 'Zera n, i, PV, PMT e FV. Sem isso, um valor de um problema anterior (uma parcela, por exemplo) entraria na conta sem você perceber.',
+ 'O investimento sai do seu bolso, por isso é negativo: CHS troca o sinal antes de guardar em PV (valor presente).',
+ 'A taxa vai em % por período (6, não 0,06) e o prazo em número de períodos. Como o problema é anual, os dois são anuais.',
+ 'Com PV, i e n guardados, apertar FV logo em seguida calcula o valor futuro: 10.000 × 1,06⁵ = 13.382,26. O sinal positivo indica dinheiro que volta para você.',
+ 'A parcela (PMT) é de 1.000, positiva porque você recebe. FV fica zero: não há valor extra no fim.',
+ 'PV traz as 10 parcelas para hoje a 8%. O sinal negativo indica quanto você pagaria hoje para ter direito a esse fluxo.',
+ 'g BEG muda a convenção: cada parcela passa a cair no início do período, então todas ficam um período mais perto de hoje e valem mais. Guardar 1.000 em PMT de novo serve para a próxima tecla financeira calcular, e não guardar.',
+ 'Volta ao padrão (parcelas no fim do período) para não afetar os próximos problemas.',
+ 'Zera os registradores financeiros antes do novo problema.',
+ 'g 12× multiplica 30 anos por 12 e já guarda em n: 360 meses. Prazo e taxa precisam estar na mesma unidade.',
+ 'g 12÷ divide a taxa anual por 12 e guarda em i: 0,5% ao mês.',
+ 'O valor financiado entra positivo (você recebe o dinheiro). PMT calcula a parcela que zera a dívida em 360 meses; sai negativa porque você paga.',
+ 'Saída de caixa de 1.000 hoje, por isso negativa.',
+ 'Com PV, FV e n guardados, apertar i calcula a taxa que faz 1.000 virar 1.500 em 5 períodos: (1.500 ÷ 1.000)^(1/5) − 1 = 8,45%.',
+ 'Ao calcular n, a HP 12c arredonda para cima para o próximo inteiro. A conta exata dá 10,24 anos, mas o visor mostra 11.',
+ 'Para o prazo exato, use logaritmos: n = ln(2) ÷ ln(1,07). Cada g LN tira o logaritmo do número no visor, e ÷ divide um pelo outro.',
+ 'Uma base de 100 deixa a leitura direta: o que passar de 100 no fim é a taxa efetiva em %.',
+ '12 meses a 1% ao mês (12% ÷ 12). FV mostra 112,68: 12,68% de taxa efetiva, maior que a nominal porque os juros de cada mês rendem juros nos meses seguintes.'],
+fluxos:[
+ 'Limpa todos os registradores, inclusive os que guardam os fluxos de caixa (R0 em diante) e as repetições.',
+ 'g CF₀ guarda o fluxo da data zero. O investimento é saída, por isso negativo.',
+ 'g CFⱼ guarda o próximo fluxo na ordem: este é o ano 1.',
+ 'O fluxo de 30.000 se repete nos anos 2, 3 e 4. Em vez de digitar três vezes, g Nⱼ diz quantas vezes o último fluxo se repete.',
+ 'O último fluxo, no ano 5.',
+ 'Guarde o custo de capital em i e aperte f NPV: cada fluxo é dividido por (1,10)^t e tudo é somado. NPV positivo significa que o projeto rende mais que o custo de capital.',
+ 'f IRR procura a taxa que faz o NPV ficar igual a zero. Como o NPV a 10% foi positivo, a IRR tem de ser maior que 10%.'],
+amort:[
+ 'Monta o financiamento: 360 meses (30 × 12) e 0,5% ao mês (6 ÷ 12).',
+ 'Valor financiado em PV e cálculo da parcela mensal.',
+ 'f RND arredonda a parcela para 2 casas e PMT guarda esse valor arredondado, como no carnê do banco. Assim a tabela de amortização bate centavo a centavo.',
+ 'n volta a zero para contar as parcelas a partir da primeira. 12 f AMORT amortiza as 12 primeiras: o visor mostra os juros pagos no período (negativos, porque saem do seu bolso).',
+ 'x≷y mostra o outro resultado que f AMORT deixou na pilha: a parte das parcelas que abateu a dívida (o principal).',
+ 'f AMORT também atualiza PV. RCL PV mostra o saldo devedor depois das 12 parcelas: 250.000 − 3.070,06.',
+ 'Para juros simples, n vai em dias (60) e i é a taxa anual (7%).',
+ 'O principal entra em PV com sinal negativo. f INT calcula PV × 7% × 60 ÷ 360 = 5,25, na base de 360 dias.',
+ 'f INT deixa o principal em Y; + soma principal e juros: o montante a receber.',
+ 'f INT também calcula a base de 365 dias e guarda em Z. R↓ desce a pilha e x≷y traz esse valor: 450 × 7% × 60 ÷ 365 = 5,18.'],
+titulos:[
+ 'Define o formato das datas como dia.mêsano. Sem isso, 1.032027 seria lido como 3 de janeiro.',
+ 'YTM desejado (7% ao ano) em i e taxa de cupom (6% ao ano) em PMT. A calculadora assume cupons semestrais: 3 por 100 de face a cada seis meses.',
+ 'Data de liquidação, ENTER, data de vencimento e f PRICE. Na data do cupom não há juros acumulados, então o preço é só o valor presente de 20 cupons de 3 e do resgate de 100, a 3,5% por semestre. Fica abaixo de 100 porque o YTM é maior que o cupom.',
+ 'Mesmos dados de taxa; muda só a data de liquidação.',
+ 'Liquidação em 15/05, entre dois cupons. O preço que aparece é o limpo: não inclui os juros que o vendedor já ganhou desde o último cupom.',
+ 'x≷y mostra os juros acumulados: 75 dias de um semestre de 184, vezes o cupom semestral de 3.',
+ 'Volta o preço limpo para X e soma os juros acumulados: é o preço sujo, o que o comprador realmente paga na liquidação.',
+ 'Agora o preço é conhecido (105, acima do par) e a pergunta é o rendimento. Preço em PV, cupom em PMT.',
+ 'f YTM procura a taxa que faz o valor presente dos fluxos igual a 105. Como o título foi comprado acima do par, o YTM fica abaixo do cupom de 6%.'],
+deprec:[
+ 'Custo do ativo em PV, valor residual em FV e vida útil em n. O total a depreciar é PV − FV = 45.000.',
+ 'Linha reta: 45.000 ÷ 5 anos = 9.000 por ano.',
+ 'x≷y mostra o que ainda falta depreciar depois do ano 1: 45.000 − 9.000.',
+ 'Soma dos dígitos: os pesos são 5, 4, 3, 2, 1 (soma 15). No ano 1, a fração é 5/15 de 45.000.',
+ 'Saldo decrescente com fator 200%: taxa de 2 ÷ 5 = 40% ao ano sobre o valor contábil. No ano 1, 40% de 50.000. O residual não entra na base, só limita o total.',
+ 'No ano 2, a base é o valor contábil que sobrou (30.000): 40% de 30.000.'],
+datas:[
+ 'D.MY define o formato dia.mêsano. A data inicial vai para Y com ENTER.',
+ 'g ΔDYS conta os dias de calendário entre a data em Y e a data no visor.',
+ 'x≷y mostra a contagem na base 30/360, que considera todo mês com 30 dias: 6 meses × 30 = 180.',
+ 'Data em Y, número de dias em X e g DATE: a calculadora soma os dias e mostra a nova data. O 7 à direita é o dia da semana (domingo).'],
+estat:[
+ 'Limpa os registradores de estatística (R1 a R6), onde ficam as somas.',
+ 'Cada Σ+ acrescenta um dado às somas (quantidade, soma, soma dos quadrados). O visor mostra quantos dados já entraram.',
+ 'g x̄ divide a soma pela quantidade: (8 − 2 + 12 + 5 + 7) ÷ 5 = 6.',
+ 'g s calcula o desvio-padrão amostral, que divide a soma dos desvios ao quadrado por n − 1 (aqui, 4).',
+ 'Truque para o desvio populacional: incluir a média como mais um dado não muda a soma dos desvios ao quadrado, mas aumenta n para 6. Assim o divisor n − 1 vira 5, que é o n original.',
+ 'Na média ponderada, o valor vai em Y (ENTER) e o peso em X antes de Σ+.',
+ 'Segundo ativo: retorno 4, peso 40.',
+ 'g x̄w soma valor × peso e divide pela soma dos pesos: (10 × 60 + 4 × 40) ÷ 100 = 7,6.',
+ 'Para regressão, cada par entra como y ENTER x Σ+. Aqui, retorno da ação (y) e retorno do mercado (x).',
+ 'Segundo par, ambos negativos: use CHS para trocar o sinal de cada número.',
+ 'Terceiro e quarto pares.',
+ 'Quinto par. Agora a calculadora tem as somas para ajustar a reta y = a + b·x.',
+ 'g ŷ,r estima y para o x no visor. Com x = 0, a estimativa é o próprio intercepto a, o alfa.',
+ 'g ŷ,r também deixou a correlação r em Y. x≷y a traz para o visor; f 4 mostra 4 casas.',
+ 'Estima y para x = 1 e guarda em R0 para usar no próximo passo.',
+ 'A inclinação b (o beta) é quanto y muda quando x sobe 1: ŷ(1) − ŷ(0). Calcula ŷ(0), traz ŷ(1) da memória, inverte a ordem com x≷y e subtrai.'],
+prog:[
+ 'f P/R entra no modo de programação (aparece PRGM); f CLEAR PRGM apaga o programa anterior. A partir daqui, as teclas são gravadas, e não executadas.',
+ 'Linha 01: traz m (o número de capitalizações por ano) de R1. O código 45 é a tecla RCL.',
+ 'Linha 02: divide a taxa nominal (que estará no visor) por m. O código 10 é a tecla ÷.',
+ 'Linhas 03 a 06: divide por 100 para transformar % em decimal.',
+ 'Linhas 07 e 08: soma 1, formando o fator (1 + taxa do período).',
+ 'Linhas 09 e 10: eleva o fator a m (o código 21 é a tecla yˣ).',
+ 'Linhas 11 e 12: subtrai 1, voltando de fator para taxa.',
+ 'Linhas 13 a 16: multiplica por 100 para mostrar em %.',
+ 'f P/R sai do modo de programação. O programa fica guardado.',
+ 'Guarda m = 12 em R1, digita a taxa nominal (8) e R/S roda o programa: 8% ao ano capitalizado mês a mês equivale a 8,30% ao ano.',
+ 'Muda m para 4 e roda de novo com a mesma taxa: capitalização trimestral dá 8,24%. Quanto mais frequente a capitalização, maior a taxa efetiva.']
+};
+if (typeof module!=='undefined') module.exports = MANUAL_WHY;
+
 /* Questões originais no estilo do CFA Level I. Não são questões oficiais do CFA Institute.
-   Cada resolução foi conferida na própria calculadora. ans = índice da alternativa correta. */
+   Cada resolução foi conferida na própria calculadora. ans = índice da alternativa correta.
+   pede = o que a questão pede; conceitos; raciocinio; erradas = por que cada alternativa errada erra.
+   steps: [teclas, visor, comentário curto, por que este passo]. */
 var QUIZ = [
 {id:'q1', tema:'Valor do dinheiro no tempo',
  q:'Um investidor aplica USD 15.000 hoje numa conta que rende 5,5% ao ano, com capitalização anual. Qual será o saldo ao fim de 8 anos?',
  opts:['USD 21.600,00','USD 23.020,30','USD 23.267,21'], ans:1,
- exp:'Valor futuro de um montante único: FV = PV × (1 + i)ⁿ. A alternativa A usa juros simples; a C capitaliza mensalmente.',
- steps:[['{f CLEAR FIN} 15000 {CHS} {PV}','-15,000.00','saída de caixa hoje'],['5.5 {i} 8 {n}','8.00','taxa anual e prazo'],['{FV}','23,020.30','saldo no ano 8']]},
+ pede:'O valor futuro (FV) de um único depósito, sem aportes no meio do caminho.',
+ conceitos:['Juros compostos: a cada ano, os juros são calculados sobre o saldo já com os juros anteriores.','Valor futuro de um montante único: FV = PV × (1 + i)ⁿ.','Capitalização anual: a taxa de 5,5% é aplicada uma vez por ano, 8 vezes.'],
+ raciocinio:['Fator de capitalização: 1,055⁸ = 1,5347.','FV = 15.000 × 1,5347 = 23.020,30.','Na calculadora: o depósito entra em PV com sinal negativo (sai do bolso), taxa em i, prazo em n, e FV calcula o saldo.'],
+ erradas:{0:'Usa juros simples: 15.000 + 15.000 × 5,5% × 8 = 21.600. Ignora os juros sobre juros.',2:'Capitaliza mensalmente (5,5% ÷ 12 por mês, 96 meses), mas o enunciado diz capitalização anual.'},
+ steps:[['{f CLEAR FIN} 15000 {CHS} {PV}','-15,000.00','saída de caixa hoje','Zera os registradores financeiros e guarda o depósito em PV. O sinal é negativo porque o dinheiro sai do bolso do investidor.'],
+  ['5.5 {i} 8 {n}','8.00','taxa anual e prazo','A taxa entra em % (5,5, não 0,055) e o prazo em anos, a mesma unidade da taxa.'],
+  ['{FV}','23,020.30','saldo no ano 8','Com PV, i e n guardados, FV calcula 15.000 × 1,055⁸. O sinal positivo indica dinheiro que volta para o investidor.']]},
+
 {id:'q2', tema:'Valor do dinheiro no tempo',
  q:'Você vai receber USD 50.000 daqui a 6 anos. Com taxa de desconto de 7% ao ano, quanto vale esse recebimento hoje?',
  opts:['USD 29.000,00','USD 31.137,49','USD 33.317,11'], ans:2,
- exp:'Valor presente: PV = FV ÷ (1 + i)ⁿ. A alternativa A desconta com juros simples; a B usa 7 anos em vez de 6.',
- steps:[['{f CLEAR FIN} 50000 {FV}','50,000.00','recebimento futuro'],['7 {i} 6 {n}','6.00',''],['{PV}','-33,317.11','valor presente']]},
+ pede:'O valor presente (PV) de um valor que só será recebido no futuro.',
+ conceitos:['Descontar é o caminho inverso de capitalizar: traz um valor futuro para a data de hoje.','PV = FV ÷ (1 + i)ⁿ.','Quanto maior a taxa ou o prazo, menor o valor presente.'],
+ raciocinio:['Fator de desconto: 1 ÷ 1,07⁶ = 0,6663.','PV = 50.000 × 0,6663 = 33.317,11.','Na calculadora: o recebimento futuro vai em FV, taxa em i, prazo em n, e PV calcula o valor de hoje (negativo: é quanto você pagaria hoje por esse direito).'],
+ erradas:{0:'Usa desconto simples: 50.000 × (1 − 7% × 6) = 29.000. Ignora a composição dos juros.',1:'Desconta por 7 anos em vez de 6.'},
+ steps:[['{f CLEAR FIN} 50000 {FV}','50,000.00','recebimento futuro','Zera os registradores e guarda o valor que será recebido em FV, positivo porque entra no seu bolso.'],
+  ['7 {i} 6 {n}','6.00','','Taxa anual em % e prazo em anos.'],
+  ['{PV}','-33,317.11','valor presente','PV calcula 50.000 ÷ 1,07⁶. Ignore o sinal na resposta: ele só indica que, para ter os 50.000 no futuro, você teria de investir esse valor hoje.']]},
+
 {id:'q3', tema:'Anuidades',
  q:'Qual o valor presente de 10 pagamentos anuais de USD 2.000, o primeiro daqui a um ano, com taxa de 6% ao ano?',
  opts:['USD 14.720,17','USD 15.603,38','USD 20.000,00'], ans:0,
- exp:'Anuidade postecipada (ordinary annuity): parcelas no fim de cada período, modo END. A alternativa B usa o modo BEG (anuidade antecipada).',
- steps:[['{f CLEAR FIN} 2000 {PMT}','2,000.00','parcela anual'],['6 {i} 10 {n}','10.00',''],['{PV}','-14,720.17','valor presente (modo END)']]},
+ pede:'O valor presente de uma série de parcelas iguais (uma anuidade).',
+ conceitos:['Anuidade: série de pagamentos iguais em intervalos iguais.','Anuidade postecipada (ordinary annuity): o primeiro pagamento ocorre no fim do primeiro período. É o modo END da calculadora, o padrão.','PV = PMT × [1 − (1 + i)⁻ⁿ] ÷ i.'],
+ raciocinio:['"O primeiro daqui a um ano" indica pagamentos no fim de cada ano: modo END.','PV = 2.000 × [1 − 1,06⁻¹⁰] ÷ 0,06 = 2.000 × 7,3601 = 14.720,17.','Cada parcela é descontada pelo seu próprio prazo; a soma dos valores presentes dá o resultado.'],
+ erradas:{1:'Usa o modo BEG (anuidade antecipada), como se o primeiro pagamento fosse hoje.',2:'Apenas soma as parcelas (10 × 2.000), sem descontar nenhuma.'},
+ steps:[['{f CLEAR FIN} 2000 {PMT}','2,000.00','parcela anual','Zera os registradores e guarda a parcela em PMT. Confira que BEGIN não está aceso no visor: o padrão é END.'],
+  ['6 {i} 10 {n}','10.00','','Taxa anual e número de parcelas.'],
+  ['{PV}','-14,720.17','valor presente (modo END)','PV desconta cada uma das 10 parcelas e soma. O sinal negativo é o valor que você pagaria hoje pela série.']]},
+
 {id:'q4', tema:'Anuidades',
  q:'Uma pessoa deposita USD 5.000 no início de cada ano, por 15 anos, numa conta que rende 8% ao ano. Qual o saldo logo após 15 anos?',
  opts:['USD 135.760,57','USD 146.621,42','USD 75.000,00'], ans:1,
- exp:'Depósitos no início de cada período formam uma anuidade antecipada (annuity due): use o modo BEG. A alternativa A é o resultado em modo END.',
- steps:[['{f CLEAR FIN} {g BEG}','','BEGIN acende no visor'],['5000 {CHS} {PMT}','-5,000.00','depósito anual'],['8 {i} 15 {n}','15.00',''],['{FV}','146,621.42','saldo final'],['{g END}','146,621.42','volte ao modo padrão']]},
+ pede:'O valor futuro de depósitos iguais feitos no início de cada período.',
+ conceitos:['Anuidade antecipada (annuity due): cada pagamento ocorre no início do período, por isso rende um período a mais.','FV antecipada = FV postecipada × (1 + i).','Na HP 12c, o modo BEG (g BEG) trata os pagamentos como antecipados.'],
+ raciocinio:['"No início de cada ano" indica anuidade antecipada: modo BEG.','FV postecipada = 5.000 × [(1,08¹⁵ − 1) ÷ 0,08] = 135.760,57.','Antecipada: 135.760,57 × 1,08 = 146.621,42. Cada depósito rendeu um ano a mais.'],
+ erradas:{0:'É o resultado no modo END, como se os depósitos fossem no fim de cada ano.',2:'Apenas soma os depósitos (15 × 5.000), sem nenhum rendimento.'},
+ steps:[['{f CLEAR FIN} {g BEG}','','BEGIN acende no visor','Zera os registradores e liga o modo BEG: os pagamentos passam a contar no início de cada período.'],
+  ['5000 {CHS} {PMT}','-5,000.00','depósito anual','O depósito sai do bolso, por isso é negativo.'],
+  ['8 {i} 15 {n}','15.00','','Taxa anual e quantidade de depósitos.'],
+  ['{FV}','146,621.42','saldo final','FV acumula cada depósito com juros até o fim do ano 15. Com BEG, cada um rende um ano a mais.'],
+  ['{g END}','146,621.42','volte ao modo padrão','Desliga o BEG para não afetar os próximos cálculos. O visor não muda.']]},
+
 {id:'q5', tema:'Financiamentos',
  q:'Um financiamento imobiliário de USD 300.000 tem prazo de 25 anos e taxa nominal de 7,2% ao ano, com pagamentos mensais. Qual a parcela mensal?',
  opts:['USD 1.800,00','USD 2.158,77','USD 2.184,06'], ans:1,
- exp:'Taxa e prazo precisam estar em meses: n = 25 × 12 = 300 e i = 7,2 ÷ 12 = 0,6% ao mês. A alternativa A paga só os juros do primeiro mês; a C calcula a parcela anual e divide por 12.',
- steps:[['{f CLEAR FIN} 25 {g 12×}','300.00','n = 300 meses'],['7.2 {g 12÷}','0.60','i = 0,6% ao mês'],['300000 {PV}','300,000.00','valor financiado'],['{PMT}','-2,158.77','parcela mensal']]},
+ pede:'A parcela mensal fixa que quita o financiamento no prazo (sistema Price).',
+ conceitos:['Taxa nominal de 7,2% ao ano com pagamentos mensais significa 7,2% ÷ 12 = 0,6% ao mês.','Prazo e taxa precisam estar na mesma unidade: 25 anos = 300 meses.','PMT = PV × i ÷ [1 − (1 + i)⁻ⁿ].'],
+ raciocinio:['n = 25 × 12 = 300 meses; i = 7,2 ÷ 12 = 0,6% ao mês.','PMT = 300.000 × 0,006 ÷ [1 − 1,006⁻³⁰⁰] = 1.800 ÷ 0,8338 = 2.158,77.','A parcela é maior que os juros do mês (1.800) porque também amortiza a dívida.'],
+ erradas:{0:'São só os juros do primeiro mês (300.000 × 0,6%), sem amortizar nada da dívida.',2:'Calcula uma parcela anual (25 anos a 7,2% ao ano) e divide por 12. Ignora que os juros correm mês a mês.'},
+ steps:[['{f CLEAR FIN} 25 {g 12×}','300.00','n = 300 meses','g 12× multiplica os anos por 12 e já guarda em n.'],
+  ['7.2 {g 12÷}','0.60','i = 0,6% ao mês','g 12÷ divide a taxa anual por 12 e já guarda em i.'],
+  ['300000 {PV}','300,000.00','valor financiado','O valor recebido do banco entra em PV, positivo.'],
+  ['{PMT}','-2,158.77','parcela mensal','PMT calcula a parcela que zera a dívida em 300 meses. Negativa porque você paga.']]},
+
 {id:'q6', tema:'Valor do dinheiro no tempo',
  q:'Um ativo comprado por USD 10.000 foi vendido por USD 18.000 depois de 7 anos, sem fluxos intermediários. Qual o retorno anual composto?',
- opts:['8,76%','11,43%','12,00%'], ans:0,
- exp:'Taxa composta: i = (FV ÷ PV)^(1/n) − 1. A alternativa B divide o ganho total de 80% por 7 anos (taxa simples).',
- steps:[['{f CLEAR FIN} 10000 {CHS} {PV}','-10,000.00','compra'],['18000 {FV} 7 {n}','7.00','venda e prazo'],['{i}','8.76','retorno anual composto, em %']]},
+ opts:['8,76%','11,43%','8,40%'], ans:0,
+ pede:'A taxa anual composta que transforma 10.000 em 18.000 em 7 anos.',
+ conceitos:['Taxa composta: i = (FV ÷ PV)^(1/n) − 1.','É a taxa que, aplicada todo ano sobre o saldo acumulado, leva do valor inicial ao final.','Na HP 12c, com PV, FV e n guardados, a tecla i calcula essa taxa.'],
+ raciocinio:['Ganho total: 18.000 ÷ 10.000 = 1,8 (80% em 7 anos).','Taxa anual: 1,8^(1/7) − 1 = 1,0876 − 1 = 8,76%.','Conferência: 10.000 × 1,0876⁷ ≈ 18.000.'],
+ erradas:{1:'Divide o ganho de 80% por 7 anos (taxa simples), ignorando a composição.',2:'É a taxa com capitalização contínua: ln(1,8) ÷ 7. O enunciado pede a taxa anual composta.'},
+ steps:[['{f CLEAR FIN} 10000 {CHS} {PV}','-10,000.00','compra','A compra é saída de caixa: valor negativo em PV.'],
+  ['18000 {FV} 7 {n}','7.00','venda e prazo','A venda é entrada de caixa: positiva em FV. O prazo vai em n.'],
+  ['{i}','8.76','retorno anual composto, em %','Com PV, FV e n guardados, i calcula a taxa que liga os dois valores. Sinais opostos em PV e FV são obrigatórios; com o mesmo sinal, a calculadora mostra Error 5.']]},
+
 {id:'q7', tema:'Taxas efetivas',
  q:'Uma aplicação paga taxa nominal de 9% ao ano com capitalização trimestral. Qual a taxa efetiva anual (EAR)?',
  opts:['9,00%','9,20%','9,31%'], ans:2,
- exp:'EAR = (1 + 0,09 ÷ 4)⁴ − 1. Com n = 4 trimestres e i = 2,25% ao trimestre, 100 viram 109,31.',
- steps:[['{f CLEAR FIN} 100 {CHS} {PV}','-100.00','base de 100'],['4 {n} 2.25 {i}','2.25','4 trimestres a 2,25%'],['{FV}','109.31','montante ao fim de um ano'],['100 {−}','9.31','EAR em %']]},
+ pede:'A taxa efetiva anual (EAR) equivalente a uma taxa nominal com capitalização trimestral.',
+ conceitos:['Taxa nominal (stated rate) é só uma convenção: 9% ao ano com capitalização trimestral significa 2,25% a cada trimestre.','A taxa efetiva mostra o rendimento real em um ano, considerando os juros sobre juros entre os trimestres.','EAR = (1 + taxa nominal ÷ m)^m − 1.'],
+ raciocinio:['Taxa do trimestre: 9% ÷ 4 = 2,25%.','EAR = 1,0225⁴ − 1 = 1,0931 − 1 = 9,31%.','Na calculadora: 100 aplicados por 4 trimestres a 2,25% viram 109,31; o que passa de 100 é a taxa efetiva.'],
+ erradas:{0:'É a própria taxa nominal; só coincidiria com a efetiva se a capitalização fosse anual.',1:'Usa capitalização semestral (4,5% duas vezes), mas o enunciado diz trimestral.'},
+ steps:[['{f CLEAR FIN} 100 {CHS} {PV}','-100.00','base de 100','Uma base de 100 deixa a leitura direta: o ganho sobre 100 é a taxa em %.'],
+  ['4 {n} 2.25 {i}','2.25','4 trimestres a 2,25%','Prazo e taxa em trimestres: 4 períodos de 2,25%.'],
+  ['{FV}','109.31','montante ao fim de um ano','FV calcula 100 × 1,0225⁴.'],
+  ['100 {−}','9.31','EAR em %','Subtrair a base de 100 deixa só o ganho: 9,31%.']]},
+
 {id:'q8', tema:'Taxas efetivas',
  q:'Qual a taxa efetiva anual equivalente a 6% ao ano com capitalização contínua?',
  opts:['6,00%','6,17%','6,18%'], ans:2,
- exp:'Capitalização contínua: EAR = e^r − 1 = e^0,06 − 1. A alternativa B é a capitalização mensal (12 períodos).',
- steps:[['.06 {g eˣ}','1.06','e elevado a 0,06'],['1 {−} 100 {×}','6.18','EAR em %']]},
+ pede:'A taxa efetiva anual quando os juros são capitalizados continuamente.',
+ conceitos:['Capitalização contínua é o limite de capitalizar em intervalos cada vez menores.','EAR = e^r − 1, em que e ≈ 2,71828 e r é a taxa anual em decimal.','É a maior taxa efetiva possível para uma mesma taxa nominal.'],
+ raciocinio:['e^0,06 = 1,061837.','EAR = 1,061837 − 1 = 0,0618 = 6,18%.'],
+ erradas:{0:'É a taxa nominal, sem capitalização.',1:'Usa capitalização mensal: (1 + 0,06 ÷ 12)¹² − 1 = 6,17%. Próxima, mas menor que a contínua.'},
+ steps:[['.06 {g eˣ}','1.06','e elevado a 0,06','A taxa entra em decimal (0,06). g eˣ calcula o fator de capitalização contínua: 1,061837 (o visor mostra 2 casas).'],
+  ['1 {−} 100 {×}','6.18','EAR em %','Subtrair 1 transforma o fator em taxa; multiplicar por 100 passa para %.']]},
+
 {id:'q9', tema:'Ações: modelo de Gordon',
  q:'Uma ação deve pagar dividendo de USD 2,10 daqui a um ano. O dividendo cresce 4% ao ano para sempre e o retorno exigido é 9%. Qual o valor da ação pelo modelo de Gordon?',
  opts:['USD 23,33','USD 42,00','USD 43,68'], ans:1,
- exp:'V₀ = D₁ ÷ (r − g) = 2,10 ÷ (0,09 − 0,04). A alternativa C aplica o crescimento ao dividendo de novo, como se 2,10 fosse D₀.',
- steps:[['2.10 {ENTER}','2.10','D₁'],['.09 {ENTER} .04 {−}','0.05','r − g'],['{÷}','42.00','valor da ação']]},
+ pede:'O valor justo da ação hoje, supondo dividendos que crescem a uma taxa constante para sempre.',
+ conceitos:['Modelo de Gordon (dividendos com crescimento constante): V₀ = D₁ ÷ (r − g).','D₁ é o dividendo do próximo ano; r é o retorno exigido; g é o crescimento.','Só funciona se r for maior que g.'],
+ raciocinio:['O enunciado já dá D₁ = 2,10 ("daqui a um ano"), então não é preciso crescer o dividendo.','r − g = 9% − 4% = 5% = 0,05.','V₀ = 2,10 ÷ 0,05 = 42,00.'],
+ erradas:{0:'Divide 2,10 só por 9%, ignorando o crescimento (seria uma perpetuidade sem crescimento).',2:'Multiplica 2,10 por 1,04 antes de dividir, como se 2,10 fosse o dividendo de hoje (D₀).'},
+ steps:[['2.10 {ENTER}','2.10','D₁','O dividendo do próximo ano vai para Y, guardado para a divisão no fim.'],
+  ['.09 {ENTER} .04 {−}','0.05','r − g','Calcula o denominador em decimal. O 2,10 sobe na pilha e continua guardado.'],
+  ['{÷}','42.00','valor da ação','÷ divide Y (2,10) por X (0,05).']]},
+
 {id:'q10', tema:'Fluxos de caixa',
  q:'Um projeto exige USD 250.000 hoje e gera USD 70.000 por ano nos anos 1 a 3 e USD 90.000 por ano nos anos 4 e 5. Com custo de capital de 10%, qual o NPV?',
  opts:['USD 41.433,77','USD 140.000,00','USD 291.433,77'], ans:0,
- exp:'NPV = soma dos fluxos descontados menos o investimento. A alternativa B não desconta os fluxos; a C esquece de subtrair o investimento.',
- steps:[['{f CLEAR REG} 250000 {CHS} {g CF₀}','-250,000.00','investimento'],['70000 {g CFⱼ} 3 {g Nⱼ}','3.00','70.000 por 3 anos'],['90000 {g CFⱼ} 2 {g Nⱼ}','2.00','90.000 por 2 anos'],['10 {i} {f NPV}','41,433.77','NPV a 10%']]},
+ pede:'O valor presente líquido (NPV) do projeto ao custo de capital de 10%.',
+ conceitos:['NPV = soma dos fluxos futuros descontados pelo custo de capital, menos o investimento inicial.','NPV positivo: o projeto rende mais que o custo de capital e cria valor.','Na HP 12c, os fluxos entram em ordem: CF₀ (data zero), CFⱼ (anos seguintes) e Nⱼ (repetições).'],
+ raciocinio:['Anos 1 a 3: 70.000 ÷ 1,1 + 70.000 ÷ 1,1² + 70.000 ÷ 1,1³ = 174.079.','Anos 4 e 5: 90.000 ÷ 1,1⁴ + 90.000 ÷ 1,1⁵ = 117.355.','NPV = 174.079 + 117.355 − 250.000 = 41.434.'],
+ erradas:{1:'Soma os fluxos sem descontar: 210.000 + 180.000 − 250.000.',2:'Desconta os fluxos, mas esquece de subtrair o investimento de 250.000.'},
+ steps:[['{f CLEAR REG} 250000 {CHS} {g CF₀}','-250,000.00','investimento','Limpa todos os registradores (inclusive fluxos antigos) e guarda o investimento como fluxo da data zero, negativo.'],
+  ['70000 {g CFⱼ} 3 {g Nⱼ}','3.00','70.000 por 3 anos','Primeiro fluxo, 70.000; g Nⱼ diz que ele se repete 3 vezes (anos 1, 2 e 3).'],
+  ['90000 {g CFⱼ} 2 {g Nⱼ}','2.00','90.000 por 2 anos','Próximo fluxo, 90.000, repetido 2 vezes (anos 4 e 5).'],
+  ['10 {i} {f NPV}','41,433.77','NPV a 10%','O custo de capital vai em i; f NPV desconta cada fluxo pelo seu ano e soma tudo, inclusive o investimento negativo.']]},
+
 {id:'q11', tema:'Fluxos de caixa',
  q:'Para o mesmo projeto da questão anterior (−250.000; 70.000 nos anos 1 a 3; 90.000 nos anos 4 e 5), qual a IRR?',
- opts:['10,00%','15,96%','22,40%'], ans:1,
- exp:'A IRR é a taxa que zera o NPV. Como o NPV a 10% é positivo, a IRR tem de ser maior que 10%.',
- steps:[['{f CLEAR REG} 250000 {CHS} {g CF₀} 70000 {g CFⱼ} 3 {g Nⱼ} 90000 {g CFⱼ} 2 {g Nⱼ}','2.00','fluxos digitados'],['{f IRR}','15.96','IRR em % ao ano']]},
+ opts:['10,00%','15,96%','11,20%'], ans:1,
+ pede:'A taxa interna de retorno (IRR) dos fluxos do projeto.',
+ conceitos:['IRR é a taxa de desconto que faz o NPV ser igual a zero.','Se a IRR é maior que o custo de capital, o NPV a esse custo é positivo, e vice-versa.','Não há fórmula fechada: a calculadora acha a taxa por tentativas sucessivas.'],
+ raciocinio:['Na questão anterior, o NPV a 10% foi positivo (41.434). Logo, a IRR tem de ser maior que 10%.','A calculadora testa taxas até o NPV zerar: isso acontece em 15,96%.','Interpretação: o projeto rende 15,96% ao ano sobre o capital investido.'],
+ erradas:{0:'É o custo de capital, não a taxa de retorno do projeto.',2:'Divide o ganho total (140.000 ÷ 250.000 = 56%) por 5 anos, ignorando quando cada fluxo acontece.'},
+ steps:[['{f CLEAR REG} 250000 {CHS} {g CF₀} 70000 {g CFⱼ} 3 {g Nⱼ} 90000 {g CFⱼ} 2 {g Nⱼ}','2.00','fluxos digitados','Os mesmos fluxos da questão anterior: investimento em CF₀ e os retornos com suas repetições.'],
+  ['{f IRR}','15.96','IRR em % ao ano','f IRR procura a taxa que zera o NPV dos fluxos. A taxa também fica guardada em i.']]},
+
 {id:'q12', tema:'Renda fixa',
  q:'Um título de 10 anos paga cupom de 5% ao ano, em parcelas semestrais. Se o YTM é 6% ao ano (base semestral), qual o preço por 100 de face, numa data de cupom?',
  opts:['92,56','92,64','100,00'], ans:0,
- exp:'Use períodos semestrais: n = 20, i = 3%, PMT = 2,5. A alternativa B usa períodos anuais. Como o YTM é maior que o cupom, o título sai abaixo do par.',
- steps:[['{f CLEAR FIN} 20 {n}','20.00','20 semestres'],['3 {i}','3.00','YTM semestral'],['2.5 {PMT} 100 {FV}','100.00','cupom semestral e resgate'],['{PV}','-92.56','preço']]},
+ pede:'O preço do título, que é o valor presente dos cupons e do resgate descontados pelo YTM.',
+ conceitos:['Preço de um título = valor presente dos cupons + valor presente do valor de face no vencimento.','Cupom semestral: 5% ao ano ÷ 2 = 2,5 por 100 de face a cada semestre.','YTM em base semestral: 6% ÷ 2 = 3% por semestre. Prazo: 10 anos = 20 semestres.','Se o YTM é maior que a taxa de cupom, o título vale menos que o valor de face (abaixo do par).'],
+ raciocinio:['n = 20 semestres; i = 3% por semestre; PMT = 2,5; FV = 100.','Preço = 2,5 × [1 − 1,03⁻²⁰] ÷ 0,03 + 100 ÷ 1,03²⁰ = 37,19 + 55,37 = 92,56.','Abaixo de 100 porque o cupom (5%) é menor que o rendimento exigido (6%).'],
+ erradas:{1:'Usa períodos anuais (10 cupons de 5 a 6%), ignorando que o cupom é semestral.',2:'Supõe que o título é negociado ao par, o que só acontece quando YTM = cupom.'},
+ steps:[['{f CLEAR FIN} 20 {n}','20.00','20 semestres','Como os cupons são semestrais, tudo vai em semestres: 10 anos = 20 períodos.'],
+  ['3 {i}','3.00','YTM semestral','6% ao ano ÷ 2 = 3% por semestre.'],
+  ['2.5 {PMT} 100 {FV}','100.00','cupom semestral e resgate','Cupom de 2,5 por semestre em PMT e o valor de face devolvido no vencimento em FV.'],
+  ['{PV}','-92.56','preço','PV desconta os 20 cupons e o resgate. O sinal negativo é o que o comprador paga.']]},
+
 {id:'q13', tema:'Renda fixa',
  q:'Um título de 8 anos com cupom de 7% ao ano, pago semestralmente, custa 104,50 por 100 de face numa data de cupom. Qual o YTM anual (base semestral)?',
  opts:['6,28%','6,70%','7,00%'], ans:0,
- exp:'Calcule a taxa semestral com n = 16 e PMT = 3,5 e multiplique por 2. Preço acima do par significa YTM abaixo do cupom.',
- steps:[['{f CLEAR FIN} 16 {n}','16.00','16 semestres'],['104.5 {CHS} {PV}','-104.50','preço pago'],['3.5 {PMT} 100 {FV}','100.00','cupom e resgate'],['{i}','3.14','YTM semestral'],['2 {×}','6.28','YTM anual']]},
+ pede:'O rendimento até o vencimento (YTM) de quem compra o título por 104,50 e o carrega até o fim.',
+ conceitos:['YTM é a taxa que iguala o preço pago ao valor presente dos cupons e do resgate.','Base semestral: calcula-se a taxa por semestre e multiplica-se por 2.','Preço acima de 100 (acima do par) significa YTM menor que a taxa de cupom.','Current yield (cupom anual ÷ preço) é outra medida e não considera a perda do ágio até o vencimento.'],
+ raciocinio:['n = 16 semestres; PMT = 3,5 (7% ÷ 2); FV = 100; PV = −104,50.','A calculadora acha a taxa por semestre: 3,14%.','YTM anual = 3,14% × 2 = 6,28%. Abaixo do cupom de 7%, porque quem paga 104,50 recebe só 100 no fim.'],
+ erradas:{1:'É o current yield: 7 ÷ 104,50. Ignora a perda de 4,50 entre o preço pago e o resgate.',2:'É a taxa de cupom; só seria o YTM se o título custasse 100.'},
+ steps:[['{f CLEAR FIN} 16 {n}','16.00','16 semestres','8 anos com cupons semestrais = 16 períodos.'],
+  ['104.5 {CHS} {PV}','-104.50','preço pago','O preço sai do bolso: negativo em PV.'],
+  ['3.5 {PMT} 100 {FV}','100.00','cupom e resgate','Cupom semestral de 3,5 (7% ÷ 2) e resgate de 100.'],
+  ['{i}','3.14','YTM semestral','i calcula a taxa por semestre que iguala o preço aos fluxos.'],
+  ['2 {×}','6.28','YTM anual','Na convenção de base semestral, o YTM anual é a taxa do semestre vezes 2.']]},
+
 {id:'q14', tema:'Renda fixa',
  q:'Um título com cupom de 4,5% ao ano (semestral) vence em 15/03/2035 e é liquidado em 15/06/2027, com YTM de 5%. Pela contagem real/real, quais são o preço limpo e os juros acumulados por 100 de face?',
  opts:['Preço 96,81; juros 1,13','Preço 97,94; juros 0,00','Preço 96,81; juros 2,25'], ans:0,
- exp:'Entre cupons, o preço limpo exclui os juros acumulados desde o último cupom (15/03): 92 dos 184 dias do semestre, ou metade do cupom semestral de 2,25.',
- steps:[['{g D.MY}','','datas em dia.mêsano'],['5 {i} 4.5 {PMT}','4.50','YTM e cupom anuais'],['15.062027 {ENTER} 15.032035 {f PRICE}','96.81','preço limpo'],['{x≷y}','1.13','juros acumulados']]},
+ pede:'Dois números do título: o preço limpo e os juros acumulados, por 100 de valor de face.',
+ conceitos:['Cupom de 4,5% ao ano pago em duas vezes: 2,25 por 100 de face a cada semestre (15/03 e 15/09).','Juros acumulados (accrued interest): entre duas datas de cupom, quem vende já "ganhou" parte do próximo cupom. O comprador paga essa parte ao vendedor e depois recebe o cupom inteiro.','Preço sujo (dirty) = valor presente de todos os fluxos que faltam. Preço limpo (clean) = preço sujo − juros acumulados. O mercado cota o preço limpo.','Contagem real/real (actual/actual): conta os dias do calendário.'],
+ raciocinio:['Último cupom em 15/03/2027 e próximo em 15/09/2027: o semestre tem 184 dias; até a liquidação, em 15/06, passaram 92.','Juros acumulados = 2,25 × 92 ÷ 184 = 1,125 ≈ 1,13.','Faltam 16 cupons de 2,25 e o resgate de 100, descontados a 2,5% por semestre (YTM de 5% ÷ 2). f PRICE faz essa conta e já desconta os juros acumulados: preço limpo 96,81.','Abaixo de 100 porque o YTM (5%) é maior que o cupom (4,5%). Preço sujo = 96,81 + 1,13 = 97,94.'],
+ erradas:{1:'Mostra o preço sujo (97,94) como se fosse o limpo e zera os juros acumulados.',2:'Usa o cupom semestral inteiro (2,25) como juros acumulados, como se o semestre já tivesse terminado.'},
+ steps:[['{g D.MY}','','datas em dia.mêsano','Define o formato das datas: 15.062027 passa a ser lido como 15 de junho de 2027.'],
+  ['5 {i} 4.5 {PMT}','4.50','YTM e cupom anuais','Em f PRICE, i recebe o YTM anual e PMT a taxa de cupom anual. A calculadora já supõe cupons semestrais e faz as divisões por 2.'],
+  ['15.062027 {ENTER} 15.032035 {f PRICE}','96.81','preço limpo','Data de liquidação em Y, vencimento em X. f PRICE localiza os cupons, conta os dias reais, desconta os fluxos e subtrai os juros acumulados: o visor mostra o preço limpo.'],
+  ['{x≷y}','1.13','juros acumulados','f PRICE deixou os juros acumulados em Y. x≷y os traz para o visor: 2,25 × 92 ÷ 184.']]},
+
 {id:'q15', tema:'Estatística',
  q:'Os retornos anuais de um fundo foram 12%, −5%, 8%, 15% e −2%. Qual o desvio-padrão amostral?',
  opts:['5,60%','7,81%','8,73%'], ans:2,
- exp:'A tecla s divide por n − 1 (amostra). A alternativa B é o desvio-padrão populacional; a A é a média.',
- steps:[['{f CLEAR Σ}','0.00',''],['12 {Σ+} 5 {CHS} {Σ+} 8 {Σ+} 15 {Σ+} 2 {CHS} {Σ+}','5.00','5 retornos'],['{g x̄}','5.60','média'],['{g s}','8.73','desvio-padrão amostral']]},
+ pede:'O desvio-padrão amostral dos cinco retornos, uma medida de quanto eles variam em torno da média.',
+ conceitos:['Desvio-padrão mede a dispersão dos dados em torno da média.','Amostral: divide a soma dos desvios ao quadrado por n − 1. Populacional: divide por n.','Retornos de um período observado são tratados como amostra, salvo indicação contrária.'],
+ raciocinio:['Média: (12 − 5 + 8 + 15 − 2) ÷ 5 = 5,6.','Desvios ao quadrado: 41,0 + 112,4 + 5,8 + 88,4 + 57,8 = 305,2.','Variância amostral: 305,2 ÷ 4 = 76,3. Desvio-padrão: √76,3 = 8,73.'],
+ erradas:{0:'É a média dos retornos, não o desvio-padrão.',1:'É o desvio-padrão populacional (divide por 5 em vez de 4).'},
+ steps:[['{f CLEAR Σ}','0.00','','Zera os registradores de estatística, onde a calculadora guarda as somas.'],
+  ['12 {Σ+} 5 {CHS} {Σ+} 8 {Σ+} 15 {Σ+} 2 {CHS} {Σ+}','5.00','5 retornos','Cada Σ+ acrescenta um dado às somas; os negativos usam CHS. O visor mostra quantos dados já entraram.'],
+  ['{g x̄}','5.60','média','Conferência intermediária: a média dos dados.'],
+  ['{g s}','8.73','desvio-padrão amostral','g s calcula o desvio-padrão dividindo por n − 1, o amostral.']]},
+
 {id:'q16', tema:'Estatística',
  q:'Um fundo rendeu 10%, −20% e 15% em três anos seguidos. Qual o retorno médio geométrico anual?',
  opts:['0,40%','1,20%','1,67%'], ans:0,
- exp:'Média geométrica: (1,10 × 0,80 × 1,15)^(1/3) − 1. A alternativa C é a média aritmética, que superestima o retorno composto.',
- steps:[['1.10 {ENTER} .80 {×} 1.15 {×}','1.01','fator acumulado em 3 anos'],['3 {1/x} {yˣ}','1.00','raiz cúbica: fator médio anual'],['1 {−} 100 {×}','0.40','retorno geométrico em %']]},
+ pede:'A taxa anual constante que produziria o mesmo resultado acumulado dos três anos.',
+ conceitos:['Média geométrica: [(1 + r₁) × (1 + r₂) × (1 + r₃)]^(1/3) − 1.','É a medida certa para retornos compostos ao longo do tempo.','A média aritmética superestima o retorno composto quando há volatilidade.'],
+ raciocinio:['Fator acumulado: 1,10 × 0,80 × 1,15 = 1,012 (ganho de 1,2% em 3 anos).','Fator médio anual: 1,012^(1/3) = 1,0040.','Retorno geométrico: 0,40% ao ano.'],
+ erradas:{1:'É o ganho acumulado nos três anos (1,2%), não a taxa anual.',2:'É a média aritmética: (10 − 20 + 15) ÷ 3.'},
+ steps:[['1.10 {ENTER} .80 {×} 1.15 {×}','1.01','fator acumulado em 3 anos','Transforma cada retorno em fator (1 + r) e multiplica: 1,10 × 0,80 × 1,15 = 1,012.'],
+  ['3 {1/x} {yˣ}','1.00','raiz cúbica: fator médio anual','Raiz cúbica é elevar a 1/3: 1/x transforma 3 em 0,333 e yˣ eleva o fator a essa potência.'],
+  ['1 {−} 100 {×}','0.40','retorno geométrico em %','Subtrai 1 para voltar de fator para taxa e multiplica por 100.']]},
+
 {id:'q17', tema:'Estatística',
  q:'Uma carteira tem 50% no ativo A (retorno de 8%), 30% no ativo B (12%) e 20% no ativo C (−4%). Qual o retorno da carteira?',
- opts:['5,33%','6,80%','8,00%'], ans:1,
- exp:'Média ponderada: 0,5 × 8 + 0,3 × 12 + 0,2 × (−4). A alternativa A é a média simples dos três retornos.',
- steps:[['{f CLEAR Σ}','0.00',''],['8 {ENTER} 50 {Σ+}','1.00','retorno ENTER peso Σ+'],['12 {ENTER} 30 {Σ+}','2.00',''],['4 {CHS} {ENTER} 20 {Σ+}','3.00',''],['{g x̄w}','6.80','retorno ponderado']]},
+ opts:['5,33%','6,80%','8,40%'], ans:1,
+ pede:'O retorno da carteira, que é a média dos retornos ponderada pelo peso de cada ativo.',
+ conceitos:['Retorno da carteira = Σ (peso × retorno de cada ativo).','Os pesos somam 100%.','Ativos com peso maior influenciam mais o resultado.'],
+ raciocinio:['A: 0,5 × 8 = 4,0. B: 0,3 × 12 = 3,6. C: 0,2 × (−4) = −0,8.','Soma: 4,0 + 3,6 − 0,8 = 6,8%.'],
+ erradas:{0:'Média simples dos três retornos, sem considerar os pesos.',2:'Ignora o sinal negativo do ativo C (soma 0,8 em vez de subtrair).'},
+ steps:[['{f CLEAR Σ}','0.00','','Zera os registradores de estatística.'],
+  ['8 {ENTER} 50 {Σ+}','1.00','retorno ENTER peso Σ+','Na média ponderada, o valor (retorno) vai em Y e o peso em X antes do Σ+.'],
+  ['12 {ENTER} 30 {Σ+}','2.00','','Segundo ativo.'],
+  ['4 {CHS} {ENTER} 20 {Σ+}','3.00','','Terceiro ativo, com retorno negativo: CHS antes do ENTER.'],
+  ['{g x̄w}','6.80','retorno ponderado','g x̄w calcula Σ(retorno × peso) ÷ Σ pesos.']]},
+
 {id:'q18', tema:'Demonstrações financeiras',
  q:'Um equipamento custa USD 120.000, tem valor residual de USD 20.000 e vida útil de 5 anos. Pelo método de saldo decrescente duplo (double-declining balance), qual a depreciação do ano 2?',
  opts:['USD 20.000,00','USD 28.800,00','USD 48.000,00'], ans:1,
- exp:'Taxa = 2 ÷ 5 = 40% sobre o valor contábil: 48.000 no ano 1; no ano 2, 40% de 72.000. O residual não entra na base, só limita o total. A alternativa A é a linha reta; a C é a depreciação do ano 1.',
- steps:[['{f CLEAR FIN} 120000 {PV}','120,000.00','custo'],['20000 {FV} 5 {n} 200 {i}','200.00','residual, vida útil e fator de 200%'],['1 {f DB}','48,000.00','ano 1'],['2 {f DB}','28,800.00','ano 2']]},
+ pede:'A despesa de depreciação do segundo ano pelo método de saldo decrescente duplo.',
+ conceitos:['Saldo decrescente duplo: taxa = 2 ÷ vida útil = 40% ao ano.','A taxa incide sobre o valor contábil do início de cada ano (custo menos depreciação acumulada), não sobre custo menos residual.','O residual não entra na base, mas o valor contábil nunca pode ficar abaixo dele.'],
+ raciocinio:['Ano 1: 40% × 120.000 = 48.000. Valor contábil: 72.000.','Ano 2: 40% × 72.000 = 28.800.','O valor contábil (43.200) continua acima do residual (20.000), então não há limitação.'],
+ erradas:{0:'É a linha reta: (120.000 − 20.000) ÷ 5.',2:'É a depreciação do ano 1, não do ano 2.'},
+ steps:[['{f CLEAR FIN} 120000 {PV}','120,000.00','custo','O custo do ativo vai em PV.'],
+  ['20000 {FV} 5 {n} 200 {i}','200.00','residual, vida útil e fator de 200%','Residual em FV, vida útil em n e o fator do saldo decrescente em i (200 = duplo).'],
+  ['1 {f DB}','48,000.00','ano 1','Digite o ano e aperte f DB: 40% de 120.000.'],
+  ['2 {f DB}','28,800.00','ano 2','Para o ano 2, a calculadora aplica 40% sobre o valor contábil que sobrou (72.000).']]},
+
 {id:'q19', tema:'Mercado monetário',
  q:'Uma aplicação de USD 1.000.000 rende juros simples de 4% ao ano, base 360 dias, de 15/03/2027 a 10/09/2027 (dias corridos). Quanto rende no período?',
  opts:['USD 19.444,44','USD 19.616,44','USD 19.888,89'], ans:2,
- exp:'Juros = principal × taxa × dias ÷ 360, com 179 dias corridos. A alternativa A conta 175 dias pela convenção 30/360; a B divide por 365.',
- steps:[['{g D.MY} 15.032027 {ENTER}','15.03','data de início'],['10.092027 {g ΔDYS}','179.00','dias corridos'],['{f CLEAR FIN} {n} 4 {i}','4.00','prazo em n, taxa em i'],['1000000 {CHS} {PV} {f INT}','19,888.89','juros, base 360']]},
+ pede:'Os juros simples do período, contando os dias de calendário e dividindo por 360.',
+ conceitos:['Juros simples: juros = principal × taxa × dias ÷ base.','Base 360 (actual/360): conta os dias reais e divide por 360. Comum no mercado monetário.','A base 30/360 considera todo mês com 30 dias; a base 365 divide por 365.'],
+ raciocinio:['Dias corridos de 15/03 a 10/09: 16 + 30 + 31 + 30 + 31 + 31 + 10 = 179.','Juros = 1.000.000 × 4% × 179 ÷ 360 = 19.888,89.'],
+ erradas:{0:'Conta 175 dias pela convenção 30/360 em vez dos dias corridos.',1:'Divide por 365 em vez de 360.'},
+ steps:[['{g D.MY} 15.032027 {ENTER}','15.03','data de início','Formato dia.mêsano; a data inicial vai para Y.'],
+  ['10.092027 {g ΔDYS}','179.00','dias corridos','g ΔDYS conta os dias de calendário entre as duas datas.'],
+  ['{f CLEAR FIN} {n} 4 {i}','4.00','prazo em n, taxa em i','f CLEAR FIN não apaga o visor: os 179 dias vão direto para n. A taxa anual vai em i.'],
+  ['1000000 {CHS} {PV} {f INT}','19,888.89','juros, base 360','Principal negativo em PV; f INT calcula os juros simples na base 360.']]},
+
 {id:'q20', tema:'Financiamentos',
  q:'No financiamento da questão 5 (USD 300.000, 25 anos, 7,2% ao ano, parcelas mensais), qual o saldo devedor após as 12 primeiras parcelas?',
  opts:['USD 274.094,76','USD 278.544,96','USD 295.549,80'], ans:2,
- exp:'No começo do financiamento quase toda a parcela é juros: em 12 meses, só cerca de 4.450 de principal são amortizados. A alternativa A subtrai todas as parcelas pagas; a B subtrai os juros em vez do principal.',
- steps:[['{f CLEAR FIN} 25 {g 12×} 7.2 {g 12÷} 300000 {PV} {PMT}','-2,158.77','parcela'],['{f RND} {PMT}','-2,158.77','parcela arredondada em centavos'],['0 {n} 12 {f AMORT}','-21,455.04','juros pagos em 12 meses'],['{RCL} {PV}','295,549.80','saldo devedor']]}
+ pede:'Quanto ainda se deve depois de pagar as 12 primeiras parcelas.',
+ conceitos:['Cada parcela tem duas partes: juros sobre o saldo devedor do mês e amortização (o que reduz a dívida).','No começo do financiamento, o saldo é alto, então quase toda a parcela é juros.','Saldo devedor = valor financiado − total amortizado.'],
+ raciocinio:['Parcela: 2.158,77 (questão 5). Em 12 meses, paga-se 25.905,24.','Desse total, 21.455,04 são juros e só 4.450,20 amortizam a dívida.','Saldo devedor: 300.000 − 4.450,20 = 295.549,80.'],
+ erradas:{0:'Subtrai todas as parcelas pagas (25.905,24), como se tudo abatesse a dívida.',1:'Subtrai os juros pagos (21.455,04) em vez da amortização.'},
+ steps:[['{f CLEAR FIN} 25 {g 12×} 7.2 {g 12÷} 300000 {PV} {PMT}','-2,158.77','parcela','Monta o financiamento da questão 5 e calcula a parcela.'],
+  ['{f RND} {PMT}','-2,158.77','parcela arredondada em centavos','f RND arredonda a parcela para 2 casas e PMT guarda esse valor, como no carnê do banco.'],
+  ['0 {n} 12 {f AMORT}','-21,455.04','juros pagos em 12 meses','n volta a zero para contar a partir da primeira parcela; 12 f AMORT amortiza 12 parcelas e mostra os juros pagos.'],
+  ['{RCL} {PV}','295,549.80','saldo devedor','f AMORT também atualiza PV com o saldo devedor; RCL PV o mostra.']]}
 ];
 if (typeof module!=='undefined') module.exports = QUIZ;
 
@@ -1453,6 +1711,7 @@ if (typeof module!=='undefined') module.exports = TIPS;
 
 (function(){
 'use strict';
+MANUAL.forEach(function(t){ var k=0, W=(typeof MANUAL_WHY!=='undefined'&&MANUAL_WHY[t.id])||[]; t.blocks.forEach(function(b){ if(b.steps) b.steps.forEach(function(s){ if(s.length<4) s[3]=W[k]||''; k++; }); }); });
 var KEYS=[
  [['n','n','AMORT','12×'],['i','i','INT','12÷'],['PV','PV','NPV','CF₀'],['PMT','PMT','RND','CFⱼ'],['FV','FV','IRR','Nⱼ'],['CHS','CHS','','DATE'],['7','7','','BEG','num'],['8','8','','END','num'],['9','9','','MEM','num'],['div','÷','','','op']],
  [['yx','yˣ','PRICE','√x'],['inv','1/x','YTM','eˣ'],['pctT','%T','SL','LN'],['dpct','Δ%','SOYD','FRAC'],['pct','%','DB','INTG'],['EEX','EEX','','ΔDYS'],['4','4','','D.MY','num'],['5','5','','M.DY','num'],['6','6','','x̄w','num'],['mul','×','','x²','op']],
@@ -1730,7 +1989,7 @@ function showRef(id){
     if (b.table) h+='<table class="errs"><tbody>'+b.table.map(function(r){return '<tr><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td></tr>';}).join('')+'</tbody></table>';
     if (b.steps){
       h+='<table class="steps"><thead><tr><th>Teclas</th><th style="text-align:right">Visor</th><th>Comentário</th></tr></thead><tbody>'+
-        b.steps.map(function(s){ return '<tr class="play" data-seq="'+esc(s[0]).replace(/"/g,'&quot;')+'" title="Clique para fazer na calculadora"><td>'+keysHTML(s[0])+'</td><td class="v">'+esc(s[1])+'</td><td class="c">'+esc(s[2])+'</td></tr>'; }).join('')+
+        b.steps.map(function(s){ return '<tr class="play" data-seq="'+esc(s[0]).replace(/"/g,'&quot;')+'" title="Clique para fazer na calculadora"><td>'+keysHTML(s[0])+'</td><td class="v">'+esc(s[1])+'</td><td class="c">'+esc(s[2])+(s[3]?'<div class="cw">'+esc(s[3])+'</div>':'')+'</td></tr>'; }).join('')+
         '</tbody></table><p class="hint">Clique numa linha para a calculadora repetir as teclas. Faça as linhas em ordem.</p>';
     }
   });
@@ -1760,7 +2019,7 @@ function buildCards(t){
   var cards=[];
   groups.forEach(function(gr){
     if (!gr.rows.length){ cards.push({type:'read', h:gr.h, html:gr.html}); return; }
-    gr.rows.forEach(function(r,k){ cards.push({type:'step', h:gr.h, html:gr.html, keys:r[0], exp:r[1], com:r[2], n:k+1, of:gr.rows.length}); });
+    gr.rows.forEach(function(r,k){ cards.push({type:'step', h:gr.h, html:gr.html, keys:r[0], exp:r[1], com:r[2], why:r[3]||'', n:k+1, of:gr.rows.length}); });
   });
   return cards;
 }
@@ -1840,6 +2099,7 @@ function guideRender(scrollTop){
     h+='<div class="gexp"><div><div class="lbl">Visor esperado</div><div class="v">'+(c.exp?esc(marks(c.exp)):'—')+'</div></div><span id="g-stat" class="gstat">Aguardando</span></div>';
     if (c.com) h+='<div class="gcom">'+esc(c.com)+'</div>';
     h+='</div>';
+    if (c.why) h+='<div class="gwhy"><div class="lbl">Por que este passo</div><p>'+keysHTML(c.why)+'</p></div>';
     if (G.note) h+='<p class="gnote">'+esc(G.note)+'</p>';
     var needCheck=!!c.exp && !G.matched;
     h+='<div class="gbtns"><button type="button" data-g="prev"'+(i===0?' disabled':'')+'>Anterior</button><button type="button" data-g="show">Mostrar</button><button type="button" data-g="redo">Recomeçar passo</button>'+
@@ -1935,7 +2195,7 @@ function showQuestion(i){
   });
   h+='</div>';
   if (a!==undefined){
-    h+='<div class="qfeed"><div class="lbl">'+(a===q.ans?'Resposta certa':'Resposta errada · a correta é '+LET[q.ans])+'</div><p>'+esc(q.exp)+'</p></div>'+
+    h+='<div class="qfeed"><div class="lbl">'+(a===q.ans?'Resposta certa':'Resposta errada · a correta é '+LET[q.ans])+'</div>'+explainHTML(q)+'</div>'+
        '<div class="gbtns"><button type="button" data-q="solve">Resolver na calculadora</button><button type="button" class="pri" data-q="next">Próxima questão</button></div>';
   } else {
     h+='<div class="gbtns"><button type="button" class="link" data-q="solve">Ver a resolução sem responder</button></div>';
@@ -1945,10 +2205,19 @@ function showQuestion(i){
   try{ store&&store.setItem(STORE+'-qidx',String(i)); }catch(e){}
   stripRender();
 }
+function explainHTML(q){
+  var h='';
+  if (q.pede) h+='<h4>O que a questão pede</h4><p>'+esc(q.pede)+'</p>';
+  if (q.conceitos) h+='<h4>Conceitos</h4><ul>'+q.conceitos.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>';
+  if (q.raciocinio) h+='<h4>Raciocínio</h4><ol>'+q.raciocinio.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol>';
+  if (q.erradas){ h+='<h4>Por que as outras alternativas erram</h4><ul>'; for (var k in q.erradas) h+='<li><b>'+LET[k]+')</b> '+esc(q.erradas[k])+'</li>'; h+='</ul>'; }
+  if (!h && q.exp) h='<p>'+esc(q.exp)+'</p>';
+  return h;
+}
 function startSolve(){
-  var q=QUIZ[QUIZ_IDX], ctx='<p class="qstem">'+esc(q.q)+'</p><p><strong>Resposta: '+LET[q.ans]+') '+esc(q.opts[q.ans])+'</strong></p>';
+  var q=QUIZ[QUIZ_IDX], ctx='<p class="qstem">'+esc(q.q)+'</p><p><strong>Resposta: '+LET[q.ans]+') '+esc(q.opts[q.ans])+'</strong></p>'+(q.raciocinio?'<h4 class="qh">Raciocínio</h4><ol>'+q.raciocinio.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol>':'');
   G.kind='quiz'; G.topic='quiz-'+q.id; G.chain=null;
-  G.cards=q.steps.map(function(r,k){ return {type:'step', h:'Resolução', html:ctx, keys:r[0], exp:r[1], com:r[2], n:k+1, of:q.steps.length}; });
+  G.cards=q.steps.map(function(r,k){ return {type:'step', h:'Resolução', html:ctx, keys:r[0], exp:r[1], com:r[2], why:r[3]||'', n:k+1, of:q.steps.length}; });
   quizView='guide'; mTitle.textContent='Questão '+(QUIZ_IDX+1)+' · resolução';
   guideGo(0);
 }
