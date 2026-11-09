@@ -229,6 +229,40 @@ body.mlayout #disp.small{font-size:22px}
 body.mlayout .keys{margin:0;padding:10px 14px 12px;grid-template-rows:repeat(4,1fr);height:100%;min-height:0}
 body.mlayout #pop{top:16px;right:16px}
 #probe{position:fixed;left:env(safe-area-inset-left);right:env(safe-area-inset-right);top:0;height:0;visibility:hidden;pointer-events:none}
+/* celular deitado com manual/questões: painel na coluna da esquerda */
+body.mlayout.mpanel .logo{display:none}
+body.mlayout.mpanel .top{justify-content:flex-start}
+body.mlayout.mpanel .tools{order:0;justify-content:flex-start}
+body.mlayout.mpanel .lcd-frame{order:1;height:70px}
+body.mlayout.mpanel #disp{font-size:24px;height:28px}
+body.mlayout.mpanel #disp.small{font-size:20px}
+body.mobile.mlayout #manual{position:fixed;bottom:auto;right:auto;box-shadow:none;border-top:1px solid var(--linha);border-left:0;z-index:20;height:auto}
+body.mobile.mlayout #mstrip{display:none}
+body.mobile.mlayout #manual .mhead{display:flex;padding:8px 12px 6px;align-items:center}
+body.mobile.mlayout #manual .mhead .eyebrow{display:none}
+body.mobile.mlayout #manual .mhead > div:first-child{flex:1;min-width:0}
+body.mobile.mlayout #manual .mhead h2{font-size:15px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.mobile.mlayout #manual:not(.navopen) .mode{display:none}
+body.mobile.mlayout #manual .mhead button{padding:5px 8px;font-size:9px}
+body.mobile.mlayout #manual .mode{margin-top:4px}
+body.mobile.mlayout #manual .mode button{padding:4px 8px;font-size:9px}
+body.mobile.mlayout #manual .mnav{display:none;padding:6px 12px 8px;gap:4px;max-height:40%;overflow-y:auto}
+body.mobile.mlayout #manual.navopen .mnav{display:flex}
+body.mobile.mlayout #manual .mnav button{font-size:10.5px;padding:3px 8px}
+body.mobile.mlayout #manual .mbody{display:flex;flex-direction:column;padding:2px 12px 14px;font-size:12.5px}
+body.mobile.mlayout #manual .mbody.guide > *{order:5}
+body.mobile.mlayout #manual .mbody.guide .gprog{order:0;margin:6px 0 2px}
+body.mobile.mlayout #manual .mbody.guide .gact{order:1;margin:6px 0}
+body.mobile.mlayout #manual .mbody.guide .gbtns{order:2;margin-top:4px}
+body.mobile.mlayout #manual .mbody.guide .gnote{order:3}
+body.mobile.mlayout #manual .mbody.guide .gctx{order:4;margin-top:8px}
+body.mobile.mlayout #manual .gbtns button{padding:6px 8px;font-size:10.5px}
+body.mobile.mlayout #manual .gexp .v{font-size:17px}
+body.mobile.mlayout #manual .gact .keys-line{font-size:12.5px;line-height:1.9}
+body.mobile.mlayout #manual .qstem{font-size:13px}
+body.mobile.mlayout #manual .qopts button{padding:7px 10px;font-size:12.5px}
+#m-temas{display:none}
+body.mobile.mlayout #m-temas{display:inline-block}
 .errs{width:100%;border-collapse:collapse;font-size:12.5px}
 .errs td{padding:6px;border-bottom:1px solid var(--linha);vertical-align:top}
 .errs td:first-child{font:500 14px var(--display);white-space:nowrap;color:var(--marrom)}
@@ -267,7 +301,7 @@ body.mlayout #pop{top:16px;right:16px}
     <div id="mstrip" role="button" tabindex="0" aria-label="Abrir ou recolher o painel"></div>
     <div class="mhead">
       <div><div class="eyebrow">Manual</div><h2 id="m-title"></h2><div class="mode" role="group" aria-label="Modo do manual"><button type="button" id="mode-g" aria-pressed="true">Guiado</button><button type="button" id="mode-c" aria-pressed="false">Consulta</button></div></div>
-      <button id="m-close" type="button">Fechar</button>
+      <div style="display:flex;gap:6px"><button id="m-temas" type="button" aria-expanded="false">Índice</button><button id="m-close" type="button">Fechar</button></div>
     </div>
     <nav class="mnav" id="m-nav"></nav>
     <div class="mbody" id="m-body"></div>
@@ -1600,9 +1634,13 @@ function fit(){
     var pr=document.getElementById('probe').getBoundingClientRect();
     var L=pr.left, W=Math.max(200, pr.width||VW);
     var top=vv?vv.offsetTop:0, H=VH-(sheetOn?58:0);
-    ch=380; sc=H/ch; cw=W/sc;
+    var pan=!man.hidden; document.body.classList.toggle('mpanel',pan);
+    H=VH; ch=380; sc=H/ch; cw=W/sc;
+    var lw=pan ? Math.max(272, Math.round(cw*0.42)) : 272;
+    calcEl.style.gridTemplateColumns=lw+'px 1fr';
     calcEl.style.left=L+'px'; calcEl.style.top=top+'px';
     holder.style.width='0px'; holder.style.height='0px';
+    mlPanel={L:L, top:top, sc:sc, lw:lw, VH:VH};
   } else if (fill){
     w=stage.clientWidth; h=stage.clientHeight;
     sc=Math.max(0.3, Math.min(w/680, h/430));
@@ -1620,7 +1658,15 @@ function fit(){
   document.body.style.background='';
   document.body.classList.toggle('overlay', window.innerWidth<980 && !mob);
   if (ml) window.scrollTo(0,0);
+  if (!ml){ document.body.classList.remove('mpanel'); calcEl.style.gridTemplateColumns=''; man.style.left=man.style.top=man.style.width=man.style.height=''; }
+  else if (!man.hidden && mlPanel){
+    var lr=document.querySelector('.lcd-frame').getBoundingClientRect();
+    var y=lr.bottom+6;
+    man.style.left=mlPanel.L+'px'; man.style.top=y+'px';
+    man.style.width=((mlPanel.lw-3)*mlPanel.sc)+'px'; man.style.height=(mlPanel.top+mlPanel.VH-y)+'px';
+  }
 }
+var mlPanel=null;
 window.addEventListener('resize',function(){ fit(); placeBracket(); });
 if (window.visualViewport){ visualViewport.addEventListener('resize',function(){ fit(); placeBracket(); }); visualViewport.addEventListener('scroll',function(){ if(document.body.classList.contains('mlayout')) fit(); }); }
 window.addEventListener('orientationchange',function(){ setTimeout(function(){ fit(); placeBracket(); },250); });
@@ -1688,7 +1734,7 @@ function showRef(id){
         '</tbody></table><p class="hint">Clique numa linha para a calculadora repetir as teclas. Faça as linhas em ordem.</p>';
     }
   });
-  mBody.innerHTML=h; mBody.scrollTop=0;
+  mBody.innerHTML=h; mBody.classList.remove('guide'); mBody.scrollTop=0;
   try{ store&&store.setItem(STORE+'-topic',t.id); }catch(e){}
   stripRender();
 }
@@ -1778,14 +1824,14 @@ function guideRender(scrollTop){
     h='<div class="gprog"><span class="lbl">Resolução concluída</span><span class="gbar"><i style="width:100%"></i></span></div>'+
       '<div class="gdone"><h3>Questão '+(qi+1)+': resolvida</h3><p>Você refez o cálculo inteiro na calculadora.</p><button type="button" data-g="qnext">Próxima questão</button></div>'+
       '<div class="gbtns"><button type="button" data-g="prev">Anterior</button><button type="button" data-g="qback">Voltar à questão</button></div>';
-    mBody.innerHTML=h; if(scrollTop) mBody.scrollTop=0; return;
+    mBody.innerHTML=h; mBody.classList.add('guide'); if(scrollTop) mBody.scrollTop=0; return;
   }
   if (!c){
     var k=MANUAL.indexOf(t), nxt=MANUAL[(k+1)%MANUAL.length];
     h='<div class="gprog"><span class="lbl">Tema concluído</span><span class="gbar"><i style="width:100%"></i></span></div>'+
       '<div class="gdone"><h3>'+esc(t.title)+': concluído</h3><p>Você passou pelos '+n+' passos deste tema.</p><button type="button" data-g="topic" data-id="'+nxt.id+'">Próximo tema: '+esc(nxt.title)+'</button></div>'+
       '<div class="gbtns"><button type="button" data-g="prev">Anterior</button><button type="button" data-g="restart">Refazer o tema</button></div>';
-    mBody.innerHTML=h; if(scrollTop) mBody.scrollTop=0; return;
+    mBody.innerHTML=h; mBody.classList.add('guide'); if(scrollTop) mBody.scrollTop=0; return;
   }
   h+='<div class="gprog"><span class="lbl">Passo '+(i+1)+' de '+n+'</span><span class="gbar"><i style="width:'+pct+'%"></i></span></div>';
   h+='<div class="gctx">'+(c.h?'<h3>'+esc(c.h)+'</h3>':'')+c.html+'</div>';
@@ -1802,7 +1848,7 @@ function guideRender(scrollTop){
   } else {
     h+='<div class="gbtns"><button type="button" data-g="prev"'+(i===0?' disabled':'')+'>Anterior</button><button type="button" class="pri" data-g="next">Próximo</button></div>';
   }
-  mBody.innerHTML=h; if(scrollTop) mBody.scrollTop=0;
+  mBody.innerHTML=h; mBody.classList.add('guide'); if(scrollTop) mBody.scrollTop=0;
   guideStatus();
   stripRender();
 }
@@ -1826,7 +1872,7 @@ mBody.addEventListener('click',function(e){
   }
   if (a==='redo'){ G.token=(G.token||0)+1; gPlaying=false; replayTo(G.idx); G.matched=false; G.presses=0; G.note='Passo recomeçado: a calculadora voltou ao ponto de partida deste passo.'; guideRender(false); return; }
   if (a==='show' && !gPlaying){
-    if (isMobile()) setSheet(false);
+    if (isMobile() && !document.body.classList.contains('mlayout')) setSheet(false);
     if (G.presses>0 || G.chain!==prevStep(G.idx)) replayTo(G.idx);
     var seq; try{ seq=seqToKeys(c.keys); }catch(err){ return; }
     gPlaying=true; var j=0, tok=G.token;
@@ -1895,7 +1941,7 @@ function showQuestion(i){
     h+='<div class="gbtns"><button type="button" class="link" data-q="solve">Ver a resolução sem responder</button></div>';
   }
   h+=QNOTE;
-  mBody.innerHTML=h; mBody.scrollTop=0;
+  mBody.innerHTML=h; mBody.classList.remove('guide'); mBody.scrollTop=0;
   try{ store&&store.setItem(STORE+'-qidx',String(i)); }catch(e){}
   stripRender();
 }
@@ -1928,6 +1974,8 @@ function setQuiz(open){
 }
 bQuiz.addEventListener('click',function(){ setQuiz(man.hidden || panel!=='quiz'); });
 bMan.addEventListener('click',function(){ setManual(man.hidden || panel!=='manual'); });
+document.getElementById('m-temas').addEventListener('click',function(){ var o=!man.classList.contains('navopen'); man.classList.toggle('navopen',o); this.setAttribute('aria-expanded',o?'true':'false'); this.textContent=o?'Ocultar índice':'Índice'; });
+mNav.addEventListener('click',function(){ if (document.body.classList.contains('mlayout')){ man.classList.remove('navopen'); var tb=document.getElementById('m-temas'); tb.textContent='Índice'; tb.setAttribute('aria-expanded','false'); } });
 function setMode(m){ mode=m; document.getElementById('mode-g').setAttribute('aria-pressed',m==='g'?'true':'false'); document.getElementById('mode-c').setAttribute('aria-pressed',m==='c'?'true':'false');
   try{ store&&store.setItem(STORE+'-mode',m); }catch(e){}
   if (m==='g') guideOpen(current||MANUAL[0].id, current===G.topic?G.idx:0, current!==G.topic); else showRef(current||MANUAL[0].id); }
