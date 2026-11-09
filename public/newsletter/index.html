@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Newsletter diária · Sans</title>
+<meta name="description" content="Newsletter diária da Sans: quiz no estilo CFA, clipping de finanças corporativas e dicas práticas de Claude para profissionais de finanças.">
+<link rel="canonical" href="https://sansfinancas.com.br/newsletter/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#1B2A41">
+<link rel="apple-touch-icon" href="https://sansfinancas.com.br/logo.png">
+<!-- Prévia de link (WhatsApp, LinkedIn, Facebook, iMessage) — Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sans">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://sansfinancas.com.br/newsletter/">
+<meta property="og:title" content="Sans · Soluções em finanças">
+<meta property="og:description" content="Finanças da estratégia à tomada de decisão. Gestão de caixa, capital de giro, performance e controladoria para a sua empresa.">
+<meta property="og:image" content="https://sansfinancas.com.br/og-image.png">
+<meta property="og:image:secure_url" content="https://sansfinancas.com.br/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sans. Soluções em finanças — Finanças da estratégia à tomada de decisão.">
+<!-- X / Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sans · Soluções em finanças">
+<meta name="twitter:description" content="Finanças da estratégia à tomada de decisão. Gestão de caixa, capital de giro, performance e controladoria para a sua empresa.">
+<meta name="twitter:image" content="https://sansfinancas.com.br/og-image.png">
+<meta name="twitter:image:alt" content="Sans. Soluções em finanças — Finanças da estratégia à tomada de decisão.">
+<!-- Dados estruturados (schema.org) -->
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231B2A41'/%3E%3Ctext x='29' y='46' font-family='Georgia,serif' font-size='42' text-anchor='middle' fill='%23F3EDE2'%3ES%3C/text%3E%3Ccircle cx='47' cy='43' r='3.5' fill='%23C49A6C'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600&display=swap">
+<style>
+/* Layout: marca de página única, faixas alternadas creme/marinho, coluna de 1200px */
+:root{
+  --navy:#1B2A41; --navy-line:#34445C; --cream:#F3EDE2; --paper:#FBF8F2;
+  --brown:#7A5638; --tan:#C49A6C; --ink-soft:#3D4A5C; --mist:#C9BFAE; --rule:#E2D9CA;
+  --display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --body:'Manrope', 'Segoe UI', Helvetica, Arial, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--cream);color:var(--navy);font-family:var(--body);font-size:16px;line-height:1.6}
+a{color:inherit}
+a:focus-visible{outline:2px solid var(--tan);outline-offset:3px}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:24px}
+.eyebrow{font-size:13px;letter-spacing:.28em;text-transform:uppercase;font-weight:600;color:var(--brown);margin:0}
+.dark .eyebrow{color:var(--tan)}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance}
+h2{font-size:clamp(32px,4vw,44px);line-height:1.15}
+h3{font-weight:500}
+.dot{color:var(--brown)}
+.dark .dot{color:var(--tan)}
+.dark{background:var(--navy);color:var(--cream)}
+
+header{border-bottom:1px solid var(--rule)}
+header .wrap{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding-block:20px}
+.logo{font-family:var(--display);font-size:32px;line-height:1;text-decoration:none}
+nav{display:flex;flex-wrap:wrap;gap:24px;align-items:center;font-size:15px;font-weight:500}
+nav a{text-decoration:none}
+nav a:hover{color:var(--brown)}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:12px 22px;font-weight:600;text-decoration:none;border:1px solid var(--navy)}
+.btn-solid{background:var(--navy);color:var(--cream)}
+.btn-solid:hover{background:#24375A;color:var(--cream)}
+.btn-line:hover{background:var(--paper)}
+
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr);gap:56px;align-items:center;padding-block:96px}
+.hero-main{display:flex;flex-direction:column;gap:28px;min-width:0}
+.hero h1{font-size:clamp(40px,5.2vw,68px);line-height:1.05;letter-spacing:-.02em}
+.hero p{margin:0;font-size:20px;color:var(--ink-soft)}
+.actions{display:flex;flex-wrap:wrap;gap:16px}
+.sectors{display:flex;flex-direction:column;gap:16px;min-width:0}
+.sectors .eyebrow{font-size:12px;color:var(--ink-soft)}
+.sector-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.sector-list li{display:flex;align-items:center;gap:16px;padding:14px 18px;background:var(--paper);border:1px solid var(--rule);min-width:0}
+.sector-list svg{flex:none;width:30px;height:30px;color:var(--brown)}
+.sector-list span{font-size:16px;font-weight:600;line-height:1.3}
+@media (min-width:960px){.hero .wrap{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:72px}}
+
+section .wrap.block{display:flex;flex-direction:column;gap:48px;padding-block:112px}
+.head{display:flex;flex-direction:column;gap:12px;max-width:760px}
+
+.grid5{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:1px;background:var(--navy-line);border:1px solid var(--navy-line)}
+.grid5 article{background:var(--navy);padding:32px 28px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.grid5 .q{margin:0;font-family:var(--display);font-size:20px;line-height:1.35;color:var(--cream);text-wrap:balance}
+.grid5 h3{font-family:var(--body);font-size:20px;font-weight:500;line-height:1.35;color:var(--tan);margin-top:auto}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:40px}
+.grid2 article{display:flex;flex-direction:column;gap:12px;border-top:2px solid var(--navy);padding-top:24px;min-width:0}
+.grid2 article + article{border-top-color:var(--brown)}
+.grid2 h3{font-size:28px}
+.grid2 p{margin:0;color:var(--ink-soft);max-width:60ch}
+
+.about{background:var(--paper);border-top:1px solid var(--rule)}
+.about .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:48px;align-items:start;padding-block:112px}
+.about p{margin:0;font-size:17px;line-height:1.7;color:var(--ink-soft);max-width:62ch}
+
+.contact .wrap.top{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:48px;align-items:end;padding-block:112px}
+.contact h2{font-size:clamp(34px,4.4vw,48px);line-height:1.1}
+.contact-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:24px;font-size:clamp(18px,2.4vw,22px)}
+.contact-list li{display:flex;flex-direction:column;gap:6px;min-width:0;word-break:break-word}
+.contact-list .label{font-size:12px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;color:var(--tan)}
+.contact-list a{color:var(--cream)}
+.contact-list a:hover{color:var(--tan)}
+footer{border-top:1px solid var(--navy-line)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding-block:24px;font-size:14px;color:var(--mist)}
+footer .logo{font-size:22px;color:var(--cream)}
+</style>
+<style>
+.nl .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:56px;align-items:start;padding-block:96px}
+.nl h1{font-size:clamp(38px,5vw,60px);line-height:1.05;letter-spacing:-.02em}
+.nl p{margin:0;font-size:18px;color:var(--ink-soft);max-width:60ch}
+.nl .intro{display:flex;flex-direction:column;gap:24px}
+.nl ul.secoes{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.nl ul.secoes li{padding:12px 16px;background:var(--paper);border:1px solid var(--rule);font-weight:600}
+.nl ul.secoes li span{display:block;font-weight:400;color:var(--ink-soft);font-size:15px}
+form.inscricao{display:flex;flex-direction:column;gap:16px;padding:32px;background:var(--navy);color:var(--cream)}
+form.inscricao h2{font-size:30px}
+form.inscricao label{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600;letter-spacing:.04em}
+form.inscricao input[type=email],form.inscricao input[type=text]{font:inherit;font-size:16px;padding:12px 14px;border:1px solid var(--navy-line);background:var(--cream);color:var(--navy)}
+form.inscricao .check{flex-direction:row;align-items:flex-start;gap:10px;font-weight:400;font-size:14px;line-height:1.5;letter-spacing:0}
+form.inscricao .check input{margin-top:4px;width:18px;height:18px;flex:none}
+form.inscricao button{font:inherit;font-weight:600;min-height:48px;border:0;background:var(--tan);color:var(--navy);cursor:pointer}
+form.inscricao button:hover{background:#D3AE84}
+form.inscricao .nota{font-size:12.5px;line-height:1.5;color:var(--mist)}
+form.inscricao .nota a{color:var(--tan)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.arquivo .wrap{display:flex;flex-direction:column;gap:24px;padding-block:80px}
+ul.edicoes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-top:2px solid var(--navy)}
+ul.edicoes li{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--rule)}
+ul.edicoes li a.t{font-family:var(--display);font-size:22px;text-decoration:none}
+ul.edicoes li a.t:hover{color:var(--brown)}
+ul.edicoes li .d{color:var(--ink-soft);font-size:15px}
+ul.edicoes li a.pdf{font-size:14px;font-weight:600;color:var(--brown)}
+ul.edicoes li.vazio{color:var(--ink-soft);font-size:16px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a class="logo" href="/">Sans<span class="dot">.</span></a>
+    <nav aria-label="Principal">
+      <a href="/#frentes">Atuação</a>
+      <a href="/#como">Formato de trabalho</a>
+      <a href="/#sobre">Sobre</a>
+      <a href="/calculadora/">Calculadora</a>
+      <a href="/newsletter/" aria-current="page">Newsletter</a>
+      <a class="btn btn-solid" href="/#contato">Fale com a Sans</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <section class="nl">
+    <div class="wrap">
+      <div class="intro">
+        <p class="eyebrow">Newsletter diária</p>
+        <h1>Sua dose diária de inteligência financeira<span class="dot">.</span></h1>
+        <p>Todo dia útil, cedo, no seu e-mail. Feita para profissionais de finanças corporativas.</p>
+        <ul class="secoes">
+          <li>Quiz do profissional de finanças<span>Quatro questões originais no estilo das certificações, com respostas comentadas.</span></li>
+          <li>Clipping<span>As notícias do dia que mexem com caixa, impostos, mercado de capitais e M&amp;A.</span></li>
+          <li>Claude na prática<span>Três dicas por edição, do básico ao avançado, aplicadas a análises financeiras.</span></li>
+        </ul>
+      </div>
+      <form class="inscricao" method="post" action="/api/newsletter/inscricao">
+        <h2>Receba no seu e-mail<span class="dot">.</span></h2>
+        <label for="nl-nome">Nome (opcional)<input id="nl-nome" name="nome" type="text" autocomplete="name" maxlength="120"></label>
+        <label for="nl-email">E-mail<input id="nl-email" name="email" type="email" autocomplete="email" required maxlength="254"></label>
+        <div class="hp" aria-hidden="true"><label for="nl-site">Site<input id="nl-site" name="site" type="text" tabindex="-1" autocomplete="off"></label></div>
+        <label class="check" for="nl-ok"><input id="nl-ok" name="consentimento" type="checkbox" value="sim" required><span>Aceito receber a newsletter diária da Sans por e-mail e sei que posso cancelar a qualquer momento.</span></label>
+        <button type="submit">Quero receber</button>
+        <p class="nota">Usamos seu e-mail só para enviar a newsletter. Ele não é compartilhado com terceiros. Para cancelar ou pedir a exclusão dos seus dados, escreva para <a href="mailto:contato@sansfinancas.com.br">contato@sansfinancas.com.br</a>.</p>
+      </form>
+    </div>
+  </section>
+  <section class="arquivo">
+    <div class="wrap">
+      <div class="head"><p class="eyebrow">Arquivo</p><h2>Edições publicadas<span class="dot">.</span></h2></div>
+      <ul class="edicoes">
+        <!-- EDICOES: novas edições entram logo abaixo desta linha, a mais recente primeiro -->
+        <li class="vazio">As edições começam a aparecer aqui a partir de 10/11/2026.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+<section class="dark">
+<footer>
+      <div class="wrap">
+        <span class="logo">Sans<span class="dot">.</span></span>
+        <a href="/calculadora/" style="color:inherit">Calculadora financeira RPN</a>
+        <span>© 2026 Sans · Soluções em finanças</span>
+      </div>
+    </footer>
+</section>
+</body>
+</html>

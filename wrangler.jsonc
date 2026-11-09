@@ -1,7 +1,16 @@
 {
   "name": "site-sans",
   "compatibility_date": "2026-10-13",
+  "main": "src/worker.js",
   "assets": {
-    "directory": "./public"
-  }
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sans-newsletter",
+      "database_id": "52378b42-3834-4b00-a70f-16cfe493483e"
+    }
+  ]
 }
