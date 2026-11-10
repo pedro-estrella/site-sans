@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sans. – Edição nº 10 – 10/11/2026</title>
+<meta name="description" content="Edição nº 10 da newsletter diária da Sans: orçamento 2027 num Projeto do Claude, aging de clientes que vira planilha e a política de PDD em forma de skill, com quiz, clipping e respostas comentadas.">
+<link rel="canonical" href="https://sansfinancas.com.br/newsletter/edicao-10/">
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600;700&display=swap">
+<style>
+:root{--navy:#1B2A41;--cream:#F3EDE2;--brown:#7A5638;--gold:#C49A6C;--mut:#5C6676;--line:#E2D9CA;--card:#FBF8F2}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--navy);font-family:"Manrope",system-ui,sans-serif;font-size:16px;line-height:1.62}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px 56px}
+a{color:var(--brown)}
+.band{background:var(--navy)}
+.cover{max-width:760px;margin:0 auto;background:var(--navy);color:var(--cream);padding:28px 24px 22px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.cover img{height:96px;display:block}
+.cover .tag{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#C9BFAE;margin-top:8px}
+.cover .ed{text-align:right}
+.cover .ed .n{font-family:"Fraunces",serif;font-size:30px;color:var(--gold)}
+.cover .ed .d{font-size:13px;color:#C9BFAE}
+.goldbar{height:4px;background:var(--gold)}
+h1{font-family:"Fraunces",serif;font-weight:400;font-size:30px;line-height:1.2;margin:26px 0 10px}
+h2{font-family:"Fraunces",serif;font-weight:400;font-size:27px;line-height:1.25;margin:38px 0 10px}
+h2 .dot,h1 .dot{color:var(--brown)}
+h3{font-family:"Fraunces",serif;font-weight:500;font-size:20px;line-height:1.3;margin:24px 0 8px}
+.eyebrow{font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--brown);margin:16px 0 6px}
+.eyebrow .chip{display:inline-block;margin-right:8px}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 12px;padding-left:22px}
+li{margin:0 0 6px}
+li.nb{list-style:none;margin-left:-18px}
+.opt{display:flex;gap:10px;margin:0 0 8px}
+.opt b{flex:none;width:24px;height:24px;border:1px solid var(--line);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:13px;background:#fff}
+.box{border-radius:4px;padding:16px 18px;margin:16px 0}
+.box.dark{color:var(--cream)}
+.box.dark a{color:var(--gold)}
+.box.dark .eyebrow{color:var(--gold)}
+.box h2:first-child,.box h3:first-child,.box .eyebrow:first-child{margin-top:0}
+.small{font-size:13px;color:var(--mut)}
+figure{margin:18px 0}
+figure img{max-width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:12.5px;color:var(--mut);margin-top:6px;text-align:center}
+.tablewrap{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;background:#fff}
+th{background:var(--navy);color:var(--cream);text-align:left;font-weight:600}
+th,td{padding:8px 10px;border:1px solid var(--line);vertical-align:top}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:22px 0 6px}
+.tile{background:#fff;border:1px solid var(--line);padding:12px 14px;border-radius:3px}
+.tile .lb{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.tile .v{font-family:"Fraunces",serif;font-size:24px}
+.num{font-family:"Fraunces",serif;font-size:26px;color:var(--gold);margin:18px 0 0;line-height:1}
+.box:not(.dark) .num{font-size:18px;color:var(--brown)}
+.gab{display:inline-block;background:var(--navy);color:var(--cream);font-size:12px;padding:2px 10px;border-radius:3px;margin:0 0 8px}
+.tile .s{font-size:12px;color:var(--mut)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 24px}
+.cols p{margin:0 0 8px;font-size:13.5px}
+.pdfnote{font-size:12px;color:var(--mut);margin:12px 0 0}
+@media(max-width:560px){body{font-size:15px}h1{font-size:25px}h2{font-size:23px}.cover .ed{text-align:left}}
+.topnav{max-width:760px;margin:0 auto;padding:10px 20px;display:flex;justify-content:space-between;font-size:14px;font-weight:600}
+.topnav a{text-decoration:none}
+.assine{margin-top:32px;text-align:center;font-weight:600}
+</style></head><body>
+<nav class="topnav"><a href="/newsletter/">← Todas as edições</a><a href="sans-edicao-10.pdf" download>Baixar PDF</a></nav>
+<header class="band"><div class="cover"><div><div class="tag" style="margin:0 0 6px;color:#C49A6C">Newsletter diária</div><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMTEgMTU4IiB3aWR0aD0iMzExIiBoZWlnaHQ9IjE1OCI+PHBhdGggdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNDUuNzQsMTE4LjQwKSBzY2FsZSgwLjA1NjAwLC0wLjA1NjAwKSIgZD0iTTYwNyAtMjFRNTEwIC0yMSA0NDguMCA2LjBRMzg2IDMzIDM1MS41IDYwLjBRMzE3IDg3IDMwNSA4N1EyOTkgODcgMjg3LjAgNzAuNVEyNzUgNTQgMjYxLjUgMzIuMFEyNDggMTAgMjM2LjAgLTYuNVEyMjQgLTIzIDIxNyAtMjNRMjEyIC0yMyAyMDcuNSAtMTkuNVEyMDMgLTE2IDIwMSAtMTBMMTIwIDM4N1ExMjAgMzkzIDEyMC4wIDM5Ni4wUTEyMCAzOTkgMTIzIDQwMFExMjUgNDAyIDEyOC41IDQwMC4wUTEzMiAzOTggMTM0IDM5NFEyMDQgMjQyIDI3OS4wIDE1NS41UTM1NCA2OSA0MzIuNSAzMy4wUTUxMSAtMyA1OTMgLTNRNzA3IC0zIDc3Ni4wIDYxLjVRODQ1IDEyNiA4NDUgMjQ1UTg0NSAzMTYgODE0LjUgMzc3LjVRNzg0IDQzOSA3MTAuMCA0OTMuMFE2MzYgNTQ3IDUwNyA1OTRRMzU1IDY1MSAyNjQuMCA3MTYuMFExNzMgNzgxIDEzMy4wIDg1OS41UTkzIDkzOCA5MyAxMDM0UTkzIDExNDkgMTUwLjAgMTIzNi4wUTIwNyAxMzIzIDMwNC41IDEzNzEuNVE0MDIgMTQyMCA1MjUgMTQyMFE2MTYgMTQyMCA2NzQuNSAxMzk3LjBRNzMzIDEzNzQgNzY2LjAgMTM1MS4wUTc5OSAxMzI4IDgxMyAxMzI4UTgyNCAxMzI4IDg0My41IDEzNTEuNVE4NjMgMTM3NSA4ODEuNSAxMzk4LjVROTAwIDE0MjIgOTA4IDE0MjJROTEyIDE0MjIgOTE1LjUgMTQyMC4wUTkxOSAxNDE4IDkyMSAxNDEwTDEwMjQgMTAwNVExMDI1IDEwMDEgMTAyNS4wIDk5Ny41UTEwMjUgOTk0IDEwMjIgOTkyUTEwMjAgOTkxIDEwMTYuNSA5OTMuMFExMDEzIDk5NSAxMDEwIDk5OFE5MzYgMTE1MyA4NjAuNSAxMjQxLjBRNzg1IDEzMjkgNzA0LjUgMTM2NS41UTYyNCAxNDAyIDUzNyAxNDAyUTQyMSAxNDAyIDM0NS41IDEzMzAuNVEyNzAgMTI1OSAyNzAgMTEyOVEyNzAgMTA1NiAyOTkuNSA5OTMuMFEzMjkgOTMwIDQwMC41IDg3NS4wUTQ3MiA4MjAgNTk3IDc3M1E3NTcgNzE0IDg0OC4wIDY0OC41UTkzOSA1ODMgOTc3LjAgNTA4LjBRMTAxNSA0MzMgMTAxNSAzNDRRMTAxNSAyNDIgOTY3LjAgMTU5LjBROTE5IDc2IDgyNy41IDI3LjVRNzM2IC0yMSA2MDcgLTIxWiIgZmlsbD0iI0YzRURFMiI+PC9wYXRoPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwNS40OSwxMTguNDApIHNjYWxlKDAuMDU2MDAsLTAuMDU2MDApIiBkPSJNNTY5IDkzVjEwMEw1NjEgOTRWNjk1UTU2MSA3ODQgNTI1LjUgODMxLjBRNDkwIDg3OCA0MjAgODc4UTM0MyA4NzggMzA2LjUgODQxLjVRMjcwIDgwNSAyNzAgNzY0VjY5NVEyNzAgNjU0IDI0Mi41IDYyNy41UTIxNSA2MDEgMTczIDYwMVExNDIgNjAxIDEyMS41IDYyMS41UTEwMSA2NDIgMTAxIDY4MlExMDEgNzMzIDEzOS41IDc4MS4wUTE3OCA4MjkgMjU0LjUgODYwLjBRMzMxIDg5MSA0NDEgODkxUTU5MiA4OTEgNjY2LjAgODI0LjVRNzQwIDc1OCA3NDAgNjQwVjEwOFE3NDAgNjggNzUzLjAgNTAuNVE3NjYgMzMgNzg2IDMzUTgwNSAzMyA4MTkuMCA0NC4wUTgzMyA1NSA4MzYgNzdRODM2IDgxIDgzOC4wIDgyLjBRODQwIDgzIDg0MSA4M1E4NDQgODMgODQ1LjAgODIuMFE4NDYgODEgODQ2IDc3UTg0NiA2MCA4MzEuNSAzOC4wUTgxNyAxNiA3ODYuMCAtMC41UTc1NSAtMTcgNzA0IC0xN1E2MzUgLTE3IDYwMi4wIDEzLjBRNTY5IDQzIDU2OSA5M1pNNTMgMTkyUTUzIDI5NSAxMzguNSAzNjAuNVEyMjQgNDI2IDM5OSA0MjZRNDY5IDQyNiA1MTUuNSA0MTIuNVE1NjIgMzk5IDYwMSAzODBMNTk1IDM3MlE1NTYgMzkwIDUxMy41IDQwMS4wUTQ3MSA0MTIgNDE5IDQxMlEzMjggNDEyIDI4MS4wIDM2MC4wUTIzNCAzMDggMjM0IDIxOVEyMzQgMTMyIDI3OC41IDgzLjVRMzIzIDM1IDM5NiAzNVE0NDYgMzUgNDk1LjUgNTcuMFE1NDUgNzkgNTc4IDEyMkw1ODggMTE1UTU0MyA1MSA0NjYuNSAxNi41UTM5MCAtMTggMzAyIC0xOFExOTAgLTE4IDEyMS41IDQwLjVRNTMgOTkgNTMgMTkyWiIgZmlsbD0iI0YzRURFMiI+PC9wYXRoPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE1MS45MiwxMTguNDApIHNjYWxlKDAuMDU2MDAsLTAuMDU2MDApIiBkPSJNMzE2IDg3NFY1M1EzMTYgNDEgMzIxLjUgMzMuNVEzMjcgMjYgMzQwIDI0TDQwMyAxNFE0MTMgMTMgNDEzIDZRNDEzIDAgNDA0IDBINDVRNDMgMCA0MC41IDIuMFEzOCA0IDM4IDZRMzggOCA0MC4wIDEwLjBRNDIgMTIgNDcgMTNMMTEzIDI0UTEyNiAyNiAxMzIuMCAzMy41UTEzOCA0MSAxMzggNTFWNzg5UTEzOCA3OTQgMTM1LjAgNzk3LjBRMTMyIDgwMCAxMjYgODAwTDQ4IDgwMVE0NCA4MDEgNDIuMCA4MDMuMFE0MCA4MDUgNDAgODA3UTQwIDgxMSA0Mi41IDgxMi41UTQ1IDgxNCA0OCA4MTVMMjg3IDg4MlEyOTUgODg0IDI5OC41IDg4NC41UTMwMiA4ODUgMzA1IDg4NVEzMTEgODg1IDMxMy41IDg4Mi4wUTMxNiA4NzkgMzE2IDg3NFpNMzAxIDY5MCAyOTIgNjk5IDMyNiA3MzBRNDIyIDgxNyA0OTAuMCA4NTMuNVE1NTggODkwIDYyMSA4OTBRNzE0IDg5MCA3NjYuMCA4MjkuMFE4MTggNzY4IDgzNSA2NDFMOTEzIDYxUTkxNSA0NSA5MjIuNSAzNC41UTkzMCAyNCA5NDcgMjFMMTAwMCAxM1ExMDA1IDEyIDEwMDcuMCAxMC41UTEwMDkgOSAxMDA5IDZRMTAwOSA0IDEwMDcuMCAyLjBRMTAwNSAwIDEwMDEgMEg2MzZRNjI2IDAgNjI2IDZRNjI2IDExIDYzNyAxNEw3MDIgMjRRNzIwIDI2IDcyNy4wIDM2LjVRNzM0IDQ3IDczMiA2MUw2NjAgNjIzUTY0NiA3MjAgNjEyLjAgNzY1LjBRNTc4IDgxMCA1MTMgODEwUTQ3MCA4MTAgNDI3LjAgNzg4LjBRMzg0IDc2NiAzMzQgNzIxWiIgZmlsbD0iI0YzRURFMiI+PC9wYXRoPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIwNS43MywxMTguNDApIHNjYWxlKDAuMDU2MDAsLTAuMDU2MDApIiBkPSJNNDAxIC0yUTQ3NyAtMiA1MjIuNSAzOS4wUTU2OCA4MCA1NjggMTQ2UTU2OCAxOTEgNTQ3LjUgMjI2LjVRNTI3IDI2MiA0NzguNSAyOTEuNVE0MzAgMzIxIDM0NiAzNDdRMjM1IDM4MyAxNzAuNSA0MjYuMFExMDYgNDY5IDc4LjUgNTIzLjBRNTEgNTc3IDUxIDY0NlE1MSA3NjQgMTMxLjUgODI4LjVRMjEyIDg5MyAzNDUgODkzUTQwNSA4OTMgNDQ0LjAgODgxLjVRNDgzIDg3MCA1MDMuNSA4NTguMFE1MjQgODQ2IDUzMCA4NDZRNTM5IDg0NiA1NTkuNSA4NTguMFE1ODAgODcwIDYwMC4wIDg4MS41UTYyMCA4OTMgNjI2IDg5M1E2MjkgODkzIDYzMi4wIDg5Mi4wUTYzNSA4OTEgNjM2IDg4NEw2OTUgNjExUTY5NyA2MDUgNjk2LjUgNjAwLjVRNjk2IDU5NiA2OTIgNTkzUTY4OSA1OTIgNjg2LjAgNTkzLjVRNjgzIDU5NSA2ODAgNTk5UTYzMiA3MDIgNTgyLjAgNzYzLjBRNTMyIDgyNCA0NzUuNSA4NTEuMFE0MTkgODc4IDM1MiA4NzhRMjY3IDg3OCAyMTkuMCA4MzUuNVExNzEgNzkzIDE3MSA3MjNRMTcxIDY3OSAxOTEuNSA2NDMuMFEyMTIgNjA3IDI2My41IDU3Ny4wUTMxNSA1NDcgNDA5IDUyMFE1MTAgNDkxIDU3Mi4wIDQ0OS41UTYzNCA0MDggNjYyLjUgMzUzLjBRNjkxIDI5OCA2OTEgMjMwUTY5MSAxNTQgNjU0LjUgOTguNVE2MTggNDMgNTU1LjUgMTIuMFE0OTMgLTE5IDQxMiAtMTlRMzU4IC0xOSAzMTguMCAtMi41UTI3OCAxNCAyNTQuMCAzMC4wUTIzMCA0NiAyMjMgNDZRMjE4IDQ2IDIwMi4wIDMxLjBRMTg2IDE2IDE2OS4wIDEuMFExNTIgLTE0IDE0NSAtMTRRMTQxIC0xNCAxMzcuMCAtMTEuMFExMzMgLTggMTMxIDFMODIgMjM5UTgxIDI0OSA4Mi4wIDI1My41UTgzIDI1OCA4NiAyNjBRODkgMjYyIDkxLjUgMjYwLjVROTQgMjU5IDk2IDI1NVExNjcgMTEzIDI0Ni4wIDU1LjVRMzI1IC0yIDQwMSAtMloiIGZpbGw9IiNGM0VERTIiPjwvcGF0aD48cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyNDUuNzcsMTE4LjQwKSBzY2FsZSgwLjA1NjAwLC0wLjA1NjAwKSIgZD0iTTE3NCAtMTZRMTQyIC0xNiAxMTcuMCAwLjVROTIgMTcgNzcuNSA0NC4wUTYzIDcxIDYzIDEwNFE2MyAxMzYgNzcuNSAxNjQuMFE5MiAxOTIgMTE3LjUgMjA4LjBRMTQzIDIyNCAxNzQgMjI0UTIwNiAyMjQgMjMxLjUgMjA3LjVRMjU3IDE5MSAyNzEuNSAxNjQuMFEyODYgMTM3IDI4NiAxMDRRMjg2IDcxIDI3MS4wIDQzLjVRMjU2IDE2IDIzMS4wIDAuMFEyMDYgLTE2IDE3NCAtMTZaIiBmaWxsPSIjQzQ5QTZDIj48L3BhdGg+PC9zdmc+" alt="Sans."><div class="tag">Sua dose diária de inteligência financeira</div></div>
+<div class="ed"><div class="n">Edição 10</div><div class="d">terça-feira, 10 de novembro de 2026</div></div></div></header><div class="goldbar"></div>
+<main class="wrap">
+<div class="stats"><div class="tile"><div class="lb">IBOVESPA · 09/11</div><div class="v">171.907 +2,02%</div><div class="s">fechamento preliminar Dados: InfoMoney, 09/11 (Ibovespa em dado preliminar das 17h55).</div></div><div class="tile"><div class="lb">DÓLAR · 09/11</div><div class="v">R$ 5,506</div><div class="s">queda de 0,06%</div></div><div class="tile"><div class="lb">BRENT · 09/11</div><div class="v">US$ 92,57</div><div class="s">−5,85% no dia</div></div><div class="tile"><div class="lb">DI JAN/27 · 09/11</div><div class="v">13,66%</div><div class="s">curva fechou em baixa</div></div></div>
+<h2>Abertura<span class="dot">.</span></h2>
+<div class="eyebrow">O GANCHO DO DIA</div>
+<p>Todo mundo sabe calcular o ROE. Lucro líquido dividido pelo patrimônio líquido, uma linha na planilha, pronto. O problema é que o ROE sozinho é o placar do jogo: diz quem ganhou, mas não conta como o gol saiu.</p>
+<p>Saber por que o ROE subiu ou caiu, e o que as outras camadas do balanço dizem sobre a saúde financeira da empresa, é o que separa o bom profissional daquele que só sabe nomear os indicadores. Margem, giro e dívida contam histórias bem diferentes para o mesmo número final.</p>
+<p>Aprender em finanças tem muito disso: pegar um número que você já usa todo dia e desmontá-lo até enxergar as peças. Não é decorar fórmula nova. É olhar de novo para a fórmula velha, com mais perguntas.</p>
+<p>O quiz de hoje tem uma questão exatamente sobre isso. E o clipping traz uma venda de R$ 12,7 bilhões em que o número da manchete e o cheque efetivamente pago são bem diferentes. Bom treino.</p>
+<h2>Quiz diário do Profissional de Finanças<span class="dot">.</span></h2>
+<p>Quatro questões para testar seus conhecimentos em ética, análise de demonstrações, capital de giro e custo de capital, no estilo das principais certificações profissionais, como o CFA. <a href="https://www.cfainstitute.org/programs/cfa-program">Saiba mais sobre o CFA Program aqui</a>.</p>
+<p class="small">Esta newsletter não tem nenhuma afiliação com o CFA Institute. As questões são originais, elaboradas pela Sans, com o objetivo de disseminar conteúdos relevantes para a comunidade de profissionais de finanças.</p>
+<div class="box" style="background:#fbf8f2"><div class="num">1</div>
+<div class="eyebrow">ÉTICA · DIFÍCIL</div>
+<p>Três profissionais de uma gestora, todos sujeitos ao Code and Standards, viveram as situações abaixo:</p>
+<ul><li><strong>1.</strong> Lorena, gestora de fundos e ativista ambiental, foi detida mais de uma vez por invadir a área de uma indústria durante protestos pacíficos, sempre fora do horário de trabalho.</li>
+<li><strong>2.</strong> Otávio, analista, declarou falência pessoal depois que o restaurante que mantinha com a família fechou. Não houve fraude nem ocultação de bens.</li>
+<li><strong>3.</strong> Caio, gestor de carteiras, costuma beber no almoço em dias úteis e volta ao escritório visivelmente alterado, tomando decisões de investimento à tarde.</li>
+</ul><p>Quais situações mais provavelmente violam o Standard sobre má conduta profissional?</p>
+<div class="opt"><b>A</b><div>Apenas a situação 3.</div></div>
+<div class="opt"><b>B</b><div>As situações 1 e 3, porque ambas envolvem conduta que expõe a reputação da gestora.</div></div>
+<div class="opt"><b>C</b><div>As situações 2 e 3, porque ambas colocam em dúvida a capacidade de cuidar do dinheiro de terceiros.</div></div>
+<p class="small">Critério: a questão de ética segue o Code of Ethics and Standards of Professional Conduct do CFA Institute, documento público.</p></div>
+<div class="box" style="background:#fbf8f2"><div class="num">2</div>
+<div class="eyebrow">ANÁLISE DE DEMONSTRAÇÕES · MÉDIA</div>
+<p>A Têxtil Monte Alegre (fictícia) mostra os dados abaixo, em R$ milhões. O ROE subiu de 8% para 10%. O que explica a melhora?</p>
+<div class="tablewrap"><table><tr><th>Item</th><th>Ano 1</th><th>Ano 2</th></tr><tr><td>Receita líquida</td><td>800</td><td>880</td></tr><tr><td>Lucro líquido</td><td>40</td><td>44</td></tr><tr><td>Ativo total</td><td>1.000</td><td>1.100</td></tr><tr><td>Patrimônio líquido</td><td>500</td><td>440</td></tr></table></div>
+<div class="opt"><b>A</b><div>Aumento da margem líquida, já que o lucro cresceu 10%.</div></div>
+<div class="opt"><b>B</b><div>Aumento do giro do ativo, já que a receita cresceu 10%.</div></div>
+<div class="opt"><b>C</b><div>Aumento da alavancagem financeira (ativo/PL), com margem e giro estáveis.</div></div></div>
+<div class="box" style="background:#fbf8f2"><div class="num">3</div>
+<div class="eyebrow">CAPITAL DE GIRO · FÁCIL</div>
+<p>O Atacadista Boa Safra (fictício) recebe de um fornecedor a condição "2% de desconto se pagar em 10 dias; senão, valor cheio em 40 dias". A empresa tem uma linha de capital de giro disponível a 1,5% ao mês. A tesouraria deve:</p>
+<div class="opt"><b>A</b><div>Não aproveitar o desconto: 2% é bem menor que o custo anual da linha, de cerca de 19,6% ao ano.</div></div>
+<div class="opt"><b>B</b><div>Aproveitar o desconto, mesmo tomando a linha: recusar equivale a pagar cerca de 2,04% por 30 dias de prazo, acima de 1,5% ao mês.</div></div>
+<div class="opt"><b>C</b><div>Ficar indiferente: 2% em 40 dias equivale a 1,5% ao mês, o mesmo custo da linha.</div></div></div>
+<div class="box" style="background:#fbf8f2"><div class="num">4</div>
+<div class="eyebrow">CUSTO DE CAPITAL E ESTRUTURA · DIFÍCIL</div>
+<p>Uma fabricante de embalagens de capital fechado quer estimar seu custo do capital próprio. A comparável listada Plásticos Ponte Alta (fictícia) tem beta alavancado de 1,30 e D/E de 0,50. A fabricante pretende operar com D/E de 1,00. Alíquota de IR/CS de 34% para ambas, taxa livre de risco de 11% e prêmio de mercado de 6%. Usando a fórmula de Hamada, o custo do capital próprio da fabricante é de aproximadamente:</p>
+<div class="opt"><b>A</b><div>18,80%</div></div>
+<div class="opt"><b>B</b><div>21,40%</div></div>
+<div class="opt"><b>C</b><div>20,74%</div></div></div>
+<p class="small">Respostas comentadas no fim da edição.</p>
+<div class="box" style="background:#fbf8f2"><figure><img src="FIGURA-1.png" alt=""></figure>
+<div class="eyebrow">CALCULADORA RPN DA SANS</div>
+<p>Quer testar mais conhecimentos técnicos? Faça o teste com a calculadora RPN da Sans e pratique com cálculos envolvendo mercado de capitais e finanças corporativas, treinando estatística e matemática financeira. Há questões e a resolução passo a passo de cada exercício.</p>
+<p><a href="https://sansfinancas.com.br/calculadora/"><strong>Acessar a calculadora: sansfinancas.com.br/calculadora</strong></a></p></div>
+<h2>Clipping do dia<span class="dot">.</span></h2>
+<div class="eyebrow">ÚLTIMAS 48H</div>
+<p>Calote apertando o varejo, nota fiscal ganhando a cara do IBS e da CBS, Bolsa aliviada com o petróleo e uma venda bilionária que vale como aula de valuation.</p>
+<h3>Varejo</h3>
+<p><strong>O calote virou a principal causa de recuperação judicial.</strong> Segundo o Monitor RGF-BizDoc, da RGF Associados, a inadimplência de clientes apareceu em 55% dos pedidos de recuperação judicial com justificativa identificável no 3º trimestre de 2026, contra 45% um ano antes. Queda de faturamento e custo do crédito aparecem em 16% cada. No varejo, eram 1.024 empresas em recuperação judicial no fim de setembro, e o estoque cresceu 18% em 12 meses. A lição para quem cuida de caixa: venda a prazo é empréstimo ao cliente, e o risco de crédito que você concede volta como risco de liquidez para você. Política de crédito, aging e provisão deixam de ser rotina de backoffice. Fonte: <a href="https://mercadoeconsumo.com.br/10/11/2026/noticias-varejo/calote-dos-consumidores-pressiona-o-caixa-do-varejo-e-lidera-causas-de-recuperacao-judicial">Mercado&amp;Consumo, 10/11</a></p>
+<h3>Tributário</h3>
+<p><strong>Nove modelos de nota fiscal já têm versão aprovada para IBS e CBS.</strong> A Receita Federal e o Comitê Gestor do IBS aprovaram, pelo Ato Técnico Conjunto nº 10, de 28 de outubro, a documentação técnica de nove modelos de documentos fiscais eletrônicos, entre eles NF-e, NFC-e, CT-e e NFCom, além da versão 1.71 da tabela cClassTrib. Um detalhe importante da matéria: aprovar o leiaute não define, sozinho, quando cada campo vira obrigatório nem quando começa o split payment; isso depende do cronograma de cada nota técnica. Para controladoria e fiscal, o recado é prático: o ERP e o cadastro de produtos precisam conversar com essas tabelas antes de 2027, e quem projeta caixa deve acompanhar o calendário do split payment, que muda o momento em que o imposto sai do caixa. Fonte: <a href="https://www.contabeis.com.br/noticias/80686/ato-tecnico-no-10-2026-veja-as-versoes-fiscais-aprovadas-para-ibs-e-cbs/">Contábeis, 09/11</a></p>
+<h3>Mercado de Capitais</h3>
+<p><strong>Petróleo cai, Bolsa sobe.</strong> Na segunda-feira, o Ibovespa fechou em alta de 2,02%, aos 171.906 pontos, em dado preliminar. O empurrão veio de fora: o Brent caiu 5,85%, para US$ 92,57, e as bolsas americanas subiram mais de 2%. Aqui, Vale e grandes bancos puxaram a alta, com Santander subindo mais de 5%. O dólar fechou praticamente estável, a R$ 5,506, e os juros futuros recuaram. A ressalva da própria cobertura: a preocupação fiscal segue limitando o otimismo. Para quem orça 2027, vale guardar o lembrete: petróleo é premissa de inflação, e inflação é premissa de juro. Fonte: <a href="https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-09112026/">InfoMoney, 09/11</a></p>
+<h3>M&amp;A</h3>
+<p><strong>CSN vende a CSN Cimentos à chinesa Huaxin por R$ 12,7 bilhões.</strong> A CSN assinou no sábado (7) a venda de 99,99% da CSN Cimentos, dona de cerca de 21% do mercado brasileiro de cimento, segundo a Huaxin. O negócio avalia a empresa em R$ 12,7 bilhões, mas o pagamento previsto é de cerca de R$ 9,03 bilhões, valor acordado após ajustes de dívida e capital de giro. Do lado da compradora, o conselho autorizou buscar financiamento de até R$ 8,89 bilhões (70% do valor da empresa) e contratar derivativos para proteger a exposição ao real. O fechamento depende do Cade, da Aneel e de aprovações na China. A CSN diz que a operação faz parte da estratégia de reduzir a dívida. Fontes: <a href="https://diariodocomercio.com.br/negocios/csn-vende-csn-cimentos-huaxin/">Diário do Comércio, 09/11</a> e <a href="https://revistaempreende.com.br/huaxin-aquisicao-csn-cimentos-financiamento/">Empreende, 09/11</a></p>
+<p><strong>A lição de finanças corporativas.</strong> Manchete de M&amp;A quase sempre fala em valor da empresa (enterprise value); o vendedor recebe o valor do equity, que é o EV menos a dívida líquida e mais ou menos os ajustes de capital de giro contra um nível de referência. Por isso a "venda de R$ 12,7 bilhões" vira um cheque de cerca de R$ 9 bilhões. Para o vendedor, o ganho de alavancagem vem dos dois lados: entra caixa e sai do balanço a dívida da controlada. Para o comprador, financiar 70% do EV com dívida em reais e fazer hedge cambial mostra que a estrutura de pagamento pesa tanto quanto o múltiplo na conta do retorno.</p>
+<h2>Claude na prática<span class="dot">.</span></h2>
+<div class="eyebrow">IA PARA FINANÇAS</div>
+<p>Três dicas independentes, da base ao avançado. Novembro é temporada de orçamento e de provisão de fim de ano, e as três conversam com isso. As figuras são ilustrações da Sans, não capturas de tela oficiais.</p>
+<div class="eyebrow">BÁSICA</div>
+<h3>Projetos: um lugar só para o orçamento 2027</h3>
+<p><strong>Por que usar.</strong> O ciclo de orçamento dura semanas e envolve dezenas de conversas: premissas macro, receita por canal, despesas por centro de custo, capex, a rodada final com a diretoria. Em chats avulsos, você reexplica as premissas em cada um e corre o risco de o Claude usar uma versão velha. Um Projeto do Claude reúne tudo num espaço de trabalho com duas peças que valem para todos os chats ali dentro: o <strong>conhecimento do projeto</strong> (documentos de referência) e as <strong>instruções do projeto</strong> (como o Claude deve trabalhar).</p>
+<p><strong>Como configurar.</strong></p>
+<ul><li class="nb">1. Na barra lateral, abra Projects e clique em "+ New Project". Nome e descrição servem para você se organizar; o próprio Claude não os lê, então nada importante deve ficar só ali.</li>
+<li class="nb">2. No painel de conhecimento, à direita, clique em "+" e suba a planilha de premissas vigente, o calendário do orçamento, a política orçamentária e o forecast mais recente.</li>
+<li class="nb">3. Em "Set project instructions", escreva as regras do jogo: unidade, cenário base, o que fazer quando faltar premissa.</li>
+<li class="nb">4. Abra um chat por frente de trabalho. Atenção: chats do mesmo projeto não compartilham contexto entre si; o que precisa valer para todos tem de estar no conhecimento.</li>
+<li class="nb">5. Em planos Team e Enterprise, use "Share project" para dar ao time acesso de leitura ("Can view") ou edição ("Can edit").</li>
+</ul><figure><img src="FIGURA-2.png" alt="Figura 1 — Ilustração da Sans (interface simplificada, não é captura de tela oficial)"><figcaption>Figura 1 — Ilustração da Sans (interface simplificada, não é captura de tela oficial)</figcaption></figure>
+<p><strong>O que esperar.</strong> Projetos estão disponíveis em todos os planos, inclusive o gratuito (com limite de cinco projetos). Nos planos pagos, quando o conhecimento se aproxima do limite de contexto, o Claude ativa automaticamente um modo de busca (RAG) que amplia a capacidade. Quando a premissa mudar, troque o arquivo no conhecimento, não só a mensagem no chat: é isso que evita a "versão 2 em um chat e versão 3 no outro".</p>
+<div class="box dark" style="background:#1b2a41"><div class="eyebrow">PROMPT PRONTO</div>
+<p>"Usando apenas as premissas do conhecimento do projeto, monte o resumo da receita 2027 por canal, em R$ mil, com a variação contra o forecast 2026. Liste à parte qualquer número que você precisou estimar e por quê."</p></div>
+<p class="small">Fonte: <a href="https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects">How can I create and manage projects?</a> — Claude Help Center</p>
+<div class="eyebrow">INTERMEDIÁRIA</div>
+<h3>Criação de arquivos: do razão de clientes ao aging em Excel</h3>
+<p><strong>Por que usar.</strong> Com a notícia do varejo ainda fresca: montar o aging de recebíveis costuma ser uma tarde de PROCV, tabela dinâmica e conferência. Com o recurso de criar e editar arquivos, o Claude roda código num ambiente isolado, lê o CSV ou a planilha que você enviar e devolve um arquivo Excel pronto para baixar, com abas, totais e notas. Também gera Word, PowerPoint, PDF e gráficos em PNG.</p>
+<p><strong>Como configurar.</strong> Nos planos Free, Pro e Max o recurso vem ligado; confira em Settings &gt; Capabilities, na opção de execução de código e criação de arquivos ("Create and edit files" no layout novo). Em Team e Enterprise, quem controla é o administrador, em Organization settings &gt; Capabilities. O limite é de 30 MB por arquivo, e criar arquivos consome mais da cota de uso do que um chat comum: vale pedir a entrega completa de uma vez, em vez de dez ajustes pequenos.</p>
+<p><strong>O que esperar.</strong> O ganho real está na conferência que você exige no prompt. Peça sempre que o total do aging bata com o saldo do razão e que a diferença apareça na resposta. Se não bater, o problema está na base (título duplicado, baixa não processada), não na fórmula, e isso aparece antes de o número circular.</p>
+<figure><img src="FIGURA-3.png" alt="Figura 2 — Ilustração da Sans (interface simplificada, não é captura de tela oficial)"><figcaption>Figura 2 — Ilustração da Sans (interface simplificada, não é captura de tela oficial)</figcaption></figure>
+<div class="box dark" style="background:#1b2a41"><div class="eyebrow">PROMPT PRONTO</div>
+<p>"Anexei o razão de clientes de 31/10 em CSV. Gere um Excel com quatro abas: aging por canal (a vencer, 1–30, 31–90 e mais de 90 dias, em R$ mil), PDD pela política anexa, top 20 devedores e notas. Confira se o total do aging bate com o saldo do razão e informe a diferença. Não arredonde antes de somar."</p></div>
+<p class="small">Fonte: <a href="https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude">Create and edit files with Claude</a> — Claude Help Center</p>
+<div class="eyebrow">AVANÇADA</div>
+<h3>Skills: a política de PDD virando procedimento</h3>
+<p><strong>Por que usar.</strong> A provisão para devedores duvidosos segue a mesma receita todo mês: faixas do aging, percentuais de perda, exceções por renegociação, nota para o comitê. Se você reescreve essa receita no prompt a cada fechamento, ela é candidata a virar uma skill. Uma skill é uma pasta com instruções (e, se quiser, scripts e arquivos de apoio) que o Claude consulta sozinho quando o pedido combina com a descrição dela.</p>
+<p><strong>Como configurar.</strong> O recurso está nos planos Free, Pro, Max, Team e Enterprise, e exige a execução de código ligada. O coração da skill é um arquivo de instruções que começa com um cabeçalho em YAML com dois campos: o name (até 64 caracteres) e a description (até 200 caracteres), que é o que o Claude lê para decidir quando usar a skill. A pasta precisa ter o mesmo nome da skill e ser compactada num ZIP com a pasta na raiz. Depois do upload, ative em Customize &gt; Skills.</p>
+<div class="box" style="background:#fbf8f2"><p class="small">---name: pdd-mensal description: Calcula a PDD mensal a partir do aging de recebíveis e redige a nota para o comitê de crédito. Use quando o pedido citar PDD, provisão, aging ou inadimplência.</p>
+<p class="small">---</p>
+<ul><li class="nb">1. Confirme a data-base e a unidade (R$ mil).</li>
+<li class="nb">2. Use calculo_pdd.py para aplicar os percentuais da política.</li>
+<li class="nb">3. Some e confira com o total do aging antes de comentar.</li>
+<li class="nb">4. Liste exceções (renegociações, garantias) como pendências; nunca as assuma.</li></ul></div>
+<figure><img src="FIGURA-4.png" alt="Figura 3 — Ilustração da Sans (interface simplificada, não é captura de tela oficial)"><figcaption>Figura 3 — Ilustração da Sans (interface simplificada, não é captura de tela oficial)</figcaption></figure>
+<p><strong>O que esperar.</strong> O cálculo que precisa bater sempre vai num script dentro da skill, e não numa frase de instrução: assim o percentual é aplicado do mesmo jeito em outubro e em março. Se a skill não for acionada, revise a description, incluindo as palavras que o time usa no pedido. E lembre que a skill entrega um rascunho técnico; a decisão sobre a provisão continua com o comitê.</p>
+<div class="box dark" style="background:#1b2a41"><div class="eyebrow">PROMPT PRONTO</div>
+<p>"Rode a PDD de outubro com o aging anexo e redija a nota para o comitê de crédito, com a variação contra setembro e as pendências que precisam de confirmação da área de Crédito."</p></div>
+<p class="small">Fontes: <a href="https://support.claude.com/en/articles/12512198-how-to-create-custom-skills">How to create custom skills</a> e <a href="https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude">Create and edit files with Claude</a> — Claude Help Center</p>
+<div class="box dark" style="background:#1b2a41"><div class="eyebrow">ANTIPADRÕES</div>
+<h2>Mau uso do Claude: o que não fazer<span class="dot">.</span></h2>
+<p>Três hábitos que gastam cota, contexto e, pior, credibilidade na hora de apresentar números.</p>
+<div class="num">01</div>
+<p><strong>Despejar a pasta inteira no projeto "por via das dúvidas".</strong> Doze versões da planilha de premissas, o orçamento de 2024, três atas de reunião e o manual do ERP. Parece prudente, mas o resultado é o oposto: o conhecimento do projeto enche, o Claude passa a buscar trechos em vez de enxergar tudo, e a premissa velha compete com a nova. Quando ele responde com o câmbio da v1, o erro não é dele; foi você que deixou a v1 lá. Mantenha no conhecimento só a versão vigente de cada documento e apague o resto.</p>
+<div class="num">02</div>
+<p><strong>Pedir o número e não pedir a conta.</strong> "Qual é a PDD de outubro?" gera um número. "Qual é a PDD de outubro, com a memória de cálculo e a conferência contra o aging?" gera um número que você consegue defender. Quem decide com base num número precisa saber de onde ele saiu, e esse caminho é parte da entrega. Se a resposta não o traz, o cálculo acaba refeito à mão, e a economia de tempo vira trabalho em dobro. Peça a memória de cálculo sempre e confira pelo menos os totais.</p>
+<div class="num">03</div>
+<p><strong>Reaproveitar o chat do mês passado para o fechamento novo.</strong> É tentador: o contexto "já está lá". Só que está lá junto com as correções de setembro, os números de setembro e as exceções de setembro. A conversa fica longa, cada mensagem nova consome mais, e o risco de um dado antigo contaminar a resposta cresce. Fechamento novo, chat novo. O que vale para todos os meses (política, plano de contas, formato) vai no conhecimento do projeto, que é justamente o lugar feito para isso.</p>
+<p>O fio comum dos três erros: tratar o Claude como uma caixa onde se joga tudo e se aceita o que sai. Ele rende mais quando recebe pouco e certo, e quando você exige que mostre o trabalho.</p>
+<p>Fontes: <a href="https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects">How can I create and manage projects?</a> e <a href="https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude">Create and edit files with Claude</a> — Claude Help Center</p></div>
+<h2>Respostas comentadas<span class="dot">.</span></h2>
+<div class="eyebrow">QUIZ DA EDIÇÃO</div>
+<div class="box" style="background:#fbf8f2"><div class="eyebrow">QUESTÃO 1 · ÉTICA</div>
+<p class="gab"><strong>Gabarito: A</strong></p>
+<p>Standard I(D) — Misconduct, do Code of Ethics and Standards of Professional Conduct do CFA Institute. O Standard trata de conduta profissional com desonestidade, fraude ou engano e de atos que afetem a reputação, a integridade ou a competência profissional. O foco é o que se reflete no exercício da profissão, não a vida pessoal como um todo. Beber em horário de trabalho a ponto de comprometer decisões de investimento atinge diretamente a competência: é o caso de Caio.</p>
+<div class="opt"><b>B</b><div>está errada porque a orientação do Standard indica que, em geral, ele não foi feito para alcançar infrações decorrentes de desobediência civil em defesa de convicções pessoais: isso não depõe contra a integridade nem a competência profissional de Lorena.</div></div>
+<div class="opt"><b>C</b><div>está errada porque a falência pessoal, por si só, pode não dizer nada sobre a integridade de quem a declara. Ela passa a ser problema quando envolve conduta fraudulenta ou enganosa nos negócios, o que não ocorreu com Otávio.</div></div></div>
+<div class="box" style="background:#fbf8f2"><div class="eyebrow">QUESTÃO 2 · ANÁLISE DE DEMONSTRAÇÕES</div>
+<p class="gab"><strong>Gabarito: C</strong></p>
+<p>DuPont em três fatores: ROE = margem líquida × giro do ativo × alavancagem (ativo/PL). Ano 1: 5% × 0,8 × 2,0 = 8%. Ano 2: 5% × 0,8 × 2,5 = 10%. Margem e giro ficaram iguais; só a alavancagem subiu, porque o PL caiu de 500 para 440 enquanto o ativo cresceu.</p>
+<div class="opt"><b>A</b><div>está errada porque lucro e receita cresceram os mesmos 10%: a margem ficou em 5%.</div></div>
+<div class="opt"><b>B</b><div>está errada porque o ativo cresceu junto com a receita: o giro ficou em 0,8.</div></div></div>
+<div class="box" style="background:#fbf8f2"><div class="eyebrow">QUESTÃO 3 · CAPITAL DE GIRO</div>
+<p class="gab"><strong>Gabarito: B</strong></p>
+<p>Recusar o desconto significa "financiar" R$ 98 com o fornecedor por 30 dias extras (do dia 10 ao dia 40) e pagar R$ 2 por isso: 2/98 = 2,04% em 30 dias, ou cerca de 27,9% ao ano com capitalização. A linha custa 1,5% ao mês (cerca de 19,6% ao ano). Vale tomar a linha e pagar no dia 10.</p>
+<div class="opt"><b>A</b><div>está errada porque compara uma taxa de 30 dias (2%) com uma taxa anual (19,6%). Taxas só se comparam no mesmo período.</div></div>
+<div class="opt"><b>C</b><div>está errada porque usa 40 dias como prazo de financiamento. O fornecedor só "empresta" pelos 30 dias entre o dia 10 e o dia 40.</div></div></div>
+<div class="box" style="background:#fbf8f2"><div class="eyebrow">QUESTÃO 4 · CUSTO DE CAPITAL E ESTRUTURA</div>
+<p class="gab"><strong>Gabarito: C</strong></p>
+<p>Passo 1, desalavancar a comparável: βu = 1,30 / [1 + (1 − 0,34) × 0,50] = 1,30 / 1,33 ≈ 0,977. Passo 2, realavancar com a estrutura da fabricante: βL = 0,977 × [1 + 0,66 × 1,00] ≈ 1,623. Passo 3, CAPM: ke = 11% + 1,623 × 6% ≈ 20,74%.</p>
+<div class="opt"><b>A</b><div>está errada porque usa o beta da comparável sem ajustar a estrutura de capital (11% + 1,30 × 6% = 18,80%).</div></div>
+<div class="opt"><b>B</b><div>está errada porque ignora o benefício fiscal da dívida ao desalavancar e realavancar (βu = 0,867; βL = 1,733; ke = 21,40%).</div></div></div>
+<h2>Fontes da edição<span class="dot">.</span></h2>
+<p class="small"><a href="https://mercadoeconsumo.com.br/10/11/2026/noticias-varejo/calote-dos-consumidores-pressiona-o-caixa-do-varejo-e-lidera-causas-de-recuperacao-judicial">Calote dos consumidores pressiona o caixa do varejo — Mercado&amp;Consumo, 10/11/2026</a></p>
+<p class="small"><a href="https://www.contabeis.com.br/noticias/80686/ato-tecnico-no-10-2026-veja-as-versoes-fiscais-aprovadas-para-ibs-e-cbs/">Ato Técnico nº 10 aprova versões para nove modelos de documentos fiscais — Contábeis, 09/11/2026</a></p>
+<p class="small"><a href="https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-09112026/">Ibovespa hoje, 09/11/2026 — InfoMoney</a></p>
+<p class="small"><a href="https://diariodocomercio.com.br/negocios/csn-vende-csn-cimentos-huaxin/">CSN vende unidade de cimento à chinesa Huaxin — Diário do Comércio, 09/11/2026</a></p>
+<p class="small"><a href="https://revistaempreende.com.br/huaxin-aquisicao-csn-cimentos-financiamento/">Huaxin aprova aquisição de participação na CSN Cimentos — Empreende, 09/11/2026</a></p>
+<p class="small"><a href="https://www.cfainstitute.org/programs/cfa-program">CFA Program — CFA Institute</a></p>
+<p class="small"><a href="https://www.cfainstitute.org/standards/professionals/code-ethics-standards">Code of Ethics and Standards of Professional Conduct — CFA Institute</a></p>
+<p class="small"><a href="https://www.cfainstitute.org/standards/professionals/code-ethics-standards/standards-of-practice-i-d">Standard I(D) Misconduct — CFA Institute</a></p>
+<p class="small"><a href="https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects">How can I create and manage projects? — Claude Help Center</a></p>
+<p class="small"><a href="https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude">Create and edit files with Claude — Claude Help Center</a></p>
+<p class="small"><a href="https://support.claude.com/en/articles/12512198-how-to-create-custom-skills">How to create custom skills — Claude Help Center</a></p>
+<div class="box dark" style="background:#1b2a41"><p>A Sans é uma empresa de soluções em finanças corporativas. Atuamos no desenvolvimento de profissionais, com a disseminação de boas práticas, cases e materiais de estudo, e na assessoria a empresas: fortalecimento dos controles internos, ferramentas de gestão e acompanhamento, e modelagens financeiras e econômicas para apoiar decisões. O time é formado por profissionais do mercado corporativo de finanças, com experiência em diversos setores da economia real, como varejo, indústria, desenvolvimento imobiliário, reflorestamento e financeiras e cartões.</p>
+<p><strong>Sans. | sansfinancas.com.br</strong></p></div>
+<p class="assine"><a href="/newsletter/">Receba a newsletter por e-mail</a></p>
+</main></body></html>
